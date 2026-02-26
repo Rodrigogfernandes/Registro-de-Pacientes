@@ -1,13 +1,31 @@
 [
   {
+    "id": 1772083649881,
+    "nomePaciente": "PACIENTE TESTE 3",
+    "cpfPaciente": "77777777777",
+    "prontuarioPaciente": "P000003",
+    "documentoPaciente": "P000003",
+    "pacienteId": "1772083649881",
+    "modalidade": "Ressonancia",
+    "observacoes": "CRANIO",
+    "numeroAcesso": "89742983474",
+    "dataHoraExame": "2026-02-26T02:26",
+    "nomeTecnico": "--",
+    "statusExame": "Agendado"
+  },
+  {
     "id": 1740428855985,
-    "nomePaciente": "ascasc",
+    "nomePaciente": "PACIENTE TESTE 2",
+    "cpfPaciente": "88888888888",
+    "prontuarioPaciente": "P000002",
+    "documentoPaciente": "P000002",
+    "pacienteId": "1772083015860",
     "modalidade": "Raiox",
-    "observacoes": "asc",
-    "numeroAcesso": "asc",
+    "observacoes": "JOELHO ESQUERDO",
+    "numeroAcesso": "89742983473",
     "dataHoraExame": "2025-02-24T17:27",
     "nomeTecnico": "asc",
-    "observacoesAdicionais": "asdcaklsnjcblkjahjgdbkxnlsmjfnlzdvcshdalmw,lekfmljsrgnbfnckmxdlfmjcaddgvmcldafmcjdllgvlmd,çxdfkcmdjddvlmc"
+    "statusExame": "Agendado"
   },
   {
     "id": 1739404406465,
@@ -16,7 +34,12 @@
     "observacoes": "JOELHO DIREITO",
     "numeroAcesso": "132435657",
     "dataHoraExame": "2024-02-12T20:52",
-    "nomeTecnico": "RODRIGO"
+    "nomeTecnico": "RODRIGO",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1739402302218,
@@ -25,7 +48,12 @@
     "observacoes": "JOELHO DIREITO",
     "numeroAcesso": "76318701",
     "dataHoraExame": "2024-02-12T20:17",
-    "nomeTecnico": "RODRIGO"
+    "nomeTecnico": "RODRIGO",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1739070658295,
@@ -35,7 +63,12 @@
     "numeroAcesso": "0876543",
     "dataHoraExame": "2023-02-09T00:09",
     "nomeTecnico": "GERMANA",
-    "observacoesAdicionais": ""
+    "observacoesAdicionais": "",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1739070585278,
@@ -44,7 +77,12 @@
     "observacoes": "MAMA",
     "numeroAcesso": "89742983472",
     "dataHoraExame": "2025-02-09T00:08",
-    "nomeTecnico": "LUZIANA"
+    "nomeTecnico": "LUZIANA",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1739070518972,
@@ -53,7 +91,12 @@
     "observacoes": "CERVICAL",
     "numeroAcesso": "2102121",
     "dataHoraExame": "2025-02-09T00:08",
-    "nomeTecnico": "GERMANA"
+    "nomeTecnico": "GERMANA",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1739070461327,
@@ -61,29 +104,14 @@
     "modalidade": "Ressonancia",
     "observacoes": "MASTOIDE",
     "numeroAcesso": "121212",
-    "dataHoraExame": "2025-02-09T00:06",
-    "nomeTecnico": "BENTO",
-    "observacoesAdicionais": "zsczasxczaxc"
-  },
-  {
-    "id": 1739063591065,
-    "nomePaciente": "RONNY GUEDES FERNANDES",
-    "modalidade": "Tomografia",
-    "observacoes": "ABDOME",
-    "numeroAcesso": "219828000",
-    "dataHoraExame": "2025-02-08T22:11",
-    "nomeTecnico": "GERMANA",
-    "observacoesAdicionais": "kjbkjb\n"
-  },
-  {
-    "id": 1739062793524,
-    "nomePaciente": "RODRIGO GUEDES GERNANDES",
-    "modalidade": "Raiox",
-    "observacoes": "JOELHO DIREITO",
-    "numeroAcesso": "21011988",
-    "dataHoraExame": "2025-02-08T21:59",
-    "nomeTecnico": "NETO",
-    "observacoesAdicionais": "TESTE\n"
+    "dataHoraExame": "2026-02-26T09:30",
+    "nomeTecnico": "Ronny",
+    "observacoesAdicionais": "zsczasxczaxc",
+    "statusExame": "Realizado",
+    "documentoPaciente": "P000004",
+    "pacienteId": "1772084470469",
+    "cpfPaciente": "66666666666",
+    "prontuarioPaciente": "P000004"
   },
   {
     "id": 1738898478811,
@@ -93,7 +121,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Realizado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478812,
@@ -103,7 +136,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478813,
@@ -113,7 +151,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478814,
@@ -123,7 +166,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478815,
@@ -133,7 +181,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478816,
@@ -143,7 +196,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478817,
@@ -153,7 +211,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478818,
@@ -163,7 +226,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478819,
@@ -173,7 +241,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478820,
@@ -183,7 +256,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478821,
@@ -193,7 +271,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478822,
@@ -203,7 +286,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478823,
@@ -213,7 +301,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478824,
@@ -223,7 +316,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478825,
@@ -233,7 +331,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478826,
@@ -243,7 +346,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478827,
@@ -253,7 +361,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478828,
@@ -263,7 +376,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478829,
@@ -273,7 +391,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478830,
@@ -283,7 +406,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478831,
@@ -292,7 +420,12 @@
     "observacoes": "TESTE",
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2024-02-07T00:48",
-    "nomeTecnico": "SICRANO"
+    "nomeTecnico": "SICRANO",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478832,
@@ -302,7 +435,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478833,
@@ -312,7 +450,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-02-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478835,
@@ -322,7 +465,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478836,
@@ -332,7 +480,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478837,
@@ -342,7 +495,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478838,
@@ -352,7 +510,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478839,
@@ -362,7 +525,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478840,
@@ -372,7 +540,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478841,
@@ -382,7 +555,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478842,
@@ -392,7 +570,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478843,
@@ -402,7 +585,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478844,
@@ -412,7 +600,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478845,
@@ -422,7 +615,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478846,
@@ -432,7 +630,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478847,
@@ -442,7 +645,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478848,
@@ -452,7 +660,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478849,
@@ -462,7 +675,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478850,
@@ -472,7 +690,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478851,
@@ -482,7 +705,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478852,
@@ -492,7 +720,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478853,
@@ -502,7 +735,12 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478854,
@@ -512,7 +750,12 @@
     "numeroAcesso": "0987654321",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "BELTRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   },
   {
     "id": 1738898478855,
@@ -522,6 +765,11 @@
     "numeroAcesso": "1234567890",
     "dataHoraExame": "2025-03-07T00:48",
     "nomeTecnico": "SICRANO",
-    "observacoesAdicionais": "Exemplo de observações."
+    "observacoesAdicionais": "Exemplo de observações.",
+    "statusExame": "Agendado",
+    "documentoPaciente": "",
+    "pacienteId": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": ""
   }
 ]

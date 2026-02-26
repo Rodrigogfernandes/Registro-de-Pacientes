@@ -1,16 +1,17 @@
-const { ipcRenderer } = require('electron');
+﻿const { ipcRenderer } = require('electron');
 let registros = [];
+let pacientes = [];
 let registroSelecionado = null;
 let registrosFiltrados = [];
 let registrosPorPagina = 50;
 let paginaAtual = 1;
 let registroAtualId = null;
 
-// Adicionar estas variáveis no início do arquivo
- // Número de registros exibidos inicialmente
+// Adicionar estas variÃ¡veis no inÃ­cio do arquivo
+ // NÃºmero de registros exibidos inicialmente
 let registrosAtuais = []; // Array com todos os registros filtrados/pesquisados
 
-// Função para aplicar tema (definida no início para garantir que seja executada primeiro)
+// FunÃ§Ã£o para aplicar tema (definida no inÃ­cio para garantir que seja executada primeiro)
 function setTheme(theme) {
     if (typeof document !== 'undefined') {
         // Aplicar tanto no body quanto no html para garantir
@@ -50,22 +51,23 @@ function loadTheme() {
     }
 }
 
-// Executar carregamento do tema imediatamente (quando o script é carregado)
-// O tema já foi aplicado no HTML, mas vamos garantir que está correto
+// Executar carregamento do tema imediatamente (quando o script Ã© carregado)
+// O tema jÃ¡ foi aplicado no HTML, mas vamos garantir que estÃ¡ correto
 loadTheme();
 
-// Funções de Inicialização
+// FunÃ§Ãµes de InicializaÃ§Ã£o
 document.addEventListener('DOMContentLoaded', async () => {
     // Carregar tema novamente para garantir
     loadTheme();
     
+    await carregarPacientes();
     await carregarRegistros();
     setupEventListeners();
     atualizarTabela();
-    atualizarBotoesAcao(); // Adicione esta linha para desabilitar os botões ao iniciar
+    atualizarBotoesAcao(); // Adicione esta linha para desabilitar os botÃµes ao iniciar
 });
 
-// O evento do botão de relatório é configurado na função de inicialização dos gráficos (linha 1084)
+// O evento do botÃ£o de relatÃ³rio Ã© configurado na funÃ§Ã£o de inicializaÃ§Ã£o dos grÃ¡ficos (linha 1084)
 
 // Listener para eventos de tema do IPC
 try {
@@ -82,7 +84,7 @@ try {
 }
 
 function setupEventListeners() {
-    // Listeners para os botões principais
+    // Listeners para os botÃµes principais
     document.getElementById('searchInput').addEventListener('input', handleSearchInput);
     document.getElementById('btnLimparPesquisa').addEventListener('click', limparPesquisa);
     document.getElementById('btnFiltrarAvancado').addEventListener('click', toggleFiltroAvancado);
@@ -90,7 +92,7 @@ function setupEventListeners() {
     document.getElementById('btnLimparFiltroAvancado').addEventListener('click', limparFiltroAvancado);
     document.getElementById('btnExcluirRegistro').addEventListener('click', iniciarExclusao);
 
-    // Listeners para ordenação
+    // Listeners para ordenaÃ§Ã£o
     document.querySelectorAll('th[data-sort]').forEach(th => {
         th.addEventListener('click', () => ordenarTabela(th));
     });
@@ -120,14 +122,19 @@ function setupEventListeners() {
         });
     }
 
-    // Adicionar listener para o botão de importar (se existir)
+    // Adicionar listener para o botÃ£o de importar (se existir)
     const btnImportar = document.getElementById('btnImportar');
     if (btnImportar) {
         btnImportar.addEventListener('click', iniciarImportacao);
     }
+
+    const cpfInput = document.getElementById('cpfPaciente');
+    const prontuarioInput = document.getElementById('prontuarioPaciente');
+    if (cpfInput) cpfInput.addEventListener('blur', preencherPacientePorCpfOuProntuario);
+    if (prontuarioInput) prontuarioInput.addEventListener('blur', preencherPacientePorCpfOuProntuario);
 }
 
-// Adicione estes listeners logo após a definição dos outros event listeners
+// Adicione estes listeners logo apÃ³s a definiÃ§Ã£o dos outros event listeners
 ipcRenderer.on('show-export-modal', () => {
     abrirModalExportar();
 });
@@ -136,12 +143,13 @@ ipcRenderer.on('start-import', () => {
     iniciarImportacao();
 });
 
-// Funções de Manipulação de Registros
+// FunÃ§Ãµes de ManipulaÃ§Ã£o de Registros
 async function carregarRegistros() {
     registros = await ipcRenderer.invoke('ler-registros');
+    registros = registros.map(normalizarRegistro);
     registrosFiltrados = [...registros];
     atualizarTabela();
-    // Atualizar ano selecionado baseado nos registros disponíveis
+    // Atualizar ano selecionado baseado nos registros disponÃ­veis
     if (registros.length > 0) {
         const anos = new Set();
         registros.forEach(registro => {
@@ -161,19 +169,201 @@ async function salvarRegistros() {
     await ipcRenderer.invoke('salvar-registros', registros);
 }
 
-// Funções para manipulação do formulário
-window.salvarExame = function(event) {
+async function carregarPacientes() {
+    pacientes = await ipcRenderer.invoke('ler-pacientes');
+    if (!Array.isArray(pacientes)) {
+        pacientes = [];
+        return;
+    }
+    pacientes = pacientes.map(paciente => {
+        const legado = extrairCpfOuProntuarioLegado(paciente.documentoPaciente || '');
+        const prontuarioPaciente = String(paciente.prontuarioPaciente || legado.prontuarioPaciente || '').trim().toUpperCase();
+        const cpfPaciente = cpfSomenteDigitos(paciente.cpfPaciente || legado.cpfPaciente || '');
+        return {
+            ...paciente,
+            cpfPaciente,
+            prontuarioPaciente,
+            documentoPaciente: prontuarioPaciente || paciente.documentoPaciente || ''
+        };
+    });
+}
+
+async function salvarPacientes() {
+    await ipcRenderer.invoke('salvar-pacientes', pacientes);
+}
+
+function cpfSomenteDigitos(valor) {
+    return String(valor || '').replace(/\D/g, '');
+}
+
+function extrairCpfOuProntuarioLegado(documento) {
+    const valor = String(documento || '').trim();
+    if (!valor) return { cpfPaciente: '', prontuarioPaciente: '' };
+
+    const upper = valor.toUpperCase();
+    if (/^P\d{1,10}$/.test(upper)) {
+        return { cpfPaciente: '', prontuarioPaciente: upper };
+    }
+
+    const cpf = cpfSomenteDigitos(valor);
+    if (cpf.length === 11) {
+        return { cpfPaciente: cpf, prontuarioPaciente: '' };
+    }
+
+    return { cpfPaciente: '', prontuarioPaciente: upper };
+}
+
+function obterProximoProntuarioRegistros() {
+    const usados = new Set();
+    [...pacientes, ...registros].forEach(item => {
+        const prontuario = String(item?.prontuarioPaciente || item?.documentoPaciente || '').trim().toUpperCase();
+        if (prontuario) usados.add(prontuario);
+    });
+
+    let seq = 1;
+    for (const valor of usados) {
+        const m = valor.match(/^P(\d{1,10})$/);
+        if (m) seq = Math.max(seq, Number(m[1]) + 1);
+    }
+
+    let candidato = `P${String(seq).padStart(6, '0')}`;
+    while (usados.has(candidato)) {
+        seq += 1;
+        candidato = `P${String(seq).padStart(6, '0')}`;
+    }
+    return candidato;
+}
+
+function obterProximoNumeroAcessoRegistros() {
+    const usados = new Set(registros.map(r => String(r.numeroAcesso || '').trim()).filter(Boolean));
+    let seq = 1;
+    for (const valor of usados) {
+        if (/^\d{1,12}$/.test(valor)) {
+            seq = Math.max(seq, Number(valor) + 1);
+        }
+    }
+
+    let candidato = String(seq).padStart(7, '0');
+    while (usados.has(candidato)) {
+        seq += 1;
+        candidato = String(seq).padStart(7, '0');
+    }
+    return candidato;
+}
+
+function normalizarRegistro(registro) {
+    const legado = extrairCpfOuProntuarioLegado(registro.documentoPaciente || registro.pacienteDocumento || '');
+    const prontuarioPaciente = String(registro.prontuarioPaciente || legado.prontuarioPaciente || '').trim().toUpperCase();
+    const cpfPaciente = cpfSomenteDigitos(registro.cpfPaciente || legado.cpfPaciente || '');
+    return {
+        ...registro,
+        statusExame: registro.statusExame || 'Agendado',
+        cpfPaciente,
+        prontuarioPaciente,
+        documentoPaciente: prontuarioPaciente || registro.documentoPaciente || registro.pacienteDocumento || '',
+        pacienteId: registro.pacienteId || ''
+    };
+}
+
+function obterDataHoraLocalAtual() {
+    return new Date().toLocaleString('sv').replace(' ', 'T').substring(0, 16);
+}
+
+function preencherPacientePorCpfOuProntuario() {
+    const form = document.getElementById('formExame');
+    const cpf = cpfSomenteDigitos(form.cpfPaciente.value);
+    const prontuario = String(form.prontuarioPaciente.value || '').trim().toLowerCase();
+    if (!cpf && !prontuario) return;
+
+    const paciente = pacientes.find(p => {
+        const prontuarioPaciente = String(p.prontuarioPaciente || p.documentoPaciente || '').trim().toLowerCase();
+        const cpfPaciente = cpfSomenteDigitos(p.cpfPaciente || '');
+        return (prontuario && prontuarioPaciente === prontuario) || (cpf && cpfPaciente === cpf);
+    });
+    if (!paciente) return;
+
+    if (!form.nomePaciente.value.trim()) {
+        form.nomePaciente.value = paciente.nomePaciente || '';
+    }
+    if (!form.cpfPaciente.value.trim()) {
+        form.cpfPaciente.value = paciente.cpfPaciente || '';
+    }
+    if (!form.prontuarioPaciente.value.trim()) {
+        form.prontuarioPaciente.value = paciente.prontuarioPaciente || paciente.documentoPaciente || '';
+    }
+    if (!form.telefonePaciente.value.trim()) {
+        form.telefonePaciente.value = paciente.telefonePaciente || '';
+    }
+    if (!form.enderecoPaciente.value.trim()) {
+        form.enderecoPaciente.value = paciente.enderecoPaciente || '';
+    }
+    if (!form.planoPaciente.value.trim()) {
+        form.planoPaciente.value = paciente.planoPaciente || '';
+    }
+    if (!form.dataNascimentoPaciente.value) {
+        form.dataNascimentoPaciente.value = paciente.dataNascimentoPaciente || '';
+    }
+}
+
+// FunÃ§Ãµes para manipulaÃ§Ã£o do formulÃ¡rio
+window.salvarExame = async function(event) {
     event.preventDefault();
     const form = document.getElementById('formExame');
+    const nomePaciente = form.nomePaciente.value.trim();
+    const cpfPaciente = cpfSomenteDigitos(form.cpfPaciente.value);
+    const prontuarioPaciente = String(form.prontuarioPaciente.value || '').trim().toUpperCase();
+    const documentoPaciente = prontuarioPaciente;
+    const telefonePaciente = form.telefonePaciente.value.trim();
+    const enderecoPaciente = form.enderecoPaciente.value.trim();
+    const planoPaciente = form.planoPaciente.value.trim();
+    const dataNascimentoPaciente = form.dataNascimentoPaciente.value || '';
+
+    if (!prontuarioPaciente) {
+        alert('Informe o prontuário do paciente.');
+        return;
+    }
+
+    let paciente = pacientes.find(p =>
+        String(p.prontuarioPaciente || p.documentoPaciente || '').toLowerCase() === prontuarioPaciente.toLowerCase() ||
+        (cpfPaciente && cpfSomenteDigitos(p.cpfPaciente || '') === cpfPaciente)
+    );
+    if (!paciente) {
+        paciente = {
+            id: Date.now().toString(),
+            nomePaciente,
+            cpfPaciente,
+            prontuarioPaciente,
+            documentoPaciente,
+            telefonePaciente,
+            enderecoPaciente,
+            planoPaciente,
+            dataNascimentoPaciente
+        };
+        pacientes.push(paciente);
+    } else {
+        paciente.nomePaciente = nomePaciente || paciente.nomePaciente;
+        paciente.cpfPaciente = cpfPaciente || paciente.cpfPaciente || '';
+        paciente.prontuarioPaciente = prontuarioPaciente || paciente.prontuarioPaciente || paciente.documentoPaciente || '';
+        paciente.documentoPaciente = paciente.prontuarioPaciente;
+        paciente.telefonePaciente = telefonePaciente || paciente.telefonePaciente || '';
+        paciente.enderecoPaciente = enderecoPaciente || paciente.enderecoPaciente || '';
+        paciente.planoPaciente = planoPaciente || paciente.planoPaciente || '';
+        paciente.dataNascimentoPaciente = dataNascimentoPaciente || paciente.dataNascimentoPaciente || '';
+    }
     
     const novoExame = {
-        id: registroSelecionado ? registroSelecionado.id : Date.now(), // Garante um ID único
-        nomePaciente: form.nomePaciente.value.trim(),
+        id: registroSelecionado ? registroSelecionado.id : Date.now(),
+        nomePaciente,
+        cpfPaciente,
+        prontuarioPaciente,
+        documentoPaciente,
+        pacienteId: paciente.id,
         modalidade: form.modalidade.value,
         observacoes: form.observacoes.value.trim(),
         numeroAcesso: form.numeroAcesso.value.trim(),
         dataHoraExame: form.dataHoraExame.value,
-        nomeTecnico: form.nomeTecnico.value.trim()
+        nomeTecnico: form.nomeTecnico.value.trim(),
+        statusExame: form.statusExame.value || 'Agendado'
     };
 
     if (registroSelecionado) {
@@ -183,67 +373,26 @@ window.salvarExame = function(event) {
         registros.unshift(novoExame);
     }
 
-    salvarRegistros();
+    await Promise.all([salvarPacientes(), salvarRegistros()]);
     registrosFiltrados = [...registros];
     registroSelecionado = null;
     paginaAtual = 1;
     
-    // Usar o método hide do modal
-    document.getElementById('modalForm').style.display = 'none';
+    fecharModal();
     atualizarTabela();
     atualizarBotoesAcao();
 }
 
-// Adicionar função para fechar modal
-window.fecharModal = function() {
-    document.getElementById('modalForm').style.display = 'none';
-}
+window.abrirModal = abrirModal;
+window.fecharModal = fecharModal;
+window.limparCampos = limparCampos;
 
-window.abrirModal = function(tipo) {
-    const form = document.getElementById('formExame');
-    const modal = document.getElementById('modalForm');
-    
-    if (tipo === 'novo') {
-        form.reset();
-        // Ajusta para usar a hora local do sistema
-        const agora = new Date();
-        const dataLocal = agora.toLocaleString('sv').replace(' ', 'T').substring(0, 16);
-        form.dataHoraExame.value = dataLocal;
-        document.getElementById('modalTitle').textContent = 'Novo Registro';
-    } else if (tipo === 'editar' && registroSelecionado) {
-        form.nomePaciente.value = registroSelecionado.nomePaciente;
-        form.modalidade.value = registroSelecionado.modalidade;
-        form.observacoes.value = registroSelecionado.observacoes;
-        form.numeroAcesso.value = registroSelecionado.numeroAcesso;
-        form.dataHoraExame.value = registroSelecionado.dataHoraExame;
-        form.nomeTecnico.value = registroSelecionado.nomeTecnico;
-        document.getElementById('modalTitle').textContent = 'Editar Registro';
-    }
-    
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-}
-
-window.fecharModal = function() {
-    const modal = document.getElementById('modalForm');
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
-}
-
-window.limparCampos = function() {
-    document.getElementById('formExame').reset();
-    // Ajusta para usar a hora local do sistema
-    const agora = new Date();
-    const dataLocal = agora.toLocaleString('sv').replace(' ', 'T').substring(0, 16);
-    document.getElementById('dataHoraExame').value = dataLocal;
-}
-
-// Funções de UI
+// FunÃ§Ãµes de UI
 function atualizarTabela() {
     registrosAtuais = registrosFiltrados;
     const tbody = document.getElementById('listaExames');
     if (!tbody) {
-        console.error('Elemento tbody não encontrado');
+        console.error('Elemento tbody nÃ£o encontrado');
         return;
     }
 
@@ -272,7 +421,7 @@ function atualizarInfoRegistros(total) {
     infoElement.textContent = `Exibindo ${registrosExibidos} de ${total} registros`;
 }
 
-// Adicionar função para atualizar visibilidade do botão "Carregar Mais"
+// Adicionar funÃ§Ã£o para atualizar visibilidade do botÃ£o "Carregar Mais"
 function atualizarBotaoCarregarMais(totalRegistros) {
     const btnCarregarMais = document.getElementById('btnCarregarMais');
     const registrosExibidos = registrosPorPagina * paginaAtual;
@@ -284,7 +433,7 @@ function atualizarBotaoCarregarMais(totalRegistros) {
     }
 }
 
-// Adicionar função para carregar mais registros
+// Adicionar funÃ§Ã£o para carregar mais registros
 function carregarMaisRegistros() {
     const tbody = document.getElementById('listaExames');
     const inicio = registrosPorPagina * paginaAtual;
@@ -301,32 +450,47 @@ function carregarMaisRegistros() {
     atualizarInfoRegistros(registrosAtuais.length);
 }
 
-// Adicionar reset da paginação quando aplicar filtros ou fazer pesquisa
+// Adicionar reset da paginaÃ§Ã£o quando aplicar filtros ou fazer pesquisa
 function resetPaginacao() {
     paginaAtual = 1;
     registrosPorPagina = 20;
 }
 
-// Funções de Modal
+// FunÃ§Ãµes de Modal
 function abrirModal(tipo) {
     const modal = document.getElementById('modalForm');
     const form = document.getElementById('formExame');
     
     if (tipo === 'novo') {
-        form.reset();
-        const agora = new Date();
-        form.dataHoraExame.value = agora.toISOString().slice(0, 16);
+        registroSelecionado = null;
+        limparCampos();
+        form.prontuarioPaciente.value = obterProximoProntuarioRegistros();
+        form.numeroAcesso.value = obterProximoNumeroAcessoRegistros();
         document.getElementById('modalTitle').textContent = 'Novo Registro';
     } else if (tipo === 'editar' && registroSelecionado) {
         form.nomePaciente.value = registroSelecionado.nomePaciente;
+        form.cpfPaciente.value = registroSelecionado.cpfPaciente || '';
+        form.prontuarioPaciente.value = registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || '';
         form.modalidade.value = registroSelecionado.modalidade;
         form.observacoes.value = registroSelecionado.observacoes;
         form.numeroAcesso.value = registroSelecionado.numeroAcesso;
         form.dataHoraExame.value = registroSelecionado.dataHoraExame;
         form.nomeTecnico.value = registroSelecionado.nomeTecnico;
+        form.statusExame.value = registroSelecionado.statusExame || 'Agendado';
+
+        const paciente = pacientes.find(p =>
+            p.id === registroSelecionado.pacienteId ||
+            String(p.prontuarioPaciente || p.documentoPaciente || '').toLowerCase() === String(registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || '').toLowerCase()
+        );
+        form.cpfPaciente.value = form.cpfPaciente.value || paciente?.cpfPaciente || '';
+        form.telefonePaciente.value = paciente?.telefonePaciente || '';
+        form.enderecoPaciente.value = paciente?.enderecoPaciente || '';
+        form.planoPaciente.value = paciente?.planoPaciente || '';
+        form.dataNascimentoPaciente.value = paciente?.dataNascimentoPaciente || '';
         document.getElementById('modalTitle').textContent = 'Editar Registro';
     }
     
+    modal.classList.remove('show');
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
 }
@@ -337,13 +501,22 @@ function fecharModal() {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
-// Funções Auxiliares
+function limparCampos() {
+    const form = document.getElementById('formExame');
+    form.reset();
+    form.dataHoraExame.value = obterDataHoraLocalAtual();
+    form.statusExame.value = 'Agendado';
+    const doc = document.getElementById('prontuarioPaciente');
+    if (doc) doc.focus();
+}
+
+// FunÃ§Ãµes Auxiliares
 function formatarData(dataString) {
     if (!dataString) return '';
     
     try {
         const data = new Date(dataString);
-        if (isNaN(data.getTime())) return 'Data inválida';
+        if (isNaN(data.getTime())) return 'Data invÃ¡lida';
         
         return data.toLocaleString('pt-BR', {
             day: '2-digit',
@@ -354,7 +527,7 @@ function formatarData(dataString) {
         });
     } catch (error) {
         console.error('Erro ao formatar data:', error);
-        return 'Data inválida';
+        return 'Data invÃ¡lida';
     }
 }
 
@@ -364,13 +537,13 @@ function handleRowClick(row) {
     
     if (!registro) return;
 
-    // Remove seleção de todas as linhas
+    // Remove seleÃ§Ã£o de todas as linhas
     document.querySelectorAll('tr.selected').forEach(tr => {
         tr.classList.remove('selected');
     });
 
     if (registroSelecionado && registroSelecionado.id === id) {
-        // Se clicou na linha já selecionada, remove a seleção
+        // Se clicou na linha jÃ¡ selecionada, remove a seleÃ§Ã£o
         registroSelecionado = null;
         row.classList.remove('selected');
     } else {
@@ -382,7 +555,7 @@ function handleRowClick(row) {
     atualizarBotoesAcao();
 }
 
-// Funções para Pesquisa e Filtros
+// FunÃ§Ãµes para Pesquisa e Filtros
 function handleSearchInput(event) {
     const searchText = event.target.value.toLowerCase();
     document.getElementById('btnLimparPesquisa').style.display = searchText ? 'block' : 'none';
@@ -443,7 +616,7 @@ function limparFiltroAvancado() {
     atualizarTabela();
 }
 
-// Funções para Ordenação
+// FunÃ§Ãµes para OrdenaÃ§Ã£o
 function ordenarTabela(th) {
     const campos = ['nomePaciente', 'modalidade', 'observacoes', 'numeroAcesso', 'dataHoraExame', 'nomeTecnico'];
     const campo = campos[th.cellIndex];
@@ -451,19 +624,19 @@ function ordenarTabela(th) {
     
     registrosFiltrados.sort((a, b) => {
         if (campo === 'dataHoraExame') {
-            // Ordenação especial para datas
+            // OrdenaÃ§Ã£o especial para datas
             const dataA = new Date(a[campo]);
             const dataB = new Date(b[campo]);
             return (dataA - dataB) * ordem;
         } else {
-            // Ordenação para texto
+            // OrdenaÃ§Ã£o para texto
             const valorA = String(a[campo]).toLowerCase();
             const valorB = String(b[campo]).toLowerCase();
             return valorA.localeCompare(valorB) * ordem;
         }
     });
     
-    // Atualiza o indicador de ordenação em todas as colunas
+    // Atualiza o indicador de ordenaÃ§Ã£o em todas as colunas
     document.querySelectorAll('th[data-sort]').forEach(header => {
         header.dataset.sort = header === th ? (ordem === 1 ? 'desc' : 'asc') : 'asc';
     });
@@ -471,7 +644,7 @@ function ordenarTabela(th) {
     atualizarTabela();
 }
 
-// Funções para Exclusão
+// FunÃ§Ãµes para ExclusÃ£o
 function iniciarExclusao() {
     if (!registroSelecionado) return;
 
@@ -509,12 +682,12 @@ function iniciarExclusao() {
     btnCancelar.onclick = fecharModalConfirmacao;
     fechar.onclick = fecharModalConfirmacao;
 
-    // Abrir modal com animação
+    // Abrir modal com animaÃ§Ã£o
     modalConfirmacao.style.display = 'flex';
     setTimeout(() => modalConfirmacao.classList.add('show'), 10);
 }
 
-// Funções para Exportação
+// FunÃ§Ãµes para ExportaÃ§Ã£o
 function abrirModalExportar() {
     const modal = document.getElementById('modalExportar');
     
@@ -530,7 +703,7 @@ function abrirModalExportar() {
     setTimeout(() => modal.classList.add('show'), 10);
 }
 
-// Adicione este código após a definição da função abrirModalExportar
+// Adicione este cÃ³digo apÃ³s a definiÃ§Ã£o da funÃ§Ã£o abrirModalExportar
 document.querySelectorAll('input[name="filtroExport"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
         const dateFields = document.getElementById('exportDateFields');
@@ -555,7 +728,7 @@ async function exportarRegistros(tipo) {
         } else if (tipo === 'pdf') {
             await ipcRenderer.invoke('exportar-pdf', registrosParaExportar);
         }
-        // ... restante do código existente ...
+        // ... restante do cÃ³digo existente ...
         fecharModalExportar();
     } catch (error) {
         console.error('Erro ao exportar:', error);
@@ -605,11 +778,11 @@ function obterRegistrosFiltradosExportacao() {
     return [];
 }
 
-// Adicionar o evento de clique para exportação Excel
+// Adicionar o evento de clique para exportaÃ§Ã£o Excel
 document.addEventListener('DOMContentLoaded', () => {
     // ...existing code...
 
-    // Adicionar handler para exportação Excel
+    // Adicionar handler para exportaÃ§Ã£o Excel
     document.getElementById('exportarCSV').addEventListener('click', async () => {
         try {
             const registrosParaExportar = obterRegistrosFiltradosExportacao();
@@ -630,8 +803,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function criarLinhaTabela(registro) {
     const tr = document.createElement('tr');
     tr.dataset.id = registro.id.toString();
+    const documentoExibicao = registro.prontuarioPaciente || registro.documentoPaciente || registro.cpfPaciente || '';
+    const nomeComDocumento = documentoExibicao
+        ? `${registro.nomePaciente || ''} (${documentoExibicao})`
+        : (registro.nomePaciente || '');
     tr.innerHTML = `
-        <td>${registro.nomePaciente || ''}</td>
+        <td>${nomeComDocumento}</td>
         <td>${registro.modalidade || ''}</td>
         <td>${registro.observacoes || ''}</td>
         <td>${registro.numeroAcesso || ''}</td>
@@ -645,6 +822,10 @@ function criarLinhaTabela(registro) {
 function atualizarBotoesAcao() {
     document.getElementById('btnEditarRegistro').disabled = !registroSelecionado;
     document.getElementById('btnExcluirRegistro').disabled = !registroSelecionado;
+    const btnHistorico = document.getElementById('btnHistoricoPaciente');
+    if (btnHistorico) {
+        btnHistorico.disabled = !registroSelecionado;
+    }
 }
 
 function abrirModalObservacoes(registro) {
@@ -674,7 +855,97 @@ function salvarObservacoes() {
     }
 }
 
-// Adicione as novas funções de importação
+window.abrirHistoricoPaciente = function() {
+    if (!registroSelecionado) {
+        alert('Selecione um registro para visualizar o histórico do paciente.');
+        return;
+    }
+    renderizarHistoricoPaciente(
+        registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || registroSelecionado.cpfPaciente || '',
+        registroSelecionado.nomePaciente
+    );
+}
+
+window.abrirHistoricoPorCadastro = function() {
+    const form = document.getElementById('formExame');
+    const documento = (form.prontuarioPaciente.value || form.cpfPaciente.value || '').trim();
+    const nome = form.nomePaciente.value.trim();
+    if (!documento) {
+        alert('Informe o CPF ou prontuário para consultar o histórico.');
+        return;
+    }
+    renderizarHistoricoPaciente(documento, nome);
+}
+
+window.fecharModalHistorico = function() {
+    const modal = document.getElementById('modalHistoricoPaciente');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.getElementById('historicoPacienteInfo').textContent = '';
+        document.getElementById('historicoPacienteLista').innerHTML = '';
+    }, 300);
+}
+
+function renderizarHistoricoPaciente(documentoPaciente, nomePaciente = '') {
+    const modal = document.getElementById('modalHistoricoPaciente');
+    const info = document.getElementById('historicoPacienteInfo');
+    const lista = document.getElementById('historicoPacienteLista');
+    const documentoNormalizado = (documentoPaciente || '').trim().toLowerCase();
+    const cpfNormalizado = cpfSomenteDigitos(documentoPaciente || '');
+
+    const examesPaciente = registros
+        .filter(r => {
+            const prontuarioRegistro = String(r.prontuarioPaciente || r.documentoPaciente || '').trim().toLowerCase();
+            const cpfRegistro = cpfSomenteDigitos(r.cpfPaciente || '');
+            return (documentoNormalizado && prontuarioRegistro === documentoNormalizado) || (cpfNormalizado && cpfRegistro === cpfNormalizado);
+        })
+        .sort((a, b) => new Date(b.dataHoraExame) - new Date(a.dataHoraExame));
+
+    const pacienteCadastrado = pacientes.find(p =>
+        String(p.prontuarioPaciente || p.documentoPaciente || '').trim().toLowerCase() === documentoNormalizado ||
+        (cpfNormalizado && cpfSomenteDigitos(p.cpfPaciente || '') === cpfNormalizado)
+    );
+    const nomeExibicao = pacienteCadastrado?.nomePaciente || nomePaciente || 'Paciente';
+
+    info.textContent = `${nomeExibicao} - ${documentoPaciente || '-'} | ${examesPaciente.length} item(s)`;
+
+    if (examesPaciente.length === 0) {
+        lista.innerHTML = '<p>Nenhum histórico encontrado para este paciente.</p>';
+    } else {
+        const linhas = examesPaciente.map(exame => `
+            <tr>
+                <td>${formatarData(exame.dataHoraExame)}</td>
+                <td>${exame.statusExame || 'Agendado'}</td>
+                <td>${exame.modalidade || ''}</td>
+                <td>${exame.observacoes || ''}</td>
+                <td>${exame.numeroAcesso || ''}</td>
+                <td>${exame.nomeTecnico || ''}</td>
+            </tr>
+        `).join('');
+
+        lista.innerHTML = `
+            <table class="historico-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Status</th>
+                        <th>Modalidade</th>
+                        <th>Exame</th>
+                        <th>Acesso</th>
+                        <th>Técnico</th>
+                    </tr>
+                </thead>
+                <tbody>${linhas}</tbody>
+            </table>
+        `;
+    }
+
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+// Adicione as novas funÃ§Ãµes de importaÃ§Ã£o
 let registrosParaImportar = null;
 
 function abrirModalImportacao(novosRegistros) {
@@ -682,7 +953,7 @@ function abrirModalImportacao(novosRegistros) {
     const modal = document.getElementById('modalImportacao');
     
     if (!modal) {
-        console.error('Modal de importação não encontrado');
+        console.error('Modal de importaÃ§Ã£o nÃ£o encontrado');
         return;
     }
 
@@ -728,29 +999,13 @@ function abrirModalImportacao(novosRegistros) {
     setTimeout(() => modal.classList.add('show'), 10);
 }
 
-// Modifique a função de importação existente ou adicione este listener
-ipcRenderer.on('arquivo-importado', (event, dados) => {
-    try {
-        console.log('Recebendo dados importados:', dados); // Debug
-        const novosRegistros = JSON.parse(dados);
-        if (Array.isArray(novosRegistros) && novosRegistros.length > 0) {
-            abrirModalImportacao(novosRegistros);
-        } else {
-            alert('O arquivo não contém registros válidos.');
-        }
-    } catch (error) {
-        console.error('Erro ao processar arquivo:', error);
-        alert('Erro ao processar o arquivo. Verifique se o formato está correto.');
-    }
-});
-
-// Função para iniciar o processo de importação
+// FunÃ§Ã£o para iniciar o processo de importaÃ§Ã£o
 async function iniciarImportacao() {
     try {
         await ipcRenderer.invoke('importar-arquivo');
     } catch (error) {
-        console.error('Erro ao iniciar importação:', error);
-        alert('Erro ao iniciar importação de arquivo');
+        console.error('Erro ao iniciar importaÃ§Ã£o:', error);
+        alert('Erro ao iniciar importaÃ§Ã£o de arquivo');
     }
 }
 
@@ -760,15 +1015,15 @@ ipcRenderer.on('arquivo-importado', (event, dados) => {
     try {
         const novosRegistros = JSON.parse(dados);
         if (!Array.isArray(novosRegistros)) {
-            throw new Error('Formato inválido: os dados não são um array');
+            throw new Error('Formato invÃ¡lido: os dados nÃ£o sÃ£o um array');
         }
         
         if (novosRegistros.length === 0) {
-            alert('O arquivo não contém registros.');
+            alert('O arquivo nÃ£o contÃ©m registros.');
             return;
         }
 
-        // Verifica se os registros têm o formato correto
+        // Verifica se os registros tÃªm o formato correto
         const formatoValido = novosRegistros.every(registro => 
             registro.hasOwnProperty('nomePaciente') && 
             registro.hasOwnProperty('modalidade') &&
@@ -776,20 +1031,20 @@ ipcRenderer.on('arquivo-importado', (event, dados) => {
         );
 
         if (!formatoValido) {
-            alert('O arquivo contém registros em formato inválido.');
+            alert('O arquivo contÃ©m registros em formato invÃ¡lido.');
             return;
         }
 
-        // Abre o modal de importação
+        // Abre o modal de importaÃ§Ã£o
         const modal = document.getElementById('modalImportacao');
         if (!modal) {
-            console.error('Modal de importação não encontrado');
+            console.error('Modal de importaÃ§Ã£o nÃ£o encontrado');
             return;
         }
 
         registrosParaImportar = novosRegistros;
         
-        // Configura os botões do modal
+        // Configura os botÃµes do modal
         const btnSubstituir = modal.querySelector('.btn-substituir');
         const btnAdicionar = modal.querySelector('.btn-adicionar');
         const btnCancelar = modal.querySelector('.btn-cancelar');
@@ -824,22 +1079,22 @@ ipcRenderer.on('arquivo-importado', (event, dados) => {
         btnCancelar.onclick = fecharModalImportacao;
         btnFechar.onclick = fecharModalImportacao;
 
-        // Exibe o modal com animação
+        // Exibe o modal com animaÃ§Ã£o
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('show'), 10);
 
     } catch (error) {
         console.error('Erro ao processar arquivo importado:', error);
-        alert('Erro ao processar o arquivo. Verifique se o formato está correto.');
+        alert('Erro ao processar o arquivo. Verifique se o formato estÃ¡ correto.');
     }
 });
 
-// Variáveis globais para o gráfico
+// VariÃ¡veis globais para o grÃ¡fico
 let chartInstance = null;
 let modalidadeSelecionada = 'Tudo';
 let anoSelecionado = new Date().getFullYear().toString();
 
-// Função para fechar o modal de gráfico
+// FunÃ§Ã£o para fechar o modal de grÃ¡fico
 window.fecharModalGrafico = function() {
     const modal = document.getElementById('modalGrafico');
     if (!modal) return;
@@ -847,24 +1102,24 @@ window.fecharModalGrafico = function() {
     modal.classList.remove('show');
     setTimeout(() => {
         modal.style.display = 'none';
-        // Destruir o gráfico ao fechar
+        // Destruir o grÃ¡fico ao fechar
         if (chartInstance) {
             try {
                 chartInstance.destroy();
             } catch (e) {
-                console.error('Erro ao destruir gráfico:', e);
+                console.error('Erro ao destruir grÃ¡fico:', e);
             }
             chartInstance = null;
         }
     }, 300);
 }
 
-// Variável para controlar se os dropdowns já foram inicializados
+// VariÃ¡vel para controlar se os dropdowns jÃ¡ foram inicializados
 let dropdownsInicializados = false;
 
-// Função para inicializar os dropdowns
+// FunÃ§Ã£o para inicializar os dropdowns
 function inicializarDropdowns() {
-    // Evitar múltiplas inicializações
+    // Evitar mÃºltiplas inicializaÃ§Ãµes
     if (dropdownsInicializados) {
         atualizarAnosDropdown();
         return;
@@ -894,7 +1149,7 @@ function inicializarDropdowns() {
     // Inicializar dropdown de ano
     atualizarAnosDropdown();
     
-    // Botão de exportar PDF
+    // BotÃ£o de exportar PDF
     const exportPDFButton = document.getElementById('exportPDF');
     if (exportPDFButton && !exportPDFButton.hasAttribute('data-initialized')) {
         exportPDFButton.setAttribute('data-initialized', 'true');
@@ -904,13 +1159,13 @@ function inicializarDropdowns() {
     dropdownsInicializados = true;
 }
 
-// Função para atualizar o dropdown de anos
+// FunÃ§Ã£o para atualizar o dropdown de anos
 function atualizarAnosDropdown() {
     const yearButton = document.getElementById('yearDropdownButton');
     const yearMenu = document.getElementById('yearDropdownMenu');
     
     if (yearButton && yearMenu) {
-        // Extrair anos únicos dos registros
+        // Extrair anos Ãºnicos dos registros
         const anos = new Set();
         (registros || []).forEach(registro => {
             if (registro && registro.dataHoraExame) {
@@ -924,7 +1179,7 @@ function atualizarAnosDropdown() {
         // Ordenar anos em ordem decrescente
         const anosOrdenados = Array.from(anos).sort((a, b) => parseInt(b) - parseInt(a));
         
-        // Se não houver anos, usar o ano atual
+        // Se nÃ£o houver anos, usar o ano atual
         if (anosOrdenados.length === 0) {
             anosOrdenados.push(new Date().getFullYear().toString());
         }
@@ -945,7 +1200,7 @@ function atualizarAnosDropdown() {
             yearMenu.appendChild(li);
         });
         
-        // Definir ano padrão se ainda não estiver definido
+        // Definir ano padrÃ£o se ainda nÃ£o estiver definido
         if (anosOrdenados.length > 0 && (!anoSelecionado || !anosOrdenados.includes(anoSelecionado))) {
             anoSelecionado = anosOrdenados[0];
             yearButton.textContent = `Ano: ${anoSelecionado}`;
@@ -976,13 +1231,13 @@ function atualizarAnosDropdown() {
     }
 }
 
-// Função para atualizar o gráfico
+// FunÃ§Ã£o para atualizar o grÃ¡fico
 function atualizarGrafico() {
     try {
-        // Verificar se Chart.js está disponível
+        // Verificar se Chart.js estÃ¡ disponÃ­vel
         if (typeof Chart === 'undefined') {
-            console.error('Chart.js não está carregado');
-            alert('Erro: Chart.js não está carregado. Verifique a conexão com a internet.');
+            console.error('Chart.js nÃ£o estÃ¡ carregado');
+            alert('Erro: Chart.js nÃ£o estÃ¡ carregado. Verifique a conexÃ£o com a internet.');
             return;
         }
         
@@ -999,9 +1254,9 @@ function atualizarGrafico() {
             return passaAno && passaModalidade;
         });
         
-        // Agrupar por mês
+        // Agrupar por mÃªs
         const dadosPorMes = {};
-        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+        const meses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 
                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         
         registrosFiltrados.forEach(registro => {
@@ -1017,14 +1272,14 @@ function atualizarGrafico() {
             }
         });
         
-        // Preparar dados para o gráfico - mostrar todos os meses
+        // Preparar dados para o grÃ¡fico - mostrar todos os meses
         const labels = meses;
         const valores = meses.map(mes => dadosPorMes[mes] || 0);
         
         // Obter o canvas
         const canvas = document.getElementById('barChart');
         if (!canvas) {
-            console.error('Canvas não encontrado');
+            console.error('Canvas nÃ£o encontrado');
             return;
         }
         
@@ -1034,13 +1289,13 @@ function atualizarGrafico() {
             return;
         }
         
-        // Destruir gráfico anterior se existir
+        // Destruir grÃ¡fico anterior se existir
         if (chartInstance) {
             chartInstance.destroy();
             chartInstance = null;
         }
         
-        // Criar novo gráfico
+        // Criar novo grÃ¡fico
         chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -1077,15 +1332,15 @@ function atualizarGrafico() {
             }
         });
         
-        // Atualizar relatório
+        // Atualizar relatÃ³rio
         atualizarRelatorio(registrosFiltrados, dadosPorMes);
     } catch (error) {
-        console.error('Erro ao atualizar gráfico:', error);
-        alert('Erro ao atualizar gráfico: ' + error.message);
+        console.error('Erro ao atualizar grÃ¡fico:', error);
+        alert('Erro ao atualizar grÃ¡fico: ' + error.message);
     }
 }
 
-// Função para atualizar o relatório
+// FunÃ§Ã£o para atualizar o relatÃ³rio
 function atualizarRelatorio(registrosFiltrados, dadosPorMes) {
     const relatorioContent = document.getElementById('relatorioContent');
     if (!relatorioContent) return;
@@ -1108,8 +1363,8 @@ function atualizarRelatorio(registrosFiltrados, dadosPorMes) {
         html += '</ul>';
     }
     
-    html += '<p><strong>Por Mês:</strong></p><ul>';
-    const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+    html += '<p><strong>Por MÃªs:</strong></p><ul>';
+    const meses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 
                    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     
     meses.forEach(mes => {
@@ -1122,15 +1377,15 @@ function atualizarRelatorio(registrosFiltrados, dadosPorMes) {
     relatorioContent.innerHTML = html;
 }
 
-// Função para exportar gráfico como PDF
+// FunÃ§Ã£o para exportar grÃ¡fico como PDF
 async function exportarGraficoPDF() {
     try {
         if (!chartInstance) {
-            alert('Nenhum gráfico para exportar');
+            alert('Nenhum grÃ¡fico para exportar');
             return;
         }
         
-        // Filtrar registros por modalidade e ano (mesmo filtro usado no gráfico)
+        // Filtrar registros por modalidade e ano (mesmo filtro usado no grÃ¡fico)
         const registrosFiltrados = (registros || []).filter(registro => {
             if (!registro || !registro.dataHoraExame) return false;
             const data = new Date(registro.dataHoraExame);
@@ -1143,11 +1398,11 @@ async function exportarGraficoPDF() {
             return passaAno && passaModalidade;
         });
         
-        // Calcular dados do relatório
+        // Calcular dados do relatÃ³rio
         const totalExames = registrosFiltrados.length;
         const totalPorModalidade = {};
         const dadosPorMes = {};
-        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+        const meses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 
                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         
         registrosFiltrados.forEach(registro => {
@@ -1155,7 +1410,7 @@ async function exportarGraficoPDF() {
             const modalidade = registro.modalidade || 'Não especificado';
             totalPorModalidade[modalidade] = (totalPorModalidade[modalidade] || 0) + 1;
             
-            // Por mês
+            // Por mÃªs
             const data = new Date(registro.dataHoraExame);
             if (!isNaN(data.getTime())) {
                 const mes = data.getMonth();
@@ -1168,15 +1423,15 @@ async function exportarGraficoPDF() {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         
-        let yPos = 20; // Posição vertical inicial
+        let yPos = 20; // PosiÃ§Ã£o vertical inicial
         
-        // Adicionar título
+        // Adicionar tÃ­tulo
         pdf.setFontSize(18);
         pdf.setFont(undefined, 'bold');
-        pdf.text('Relatório de Exames Médicos', 148.5, yPos, { align: 'center' });
+        pdf.text('RelatÃ³rio de Exames MÃ©dicos', 148.5, yPos, { align: 'center' });
         yPos += 10;
         
-        // Adicionar informações do filtro
+        // Adicionar informaÃ§Ãµes do filtro
         pdf.setFontSize(12);
         pdf.setFont(undefined, 'normal');
         pdf.text(`Ano: ${anoSelecionado}`, 20, yPos);
@@ -1187,18 +1442,18 @@ async function exportarGraficoPDF() {
         const canvas = document.getElementById('barChart');
         const imgData = canvas.toDataURL('image/png');
         
-        // Calcular dimensões da imagem (ajustar para caber bem)
+        // Calcular dimensÃµes da imagem (ajustar para caber bem)
         const imgWidth = 240;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Adicionar imagem do gráfico ao PDF
+        // Adicionar imagem do grÃ¡fico ao PDF
         pdf.addImage(imgData, 'PNG', 20, yPos, imgWidth, imgHeight);
         yPos += imgHeight + 15;
         
-        // Adicionar seção de relatório textual
+        // Adicionar seÃ§Ã£o de relatÃ³rio textual
         pdf.setFontSize(14);
         pdf.setFont(undefined, 'bold');
-        pdf.text('Resumo Estatístico', 20, yPos);
+        pdf.text('Resumo EstatÃ­stico', 20, yPos);
         yPos += 8;
         
         pdf.setFontSize(11);
@@ -1219,10 +1474,10 @@ async function exportarGraficoPDF() {
             const modalidadesOrdenadas = Object.keys(totalPorModalidade).sort();
             modalidadesOrdenadas.forEach(modalidade => {
                 const quantidade = totalPorModalidade[modalidade];
-                pdf.text(`  • ${modalidade}: ${quantidade}`, 25, yPos);
+                pdf.text(`  â€¢ ${modalidade}: ${quantidade}`, 25, yPos);
                 yPos += 6;
                 
-                // Quebra de página se necessário
+                // Quebra de pÃ¡gina se necessÃ¡rio
                 if (yPos > 180) {
                     pdf.addPage();
                     yPos = 20;
@@ -1230,30 +1485,30 @@ async function exportarGraficoPDF() {
             });
         }
         
-        // Por mês
+        // Por mÃªs
         yPos += 3;
         pdf.setFont(undefined, 'bold');
-        pdf.text('Por Mês:', 20, yPos);
+        pdf.text('Por MÃªs:', 20, yPos);
         yPos += 7;
         pdf.setFont(undefined, 'normal');
         
         meses.forEach(mes => {
             const quantidade = dadosPorMes[mes] || 0;
-            pdf.text(`  • ${mes}: ${quantidade}`, 25, yPos);
+            pdf.text(`  â€¢ ${mes}: ${quantidade}`, 25, yPos);
             yPos += 6;
             
-            // Quebra de página se necessário
+            // Quebra de pÃ¡gina se necessÃ¡rio
             if (yPos > 180) {
                 pdf.addPage();
                 yPos = 20;
             }
         });
         
-        // Adicionar data/hora de geração no rodapé
+        // Adicionar data/hora de geraÃ§Ã£o no rodapÃ©
         const dataHora = new Date().toLocaleString('pt-BR');
         pdf.setFontSize(8);
         pdf.setFont(undefined, 'italic');
-        pdf.text(`Relatório gerado em: ${dataHora}`, 20, 195, { align: 'left' });
+        pdf.text(`RelatÃ³rio gerado em: ${dataHora}`, 20, 195, { align: 'left' });
         
         // Salvar PDF
         const nomeModalidade = modalidadeSelecionada === 'Tudo' ? 'Todas' : modalidadeSelecionada.replace(/\s+/g, '_');
@@ -1262,21 +1517,21 @@ async function exportarGraficoPDF() {
         
     } catch (error) {
         console.error('Erro ao exportar PDF:', error);
-        alert('Erro ao exportar PDF. Verifique se a biblioteca jsPDF está carregada.\n\nErro: ' + error.message);
+        alert('Erro ao exportar PDF. Verifique se a biblioteca jsPDF estÃ¡ carregada.\n\nErro: ' + error.message);
     }
 }
 
-// Função para abrir o modal de gráfico
+// FunÃ§Ã£o para abrir o modal de grÃ¡fico
 function abrirModalGrafico() {
     const modal = document.getElementById('modalGrafico');
     if (!modal) {
-        console.error('Modal de gráfico não encontrado');
+        console.error('Modal de grÃ¡fico nÃ£o encontrado');
         return;
     }
     
-    // Verificar se Chart.js está disponível
+    // Verificar se Chart.js estÃ¡ disponÃ­vel
     if (typeof Chart === 'undefined') {
-        alert('Erro: Chart.js não está carregado. Verifique a conexão com a internet.');
+        alert('Erro: Chart.js nÃ£o estÃ¡ carregado. Verifique a conexÃ£o com a internet.');
         return;
     }
     
@@ -1284,7 +1539,7 @@ function abrirModalGrafico() {
     if (!modal.hasAttribute('data-click-handler')) {
         modal.setAttribute('data-click-handler', 'true');
         modal.addEventListener('click', function(e) {
-            // Fechar apenas se clicar no overlay (fora do conteúdo)
+            // Fechar apenas se clicar no overlay (fora do conteÃºdo)
             if (e.target === modal) {
                 window.fecharModalGrafico();
             }
@@ -1294,7 +1549,7 @@ function abrirModalGrafico() {
     modal.style.display = 'flex';
     setTimeout(() => {
         modal.classList.add('show');
-        // Aguardar um pouco mais para garantir que o modal está totalmente visível
+        // Aguardar um pouco mais para garantir que o modal estÃ¡ totalmente visÃ­vel
         setTimeout(() => {
             inicializarDropdowns();
             atualizarGrafico();
@@ -1302,12 +1557,12 @@ function abrirModalGrafico() {
     }, 10);
 }
 
-// Atualizar a função que abre o modal para inicializar os dropdowns
-// Aguardar o DOM estar pronto e depois configurar o botão de relatório
+// Atualizar a funÃ§Ã£o que abre o modal para inicializar os dropdowns
+// Aguardar o DOM estar pronto e depois configurar o botÃ£o de relatÃ³rio
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', configurarBotaoRelatorio);
 } else {
-    // DOM já está pronto
+    // DOM jÃ¡ estÃ¡ pronto
     setTimeout(configurarBotaoRelatorio, 100);
 }
 
@@ -1322,7 +1577,7 @@ function configurarBotaoRelatorio() {
     }
 }
 
-// Exportar funções necessárias
+// Exportar funÃ§Ãµes necessÃ¡rias
 module.exports = {
     salvarExame,
     abrirModal,
@@ -1331,5 +1586,6 @@ module.exports = {
         atualizarTabela();
     }
 };
+
 
 

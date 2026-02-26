@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -11,31 +11,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
     <script>
-      // Aplicar tema antes da página ser renderizada
-      (function() {
-        try {
-          const savedTheme = localStorage.getItem('theme') || 'azul';
-          // Remover classes de tema do html
-          document.documentElement.classList.remove('dark-theme', 'light-theme', 'theme-azul');
-          
-          // Aplicar tema no html (o body será atualizado pelo script principal)
-          if (savedTheme === 'dark') {
-            document.documentElement.classList.add('dark-theme');
-          } else if (savedTheme === 'light') {
-            document.documentElement.classList.add('light-theme');
-          } else if (savedTheme === 'blue' || savedTheme === 'azul') {
-            document.documentElement.classList.add('theme-azul');
-          }
-        } catch (e) {
-          console.error('Erro ao aplicar tema:', e);
-        }
-      })();
+        // Aplicar tema antes da página ser renderizada
+        (function () {
+            try {
+                const savedTheme = localStorage.getItem('theme') || 'azul';
+                // Remover classes de tema do html
+                document.documentElement.classList.remove('dark-theme', 'light-theme', 'theme-azul');
+
+                // Aplicar tema no html (o body será atualizado pelo script principal)
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark-theme');
+                } else if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                } else if (savedTheme === 'blue' || savedTheme === 'azul') {
+                    document.documentElement.classList.add('theme-azul');
+                }
+            } catch (e) {
+                console.error('Erro ao aplicar tema:', e);
+            }
+        })();
     </script>
 </head>
 
 <body>
     <header class="header-container">
-        <button onclick="window.location.href='../index.html'" class="home-button" title="Voltar para a página inicial">Home</button>
+        <button onclick="window.location.href='../index.html'" class="home-button"
+            title="Voltar para a página inicial">Home</button>
         <h1>Registro de Pacientes</h1>
     </header>
 
@@ -49,28 +50,56 @@
                         <span class="close" onclick="fecharModal()">&times;</span>
                         <h2 id="modalTitle">Novo Registro</h2>
                         <form id="formExame" onsubmit="salvarExame(event)">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="text" id="nomePaciente" name="nomePaciente" placeholder="Nome do Paciente"
-                                    required style="flex: 2;">
-                                <select id="modalidade" name="modalidade" required style="flex: 1;">
-                                    <option value="" disabled selected>Selecione a Modalidade</option>
-                                    <option value="Raiox">RX</option>
-                                    <option value="Tomografia">TC</option>
-                                    <option value="Ressonancia">RM</option>
-                                    <option value="Densitometria">DO</option>
-                                    <option value="Mamografia">MG</option>
-                                </select>
-                                <input type="text" id="observacoes" name="observacoes" placeholder="Exame Realizado"
-                                    required style="flex: 1.5;">
-                                <input type="text" id="numeroAcesso" name="numeroAcesso" placeholder="Número de Acesso"
-                                    required style="flex: 1;">
+                            <input type="text" id="nomePaciente" name="nomePaciente" placeholder="Nome do Paciente"
+                                required>
+                            <div class="form-row-inline">
+                                <label class="field-with-label">
+                                    <span>CPF</span>
+                                    <input type="text" id="cpfPaciente" name="cpfPaciente" placeholder="Somente números">
+                                </label>
+                                <label class="field-with-label">
+                                    <span>Prontuário *</span>
+                                    <input type="text" id="prontuarioPaciente" name="prontuarioPaciente"
+                                        placeholder="Gerado automaticamente" required>
+                                </label>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="datetime-local" id="dataHoraExame" name="dataHoraExame" style="flex: 1.5;">
-                                <input type="text" id="nomeTecnico" name="nomeTecnico"
-                                    placeholder="Técnico de Radiologia" required style="flex: 2;">
-                                <button type="submit" style="flex: 1;">Registrar</button>
-                                <button type="button" onclick="limparCampos()" style="flex: 1;">Limpar</button>
+                            <div class="form-row-inline">
+                                <label class="field-with-label">
+                                    <span>Telefone</span>
+                                    <input type="text" id="telefonePaciente" name="telefonePaciente"
+                                        placeholder="99 99999-9999">
+                                </label>
+                                <label class="field-with-label">
+                                    <span>Data de Nascimento</span>
+                                    <input type="date" id="dataNascimentoPaciente" name="dataNascimentoPaciente">
+                                </label>
+                            </div>
+                            <input type="text" id="enderecoPaciente" name="enderecoPaciente" placeholder="Endereço">
+                            <input type="text" id="planoPaciente" name="planoPaciente" placeholder="Plano">
+                            <select id="modalidade" name="modalidade" required>
+                                <option value="" disabled selected>Selecione a Modalidade</option>
+                                <option value="Raiox">RX</option>
+                                <option value="Tomografia">TC</option>
+                                <option value="Ressonancia">RM</option>
+                                <option value="Densitometria">DO</option>
+                                <option value="Mamografia">MG</option>
+                            </select>
+                            <input type="text" id="observacoes" name="observacoes" placeholder="Exame Realizado"
+                                required>
+                            <input type="text" id="numeroAcesso" name="numeroAcesso" placeholder="Número de Acesso"
+                                required>
+                            <input type="datetime-local" id="dataHoraExame" name="dataHoraExame">
+                            <select id="statusExame" name="statusExame">
+                                <option value="Agendado">Agendado</option>
+                                <option value="Realizado">Realizado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                            <input type="text" id="nomeTecnico" name="nomeTecnico" placeholder="Técnico de Radiologia"
+                                required>
+                            <div class="actions">
+                                <button type="button" onclick="abrirHistoricoPorCadastro()">Histórico</button>
+                                <button type="submit">Salvar</button>
+                                <button type="button" onclick="fecharModal()">Cancelar</button>
                             </div>
                         </form>
                     </div>
@@ -84,6 +113,8 @@
                     <button type="button" id="relatorio">Relatório Registros</button>
                     <button type="button" id="btnFiltrarAvancado">Filtro Avançado</button>
                     <button type="button" id="btnEditarRegistro" onclick="abrirModal('editar')">Editar</button>
+                    <button type="button" id="btnHistoricoPaciente" onclick="abrirHistoricoPaciente()">Histórico
+                        Paciente</button>
                     <button type="button" id="btnExcluirRegistro">Excluir</button>
                 </div>
             </div>
@@ -246,7 +277,7 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Importar Registros</h2>
-                <p>Como você deseja importar os novos registros?</p>
+                <p>Como você deseja importar os novos registros</p>
                 <div class="modal-buttons">
                     <button type="button" class="btn-substituir">Substituir Existentes</button>
                     <button type="button" class="btn-adicionar">Adicionar aos Existentes</button>
@@ -254,7 +285,17 @@
                 </div>
             </div>
         </div>
-
+        <div id="modalHistoricoPaciente" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModalHistorico()">&times;</span>
+                <h2>Histórico do Paciente</h2>
+                <p id="historicoPacienteInfo"></p>
+                <div id="historicoPacienteLista"></div>
+                <div class="actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalHistorico()">Fechar</button>
+                </div>
+            </div>
+        </div>
         <!-- Modal de Gráfico -->
         <div id="modalGrafico" class="modal">
             <div class="modal-content">
@@ -263,7 +304,8 @@
                 <div class="grafico-container">
                     <div class="controls">
                         <div class="dropdown">
-                            <button id="modalidadeDropdownButton" class="dropdown-button">Selecione a Modalidade</button>
+                            <button id="modalidadeDropdownButton" class="dropdown-button">Selecione a
+                                Modalidade</button>
                             <ul id="modalidadeDropdownMenu" class="dropdown-menu">
                                 <li data-modalidade="Tudo">Todas as Modalidades</li>
                                 <li data-modalidade="Raiox">RX</li>
@@ -296,5 +338,6 @@
         </div>
 
         <script src="../../scripts/registros/registros.js"></script>
-    </body>
+</body>
+
 </html>

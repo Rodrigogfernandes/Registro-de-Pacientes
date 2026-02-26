@@ -96,3 +96,171 @@ hr {
     border-top: 1px solid var(--border-color);
     margin: 20px 0;
 }
+.logo-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.logo-container img {
+    width: 50px;
+    height: 50px;
+}
+
+.modal,
+.export-modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-background);
+}
+
+.modal.active,
+.export-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--modal-content-background);
+    padding: 30px;
+    border: 1px solid var(--modal-border);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    color: var(--modal-text);
+    margin: 0;
+    position: relative;
+    transform: translateY(-10%);
+}
+
+.close {
+    color: var(--modal-text);
+    position: absolute;
+    right: 20px;
+    top: 15px;
+}
+
+.theme-options {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.theme-button {
+    padding: 10px;
+    border: 1px solid var(--modal-border);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--modal-content-background);
+    color: var(--modal-text);
+}
+
+.theme-button:hover {
+    background-color: var(--modal-button-hover);
+}
+
+.theme-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.config-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--modal-border);
+}
+
+.config-button {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid var(--modal-border);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--modal-content-background);
+    color: var(--modal-text);
+    width: 100%;
+    text-align: left;
+}
+
+.config-button:hover {
+    background-color: var(--modal-button-hover);
+}
+
+.export-modal-content {
+    background-color: var(--modal-content-background);
+    margin: 0;
+    padding: 30px;
+    border: 1px solid var(--modal-border);
+    width: 300px;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--modal-text);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10%);
+    position: relative;
+}
+
+.export-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.export-button {
+    padding: 12px;
+    border: 1px solid var(--modal-border);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--modal-content-background);
+    color: var(--modal-text);
+    transition: background-color 0.3s;
+}
+
+.export-button:hover {
+    background-color: var(--modal-button-hover);
+}
+
+.export-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.modal h2,
+.modal h3,
+.export-modal h2,
+.export-modal h3 {
+    color: var(--modal-text);
+    margin-bottom: 20px;
+}
+
+#exportModal .close,
+#backupModal .close,
+#importModal .close {
+    color: var(--modal-text);
+    position: absolute;
+    right: 20px;
+    top: 15px;
+}

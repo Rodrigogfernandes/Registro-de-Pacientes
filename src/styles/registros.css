@@ -817,13 +817,31 @@ form select:focus {
 
 /* Estilos específicos para o modal de cadastro */
 #modalForm .modal-content {
-    max-width: 800px;
+    max-width: 620px;
 }
 
 #formExame {
+    display: grid;
+    gap: 10px;
+}
+
+#formExame .form-row-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#formExame .actions {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+    #formExame .form-row-inline {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Estilos específicos para o modal de observações */
@@ -2031,5 +2049,98 @@ html.theme-azul body,
 html.theme-azul {
     background-color: #e0faff;  /* Cor de fundo azul clara */
     color: #003366;             /* Cor do texto */
+}
+
+#modalHistoricoPaciente .modal-content {
+    width: min(1080px, 100%);
+}
+
+#historicoPacienteInfo {
+    margin: 8px 0 14px;
+    font-weight: 600;
+}
+
+#modalHistoricoPaciente #historicoPacienteLista {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: auto;
+    max-height: 58vh;
+}
+
+#modalHistoricoPaciente #historicoPacienteLista > p {
+    margin: 0;
+    padding: 12px;
+    color: var(--text-secondary);
+}
+
+.historico-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    display: table;
+}
+
+#modalHistoricoPaciente .historico-table thead {
+    display: table-header-group;
+    width: auto;
+    table-layout: auto;
+}
+
+#modalHistoricoPaciente .historico-table tbody {
+    display: table-row-group;
+    overflow: visible;
+    height: auto;
+}
+
+#modalHistoricoPaciente .historico-table tr {
+    display: table-row;
+    width: auto;
+    table-layout: auto;
+}
+
+.historico-table th,
+.historico-table td {
+    padding: 9px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    text-align: left;
+    width: auto;
+}
+
+.historico-table th {
+    background: var(--table-header);
+}
+
+#modalHistoricoPaciente .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+#modalHistoricoPaciente .btn {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#modalHistoricoPaciente .btn-secondary {
+    background: color-mix(in srgb, var(--button-primary) 18%, var(--bg-secondary));
+    color: var(--text-primary);
+    border-color: color-mix(in srgb, var(--button-primary) 28%, var(--border-color));
+}
+
+
+#formExame .field-with-label {
+    display: grid;
+    gap: 4px;
+}
+
+#formExame .field-with-label span {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #666);
 }
 

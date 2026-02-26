@@ -1,0 +1,60 @@
+[
+  {
+    "id": "ronny",
+    "nome": "Ronny",
+    "diasSemana": [
+      1,
+      2,
+      4
+    ],
+    "inicio": "07:00",
+    "fim": "13:00",
+    "intervaloMinutos": 30,
+    "datasBloqueadas": []
+  },
+  {
+    "id": "germana",
+    "nome": "Germana",
+    "diasSemana": [
+      1,
+      3,
+      5
+    ],
+    "inicio": "08:00",
+    "fim": "14:00",
+    "intervaloMinutos": 30,
+    "datasBloqueadas": []
+  },
+  {
+    "id": "bento",
+    "nome": "Rodrigo",
+    "diasSemana": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "inicio": "07:00",
+    "fim": "15:00",
+    "intervaloMinutos": 30,
+    "datasBloqueadas": []
+  },
+  {
+    "id": "francisco-bento",
+    "nome": "Francisco Bento",
+    "diasSemana": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "inicio": "07:00",
+    "fim": "13:00",
+    "intervaloMinutos": 30,
+    "datasBloqueadas": [
+      "2026-02-26"
+    ]
+  }
+]

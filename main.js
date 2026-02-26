@@ -12,24 +12,39 @@ let helpWindow;
 function getDataFilePath(tipo) {
     const dataDir = path.join(__dirname, 'data');
     switch(tipo) {
+        case 'agendamentos':
+            return path.join(dataDir, 'agendamentos.json');
+        case 'medicos-agenda':
+            return path.join(dataDir, 'medicos_agenda.json');
         case 'ocorrencias':
             return path.join(dataDir, 'ocorrencias.json');
         case 'ponto':
             return path.join(dataDir, 'ponto.json');
         case 'config':
             return path.join(dataDir, 'config.json');
+        case 'pacientes':
+            return path.join(dataDir, 'pacientes.json');
         default:
             return path.join(dataDir, 'registros.json');
     }
 }
 
+function ensureDataDir() {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+    }
+}
+
 function setupIpcHandlers() {
+    const parseJsonSafe = (raw) => JSON.parse((raw || '').replace(/^\uFEFF/, ''));
+
     ipcMain.handle('ler-registros', () => {
         try {
             const filePath = getDataFilePath();
             if (fs.existsSync(filePath)) {
                 const data = fs.readFileSync(filePath, 'utf8');
-                return JSON.parse(data);
+                return parseJsonSafe(data);
             }
             return [];
         } catch (error) {
@@ -41,12 +56,97 @@ function setupIpcHandlers() {
 
     ipcMain.handle('salvar-registros', (event, registros) => {
         try {
+            ensureDataDir();
             const filePath = getDataFilePath();
             fs.writeFileSync(filePath, JSON.stringify(registros, null, 2), 'utf8');
             return true;
         } catch (error) {
             console.error('Erro ao salvar registros:', error);
             dialog.showErrorBox('Erro', 'Não foi possível salvar os registros: ' + error.message);
+            return false;
+        }
+    });
+
+    ipcMain.handle('ler-pacientes', () => {
+        try {
+            const filePath = getDataFilePath('pacientes');
+            if (fs.existsSync(filePath)) {
+                const data = fs.readFileSync(filePath, 'utf8');
+                return parseJsonSafe(data);
+            }
+            return [];
+        } catch (error) {
+            console.error('Erro ao ler pacientes:', error);
+            dialog.showErrorBox('Erro', 'Não foi possível ler os pacientes: ' + error.message);
+            return [];
+        }
+    });
+
+    ipcMain.handle('salvar-pacientes', (event, pacientes) => {
+        try {
+            ensureDataDir();
+            const filePath = getDataFilePath('pacientes');
+            fs.writeFileSync(filePath, JSON.stringify(pacientes, null, 2), 'utf8');
+            return true;
+        } catch (error) {
+            console.error('Erro ao salvar pacientes:', error);
+            dialog.showErrorBox('Erro', 'Não foi possível salvar os pacientes: ' + error.message);
+            return false;
+        }
+    });
+
+    ipcMain.handle('ler-agendamentos', () => {
+        try {
+            const filePath = getDataFilePath('agendamentos');
+            if (fs.existsSync(filePath)) {
+                const data = fs.readFileSync(filePath, 'utf8');
+                return parseJsonSafe(data);
+            }
+            return [];
+        } catch (error) {
+            console.error('Erro ao ler agendamentos:', error);
+            dialog.showErrorBox('Erro', 'Não foi possível ler os agendamentos: ' + error.message);
+            return [];
+        }
+    });
+
+    ipcMain.handle('salvar-agendamentos', (event, agendamentos) => {
+        try {
+            ensureDataDir();
+            const filePath = getDataFilePath('agendamentos');
+            fs.writeFileSync(filePath, JSON.stringify(agendamentos, null, 2), 'utf8');
+            return true;
+        } catch (error) {
+            console.error('Erro ao salvar agendamentos:', error);
+            dialog.showErrorBox('Erro', 'Não foi possível salvar os agendamentos: ' + error.message);
+            return false;
+        }
+    });
+
+    ipcMain.handle('ler-medicos-agenda', () => {
+        try {
+            const filePath = getDataFilePath('medicos-agenda');
+            if (fs.existsSync(filePath)) {
+                const data = fs.readFileSync(filePath, 'utf8');
+                return parseJsonSafe(data);
+            }
+            return [];
+        } catch (error) {
+            console.error('Erro ao ler agendas mÃ©dicas:', error);
+            dialog.showErrorBox('Erro', 'NÃ£o foi possÃ­vel ler as agendas mÃ©dicas: ' + error.message);
+            return [];
+        }
+    });
+
+    ipcMain.handle('salvar-medicos-agenda', (event, medicosAgenda) => {
+        try {
+            ensureDataDir();
+            const filePath = getDataFilePath('medicos-agenda');
+            fs.writeFileSync(filePath, JSON.stringify(medicosAgenda, null, 2), 'utf8');
+            return true;
+        } catch (error) {
+            console.error('Erro ao salvar agendas mÃ©dicas:', error);
+            dialog.showErrorBox('Erro', 'NÃ£o foi possÃ­vel salvar as agendas mÃ©dicas: ' + error.message);
             return false;
         }
     });

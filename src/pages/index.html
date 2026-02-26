@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -8,178 +8,13 @@
     <link rel="stylesheet" href="../styles/index.css">
     <link rel="icon" href="../../icon.ico" type="image/x-icon">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
-    <style>
-        .logo-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-        .logo-container img {
-            width: 50px;
-            height: 50px;
-        }
-        .modal, .export-modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--modal-background);
-        }
-
-        .modal.active, .export-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--modal-content-background);
-            padding: 30px;
-            border: 1px solid var(--modal-border);
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            color: var(--modal-text);
-            margin: 0;
-            position: relative;
-            transform: translateY(-10%);
-        }
-
-        .close {
-            color: var(--modal-text);
-            position: absolute;
-            right: 20px;
-            top: 15px;
-        }
-
-        .theme-options {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .theme-button {
-            padding: 10px;
-            border: 1px solid var(--modal-border);
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: var(--modal-content-background);
-            color: var(--modal-text);
-        }
-
-        .theme-button:hover {
-            background-color: var(--modal-button-hover);
-        }
-
-        .theme-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
-
-        .config-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--modal-border);
-        }
-
-        .config-button {
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid var(--modal-border);
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: var(--modal-content-background);
-            color: var(--modal-text);
-            width: 100%;
-            text-align: left;
-        }
-
-        .config-button:hover {
-            background-color: var(--modal-button-hover);
-        }
-
-        .export-modal-content {
-            background-color: var(--modal-content-background);
-            margin: 15% auto;
-            padding: 30px;
-            border: 1px solid var(--modal-border);
-            width: 300px;
-            border-radius: 12px;
-            text-align: center;
-            color: var(--modal-text);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            margin: 0;
-            transform: translateY(-10%);
-        }
-
-        .export-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .export-button {
-            padding: 12px;
-            border: 1px solid var(--modal-border);
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: var(--modal-content-background);
-            color: var(--modal-text);
-            transition: background-color 0.3s;
-        }
-
-        .export-button:hover {
-            background-color: var(--modal-button-hover);
-        }
-
-        .export-button img {
-            width: 24px;
-            height: 24px;
-        }
-
-        .modal h2, .modal h3 {
-            color: var(--modal-text);
-            margin-bottom: 20px;
-        }
-
-        .export-modal h2, .export-modal h3 {
-            color: var(--modal-text);
-            margin-bottom: 20px;
-        }
-
-        #exportModal .close, #backupModal .close, #importModal .close {
-            color: var(--modal-text);
-            position: absolute;
-            right: 20px;
-            top: 15px;
-        }
-    </style>
 </head>
 
 <body>
     <div class="logo-container">
         <img src="../assets/images/config.png" alt="Logo" id="configBtn">
     </div>
+
     <div id="configModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -212,6 +47,7 @@
             </div>
         </div>
     </div>
+
     <div id="exportModal" class="export-modal">
         <div class="export-modal-content">
             <span class="close" onclick="closeExportModal()">&times;</span>
@@ -232,6 +68,7 @@
             </div>
         </div>
     </div>
+
     <div id="backupModal" class="export-modal">
         <div class="export-modal-content">
             <span class="close" onclick="closeBackupModal()">&times;</span>
@@ -248,7 +85,7 @@
             </div>
         </div>
     </div>
-    <!-- Adicionar novo modal de importação após o backupModal -->
+
     <div id="importModal" class="export-modal">
         <div class="export-modal-content">
             <span class="close" onclick="closeImportModal()">&times;</span>
@@ -265,10 +102,18 @@
             </div>
         </div>
     </div>
+
     <div class="table-container">
         <h1>Bem-vindo!</h1>
         <hr>
         <div class="button-group">
+            <div class="button-group1" onclick="window.location.href='agendamento/agendamento.html'">
+                <div class="icon-container">
+                    <img src="../assets/images/agendamento.png" alt="Agendamentos">
+                </div>
+                <div class="button-label">Agendamento</div>
+            </div>
+
             <div class="button-group1" onclick="window.location.href='registros/registros.html'">
                 <div class="icon-container">
                     <img src="../assets/images/registro.png" alt="Registros">
@@ -291,160 +136,8 @@
             </div>
         </div>
     </div>
-   
+
+    <script src="../scripts/index/index.js"></script>
 </body>
-<script>
-    try {
-        const { ipcRenderer } = require('electron');
-        
-        // Elementos do DOM
-        const modal = document.getElementById("configModal");
-        const configBtn = document.getElementById("configBtn");
-        const closeBtn = document.getElementsByClassName("close")[0];
 
-        // Funções de manipulação do modal
-        function openModal() {
-            if (modal) {
-                modal.classList.add('active');
-            }
-        }
-
-        function closeModal() {
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        }
-
-        // Event Listeners
-        if (configBtn) {
-            configBtn.addEventListener('click', openModal);
-        }
-
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeModal);
-        }
-
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-            if (event.target === exportModal) {
-                closeExportModal();
-            }
-            if (event.target === backupModal) {
-                closeBackupModal();
-            }
-            if (event.target === importModal) {
-                closeImportModal();
-            }
-        });
-
-        // Funções de tema
-        window.changeTheme = function(theme) {
-            document.body.classList.remove('dark-theme', 'theme-azul');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-            } else if (theme === 'blue') {
-                document.body.classList.add('theme-azul');
-            }
-            localStorage.setItem('theme', theme);
-            closeModal();
-        };
-
-        // Funções de arquivo atualizadas
-        window.handleExport = function() {
-            exportModal.classList.add('active');
-            closeModal(); // Fecha o modal de configurações
-        };
-
-        window.exportAs = async function(type) {
-            try {
-                const registros = await ipcRenderer.invoke('ler-registros');
-                if (registros && registros.length > 0) {
-                    if (type === 'pdf') {
-                        await ipcRenderer.invoke('exportar-pdf', registros);
-                    } else if (type === 'excel') {
-                        await ipcRenderer.invoke('exportar-csv', registros);
-                    }
-                } else {
-                    await ipcRenderer.invoke('mostrar-erro', 'Não há registros para exportar');
-                }
-            } catch (error) {
-                console.error('Erro ao exportar:', error);
-                await ipcRenderer.invoke('mostrar-erro', 'Erro ao exportar registros');
-            }
-            closeExportModal();
-        };
-
-        window.handleImport = function() {
-            importModal.classList.add('active');
-            closeModal();
-        };
-
-        // Nova função para importar arquivo específico
-        window.importarArquivo = async function(tipo) {
-            try {
-                const resultado = await ipcRenderer.invoke('importar-arquivo', tipo);
-                if (resultado) {
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Erro ao importar:', error);
-                await ipcRenderer.invoke('mostrar-erro', 'Erro ao importar arquivo');
-            }
-            closeImportModal();
-        };
-
-        // Carregar tema salvo
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            window.changeTheme(savedTheme);
-        }
-
-        // Listener para eventos de tema
-        ipcRenderer.on('apply-theme', (event, theme) => {
-            window.changeTheme(theme);
-        });
-
-        // Elementos dos modais
-        const exportModal = document.getElementById("exportModal");
-        const backupModal = document.getElementById("backupModal");
-        const importModal = document.getElementById("importModal");
-
-        // Funções dos modais
-        function closeExportModal() {
-            exportModal.classList.remove('active');
-        }
-
-        function closeBackupModal() {
-            backupModal.classList.remove('active');
-        }
-
-        function closeImportModal() {
-            importModal.classList.remove('active');
-        }
-
-        window.handleBackup = function() {
-            closeExportModal();
-            backupModal.classList.add('active');
-        }
-
-        window.exportBackup = async function(type) {
-            try {
-                if (type === 'registros') {
-                    await ipcRenderer.invoke('fazer-backup', 'registros');
-                } else if (type === 'ocorrencias') {
-                    await ipcRenderer.invoke('fazer-backup', 'ocorrencias');
-                }
-            } catch (error) {
-                console.error('Erro ao fazer backup:', error);
-                await ipcRenderer.invoke('mostrar-erro', 'Erro ao fazer backup');
-            }
-            closeBackupModal();
-        }
-
-    } catch (error) {
-        console.error('Erro na inicialização:', error);
-    }
-</script>
 </html>

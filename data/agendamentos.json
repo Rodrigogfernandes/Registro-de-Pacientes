@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1772080348324,
+    "nomePaciente": "PACIENTE TESTE",
+    "cpfPaciente": "99999999999",
+    "prontuarioPaciente": "P000001",
+    "telefonePaciente": "83 999999999",
+    "dataNascimentoPaciente": "1988-01-21",
+    "enderecoPaciente": "Rua: Imaginaria que não existe, 181",
+    "planoPaciente": "Unimed",
+    "medicoId": "ronny",
+    "modalidade": "Ressonancia",
+    "exame": "ABDOME TOTAL",
+    "numeroAcesso": "89742983474",
+    "dataHora": "2026-02-26T08:00",
+    "nomeTecnico": "Ronny",
+    "statusExame": "Agendado",
+    "documentoPaciente": "P000001",
+    "pacienteId": "1771994357793"
+  }
+]

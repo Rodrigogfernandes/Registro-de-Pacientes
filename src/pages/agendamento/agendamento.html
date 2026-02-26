@@ -1,0 +1,389 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Exames</title>
+    <link rel="stylesheet" href="../../styles/agendamento.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <script>
+        (function () {
+            try {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.classList.remove('dark-theme', 'light-theme', 'theme-azul');
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark-theme');
+                } else if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                } else if (savedTheme === 'blue' || savedTheme === 'azul') {
+                    document.documentElement.classList.add('theme-azul');
+                }
+            } catch (e) {
+                console.error('Erro ao aplicar tema:', e);
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <header class="header-container">
+        <button onclick="window.location.href='../index.html'" class="home-button" title="Voltar para a página inicial">Home</button>
+        <div class="header-copy">
+            <h1>Agendamento de Exames</h1>
+            <p>Gerencie agendas médicas, horários e histórico do paciente em um único fluxo.</p>
+        </div>
+    </header>
+
+    <main class="agendamento-shell">
+        <section class="table-container">
+            <div class="toolbar" role="region" aria-label="Ações de agendamento">
+                <div class="toolbar-group toolbar-group--primary">
+                    <button type="button" class="btn btn-primary" onclick="abrirModal('novo')">Novo Agendamento</button>
+                    <button type="button" class="btn btn-secondary" onclick="abrirModalDisponibilidade()">Disponibilidade</button>
+                    <button type="button" class="btn btn-secondary" onclick="abrirModalAgendaMedico('novo')">Agendas Médicas</button>
+                    <button type="button" class="btn btn-secondary" onclick="abrirModalPerformance()">Performance</button>
+                </div>
+
+                <div class="toolbar-group toolbar-group--context">
+                    <button type="button" class="btn btn-ghost" id="btnEditar" onclick="abrirModal('editar')">Editar</button>
+                    <button type="button" class="btn btn-danger" id="btnExcluir" onclick="excluirAgendamento()">Excluir</button>
+                    <button type="button" class="btn btn-ghost" id="btnHistorico" onclick="abrirHistoricoPaciente()">Histórico Paciente</button>
+                </div>
+
+                <div class="toolbar-search">
+                    <label for="pesquisa">Buscar</label>
+                    <input type="search" id="pesquisa" placeholder="Digite o nome, CPF ou prontuário do paciente para exibir na tabela" oninput="filtrarAgendamentos()">
+                </div>
+            </div>
+
+            <div class="table-meta">
+                <p id="tableSummary">Use a busca para exibir o paciente na tabela.</p>
+            </div>
+
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>CPF</th>
+                            <th>Prontuário</th>
+                            <th>Modalidade</th>
+                            <th>Exame</th>
+                            <th>Data/Hora</th>
+                            <th>Status</th>
+                            <th>Médico</th>
+                            <th>Acesso</th>
+                            <th>Impressão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaAgendamentos"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalAgendamento" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()" aria-label="Fechar">&times;</span>
+            <h2 id="modalTitle">Novo Agendamento</h2>
+            <form id="formAgendamento" onsubmit="salvarAgendamento(event)">
+                <section class="form-section">
+                    <h3>Dados do paciente</h3>
+                    <div class="form-grid form-grid-2">
+                        <label class="field-with-label">
+                            <span>Nome do paciente *</span>
+                            <input type="text" id="nomePaciente" placeholder="Nome completo" required>
+                        </label>
+                        <label class="field-with-label">
+                            <span>CPF</span>
+                            <input type="text" id="cpfPaciente" placeholder="Somente números">
+                        </label>
+                        <label class="field-with-label">
+                            <span>Prontuário *</span>
+                            <input type="text" id="prontuarioPaciente" placeholder="Gerado automaticamente" required>
+                        </label>
+                        <label class="field-with-label">
+                            <span>Telefone</span>
+                            <input type="text" id="telefonePaciente" placeholder="99 99999-9999">
+                        </label>
+                        <label class="field-with-label">
+                            <span>Data de Nascimento</span>
+                            <input type="date" id="dataNascimentoPaciente">
+                        </label>
+                        <label class="field-with-label">
+                            <span>Plano</span>
+                            <input type="text" id="planoPaciente" placeholder="Plano de saúde ou convênio">
+                        </label>
+                        <label class="field-with-label form-span-2">
+                            <span>Endereço</span>
+                            <input type="text" id="enderecoPaciente" placeholder="Rua, número, bairro, cidade">
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3>Dados do exame</h3>
+                    <div class="form-grid form-grid-2">
+                        <label class="field-with-label">
+                            <span>Médico *</span>
+                            <select id="medicoId" required onchange="atualizarHorariosDisponiveis()"></select>
+                        </label>
+                        <label class="field-with-label">
+                            <span>Modalidade *</span>
+                            <select id="modalidade" required>
+                                <option value="Raiox">RX</option>
+                                <option value="Tomografia">TC</option>
+                                <option value="Ressonancia">RM</option>
+                                <option value="Densitometria">DO</option>
+                                <option value="Mamografia">MG</option>
+                            </select>
+                        </label>
+                        <label class="field-with-label form-span-2">
+                            <span>Exame *</span>
+                            <input type="text" id="exame" placeholder="Descrição do exame" required>
+                        </label>
+                        <label class="field-with-label">
+                            <span>Número de acesso *</span>
+                            <input type="text" id="numeroAcesso" placeholder="Identificador do exame" required>
+                        </label>
+                        <label class="field-with-label">
+                            <span>Status *</span>
+                            <select id="statusExame" required>
+                                <option value="Agendado">Agendado</option>
+                                <option value="Realizado">Realizado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </label>
+                        <label class="field-with-label">
+                            <span>Data *</span>
+                            <input type="date" id="dataAgendamento" required onchange="atualizarHorariosDisponiveis()">
+                        </label>
+                        <label class="field-with-label">
+                            <span>Horário *</span>
+                            <select id="horaAgendamento" required>
+                                <option value="" disabled selected>Selecione o horário</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div id="agendaMedicoInfo"></div>
+                </section>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-ghost" onclick="abrirHistoricoPorCadastro()">Histórico</button>
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalHistoricoPaciente" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalHistorico()" aria-label="Fechar">&times;</span>
+            <h2>Histórico do Paciente</h2>
+            <p id="historicoPacienteInfo"></p>
+            <div id="historicoPacienteLista"></div>
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalHistorico()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAgendaMedico" class="modal" aria-hidden="true">
+        <div class="modal-content modal-content-large">
+            <span class="close" onclick="fecharModalAgendaMedico()" aria-label="Fechar">&times;</span>
+            <h2 id="modalAgendaMedicoTitle">Agenda de Médicos</h2>
+
+            <div class="agenda-medico-layout">
+                <aside class="agenda-medico-lista">
+                    <h3>Médicos cadastrados</h3>
+                    <div id="listaMedicosAgenda"></div>
+                </aside>
+
+                <form id="formAgendaMedico" onsubmit="salvarAgendaMedico(event)">
+                    <input type="hidden" id="agendaMedicoId">
+
+                    <label class="field-with-label">
+                        <span>Nome do médico *</span>
+                        <input type="text" id="agendaMedicoNome" placeholder="Nome completo" required>
+                    </label>
+
+                    <section class="agenda-block">
+                        <h3>Dias de atendimento</h3>
+                        <div class="dias-semana-group">
+                            <label><input type="checkbox" value="1"> Segunda</label>
+                            <label><input type="checkbox" value="2"> Terça</label>
+                            <label><input type="checkbox" value="3"> Quarta</label>
+                            <label><input type="checkbox" value="4"> Quinta</label>
+                            <label><input type="checkbox" value="5"> Sexta</label>
+                            <label><input type="checkbox" value="6"> Sábado</label>
+                            <label><input type="checkbox" value="0"> Domingo</label>
+                        </div>
+                    </section>
+
+                    <section class="agenda-block">
+                        <h3>Horário de atendimento</h3>
+                        <div class="agenda-horarios-grid">
+                            <label class="field-with-label">
+                                <span>Início</span>
+                                <input type="time" id="agendaMedicoInicio" required>
+                            </label>
+                            <label class="field-with-label">
+                                <span>Fim</span>
+                                <input type="time" id="agendaMedicoFim" required>
+                            </label>
+                            <label class="field-with-label">
+                                <span>Intervalo (min)</span>
+                                <input type="number" id="agendaMedicoIntervalo" min="5" step="5" value="30" required>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="agenda-bloqueio">
+                        <h3>Fechamento de agenda</h3>
+                        <div class="agenda-bloqueio-actions">
+                            <input type="date" id="agendaDataBloqueio">
+                            <button type="button" class="btn btn-secondary" onclick="adicionarDataBloqueioMedico()">Adicionar Dia</button>
+                        </div>
+                        <div id="listaDatasBloqueadasMedico" class="agenda-bloqueio-lista"></div>
+                    </section>
+
+                    <div class="actions">
+                        <button type="button" class="btn btn-ghost" onclick="abrirModalAgendaMedico('novo')">Novo</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalAgendaMedico()">Fechar</button>
+                        <button type="button" class="btn btn-danger" id="btnExcluirAgendaMedico" onclick="excluirAgendaMedico()">Excluir</button>
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDisponibilidade" class="modal" aria-hidden="true">
+        <div class="modal-content modal-content-large">
+            <span class="close" onclick="fecharModalDisponibilidade()" aria-label="Fechar">&times;</span>
+            <h2>Disponibilidade dos Médicos</h2>
+            <p class="modal-description">Visualize horários livres e ocupados por dia, semana ou mês.</p>
+
+            <div class="disponibilidade-filtros">
+                <label class="field-with-label">
+                    <span>Médico</span>
+                    <select id="dispMedico" onchange="renderDisponibilidadeMedico()"></select>
+                </label>
+                <label class="field-with-label">
+                    <span>Período</span>
+                    <select id="dispPeriodo" onchange="renderDisponibilidadeMedico()">
+                        <option value="dia">Dia</option>
+                        <option value="semana">Semana</option>
+                        <option value="mes">Mês</option>
+                    </select>
+                </label>
+                <label class="field-with-label">
+                    <span>Data de referência</span>
+                    <input type="date" id="dispData" onchange="renderDisponibilidadeMedico()">
+                </label>
+                <button type="button" class="btn btn-primary" onclick="renderDisponibilidadeMedico()">Atualizar</button>
+            </div>
+
+            <div id="resumoDisponibilidade" class="resumo-disponibilidade"></div>
+            <div id="listaDisponibilidade" class="lista-disponibilidade"></div>
+
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalDisponibilidade()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalPerformance" class="modal" aria-hidden="true">
+        <div class="modal-content modal-content-large">
+            <span class="close" onclick="fecharModalPerformance()" aria-label="Fechar">&times;</span>
+            <h2>Painel de Performance</h2>
+            <p class="modal-description">Acompanhe os indicadores de agendamento por visão diária, semanal, mensal e anual.</p>
+
+            <div class="performance-filtros">
+                <label class="field-with-label">
+                    <span>Período</span>
+                    <select id="perfPeriodo" onchange="renderPerformance()">
+                        <option value="dia">Diário</option>
+                        <option value="semana">Semanal</option>
+                        <option value="mes">Mensal</option>
+                        <option value="ano">Anual</option>
+                    </select>
+                </label>
+                <label class="field-with-label">
+                    <span>Data de referência</span>
+                    <input type="date" id="perfData" onchange="renderPerformance()">
+                </label>
+                <button type="button" class="btn btn-primary" onclick="renderPerformance()">Atualizar</button>
+            </div>
+
+            <section class="dashboard-card performance-dashboard" aria-label="Resumo de performance">
+                <article class="metric-card">
+                    <span class="metric-label">Total</span>
+                    <strong id="metricTotal">0</strong>
+                </article>
+                <article class="metric-card metric-card--agendado">
+                    <span class="metric-label">Agendados</span>
+                    <strong id="metricAgendado">0</strong>
+                </article>
+                <article class="metric-card metric-card--realizado">
+                    <span class="metric-label">Realizados</span>
+                    <strong id="metricRealizado">0</strong>
+                </article>
+                <article class="metric-card metric-card--cancelado">
+                    <span class="metric-label">Cancelados</span>
+                    <strong id="metricCancelado">0</strong>
+                </article>
+            </section>
+
+            <div id="perfResumo" class="resumo-disponibilidade"></div>
+            <div id="perfStatusChart" class="status-chart"></div>
+            <div id="perfTrendChart" class="trend-chart"></div>
+
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalPerformance()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalImpressaoExames" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalImpressaoExames()" aria-label="Fechar">&times;</span>
+            <h2>Espelho de Exames</h2>
+            <p id="impressaoPacienteInfo"></p>
+            <div id="impressaoListaExames" class="impressao-lista-exames"></div>
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalImpressaoExames()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="imprimirEspelhoSelecionado()">Imprimir Espelho</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirmacao" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalConfirmacao()" aria-label="Fechar">&times;</span>
+            <h2 id="confirmacaoTitulo">Confirmar ação</h2>
+            <p id="confirmacaoMensagem"></p>
+            <div class="actions">
+                <button type="button" class="btn btn-secondary" onclick="responderConfirmacao(false)">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmacaoBtnConfirmar" onclick="responderConfirmacao(true)">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAviso" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalAviso()" aria-label="Fechar">&times;</span>
+            <h2 id="avisoTitulo">Aviso</h2>
+            <p id="avisoMensagem"></p>
+            <div class="actions">
+                <button type="button" class="btn btn-primary" onclick="fecharModalAviso()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../scripts/agendamento/agendamento.js"></script>
+</body>
+
+</html>
