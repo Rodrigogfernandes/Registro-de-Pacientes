@@ -1,134 +1,200 @@
-# Registro de Pacientes v2.0
+# Registro de Pacientes - v2.0
+
+<div align="center">
+
+![Desktop Preview](src/assets/images/image.gif)
+
+![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=electron&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+
+[![rodrigodev.net](https://img.shields.io/badge/rodrigodev.net-green?style=for-the-badge)](https://www.rodrigodev.net/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Rodrigogfernandes)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rodrigogfernandes/)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/rodrigogfernandes1/)
+
+</div>
+
+## Sobre o Projeto
 
 Aplicacao desktop em Electron para gestao de:
-- Agendamento de exames
-- Registros de pacientes/exames
-- Livro de ocorrencias
-- Controle de ponto
+- agendamento de exames
+- registros de pacientes/exames
+- livro de ocorrencias
+- controle de ponto
 
-## Tecnologias
+O sistema opera com MongoDB (Atlas ou local) e possui modo offline com backup JSON automatico.
+
+## Funcionalidades
+
+- Cadastro e edicao de pacientes com CPF e prontuario.
+- Geracao automatica de prontuario e numero de acesso.
+- Validacao de duplicidade por CPF/prontuario.
+- Exportacao de dados (PDF, Excel e JSON).
+- Importacao de backup.
+- Modo offline com `data/*.json` quando o banco estiver indisponivel.
+- Sincronizacao automatica do JSON local para MongoDB quando a conexao retorna.
+- Historico de paciente em Agendamento e Registros.
+- Controle de ponto e livro de ocorrencias.
+
+## Tecnologias Utilizadas
+
+### Aplicacao
 - Electron
 - Node.js
 - JavaScript (ES6+)
-- HTML5 + CSS3
+
+### Banco e Persistencia
+- MongoDB Driver (`mongodb`)
+- dotenv
+- JSON local (`data/*.json`) como fallback offline
+
+### Relatorios e Utilitarios
+- PDFKit
+- xlsx-js-style
 - Chart.js
-- jsPDF
-- xlsx
 
-## Modulos
+## Estrutura do Projeto
 
-### 1. Agendamento (`src/pages/agendamento/agendamento.html`)
-- Cadastro e edicao de agendamentos.
-- Busca de paciente por CPF ou prontuario.
-- Ao selecionar paciente na busca, abrir "Novo Agendamento" preenche dados pessoais automaticamente.
-- Geracao automatica e sequencial de:
-  - `prontuarioPaciente` (nao repete)
-  - `numeroAcesso` (nao repete)
-- Separacao de CPF e prontuario (campos e validacoes independentes).
-- Validacao de duplicidade ao criar novo paciente:
-  - bloqueia duplicidade por CPF, prontuario ou numero de acesso.
-- Alteracao de status diretamente na coluna de status da tabela.
-- Correcao de duplicidade ao mudar status de Agendado para Realizado.
-- Integracao com registros:
-  - itens vindos de `Registros` podem ser vistos, editados, excluidos e ter status alterado no Agendamento.
-- Historico do paciente (modal) combinando dados de Agendamento e Registros.
-- Impressao de espelho:
-  - coluna final com icone de impressora (`🖨️`)
-  - selecao de exames pendentes por paciente
-  - impressao com dados do paciente + exames selecionados.
-- Confirmacoes e avisos por modal (sem `alert`/`confirm` nativo nas acoes principais).
-
-### 2. Registros (`src/pages/registros/registros.html`)
-- Cadastro/edicao de exames realizados.
-- Cadastro de paciente com CPF e prontuario separados.
-- Geracao automatica de prontuario e numero de acesso para novos registros.
-- Modal de confirmacao de exclusao (substituindo fluxo antigo).
-- Historico do paciente por modal.
-- Layout do historico alinhado ao padrao da pagina de Agendamento.
-- Ajustes de contraste e legibilidade no tema escuro.
-- Exportacao (TXT, PDF, Excel, backup) e importacao com opcoes de substituicao/adicao.
-
-### 3. Ocorrencias (`src/pages/ocorrencias/ocorrencias.html`)
-- Registro, busca, filtros e ordenacao de ocorrencias.
-- Exportacao/importacao.
-
-### 4. Ponto (`src/pages/ponto/ponto.html`)
-- Cadastro de funcionarios.
-- Registro de ponto por turno.
-- Relatorios e folha de ponto.
-
-### 5. Pagina inicial (`src/pages/index.html`)
-- Navegacao para todos os modulos.
-- Configuracoes de tema.
-- Exportacao/importacao centralizadas.
-- Estrutura separada em HTML/CSS/JS seguindo o padrao das outras paginas.
-
-## Temas
-- Claro
-- Escuro
-- Azul
-
-O tema e aplicado globalmente via variaveis CSS em `src/styles/common.css`.
-
-## Estrutura principal
-```txt
-src/
-  pages/
-    index.html
-    agendamento/agendamento.html
-    registros/registros.html
-    ocorrencias/ocorrencias.html
-    ponto/ponto.html
-  scripts/
-    index/index.js
-    agendamento/agendamento.js
-    registros/registros.js
-    ocorrencias/ocorrencias.js
-    ponto/ponto.js
-  styles/
-    common.css
-    index.css
-    agendamento.css
-    registros.css
-    ocorrencias.css
-    ponto.css
+```text
+Registro-de-Pacientes/
+|
+|-- main.js
+|-- preload.js
+|-- src/
+|   |-- pages/
+|   |   |-- index.html
+|   |   |-- agendamento/agendamento.html
+|   |   |-- registros/registros.html
+|   |   |-- ocorrencias/ocorrencias.html
+|   |   `-- ponto/ponto.html
+|   |-- scripts/
+|   |   |-- index/index.js
+|   |   |-- agendamento/agendamento.js
+|   |   |-- registros/registros.js
+|   |   |-- ocorrencias/ocorrencias.js
+|   |   `-- ponto/ponto.js
+|   |-- styles/
+|   `-- assets/images/
+`-- data/
+    |-- registros.json
+    |-- pacientes.json
+    |-- agendamentos.json
+    |-- medicos_agenda.json
+    |-- ocorrencias.json
+    |-- ponto.json
+    `-- config.json
 ```
 
-## Como executar
+## Como Usar
 
-### Requisitos
-- Node.js 18+
+### Pre-requisitos
+
+- Node.js 20+
 - npm
+- MongoDB Atlas ou MongoDB local
 
 ### Instalacao
+
+1. Clone o repositorio
+```bash
+git clone <URL_DO_SEU_REPOSITORIO>
+```
+
+2. Entre na pasta
+```bash
+cd Registro-de-Pacientes
+```
+
+3. Instale as dependencias
 ```bash
 npm install
 ```
 
-### Desenvolvimento
+4. Configure o `.env`
+```env
+MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/?appName=RegistroDePacientes
+MONGODB_DB=RegistroDePacientes
+```
+
+### Executar
+
 ```bash
 npm start
 ```
 
-### Build
+### Build (Windows)
+
 ```bash
 npm run build
 ```
 
-### Outros comandos
+## Persistencia Online/Offline
+
+- Online: le e grava no MongoDB.
+- Offline: salva e le em `data/*.json`.
+- Reconexao: sincroniza automaticamente dados pendentes do JSON local para o banco.
+
+## Regras de Duplicidade
+
+- Pacientes: bloqueio por CPF ou prontuario duplicado.
+- Registros: bloqueio de conflito de identidade:
+  - mesmo prontuario com CPF diferente
+  - mesmo CPF com prontuario diferente
+- Validacao considera dados do MongoDB e do backup local.
+
+## Troubleshooting
+
+### Erro SSL/TLS no MongoDB Atlas
+
+Se ocorrer `MongoServerSelectionError` com `TLSV1_ALERT_INTERNAL_ERROR`:
+
+1. Libere seu IP em `Atlas > Network Access`.
+2. Verifique credenciais em `Atlas > Database Access`.
+3. Teste em outra rede (VPN/proxy/antivirus podem interferir).
+4. Teste com `mongosh` para isolar problema de rede:
 ```bash
-npm run clean
-npm run pack
+mongosh "mongodb+srv://<usuario>:<senha>@<cluster>.mongodb.net/<db>?appName=RegistroDePacientes"
 ```
 
-## Dados e persistencia
-- Persistencia local via IPC/Electron.
-- Entidades principais:
-  - Pacientes
-  - Agendamentos
-  - Registros
-  - Ocorrencias
-  - Ponto
+### `mongosh` nao reconhecido
+
+No PowerShell:
+```powershell
+mongosh --version
+```
+
+Se nao reconhecer, ajuste o `PATH` para a pasta de instalacao do `mongosh`.
+
+## Contribuindo
+
+1. Faça um fork do projeto.
+2. Crie uma branch para sua feature (`git checkout -b feature/minha-feature`).
+3. Commit suas alteracoes (`git commit -m "feat: minha feature"`).
+4. Push para a branch (`git push origin feature/minha-feature`).
+5. Abra um Pull Request.
 
 ## Licenca
+
 ISC
+
+## Contato
+
+**Rodrigo G Fernandes**
+
+- Telefone: [+55 (83) 99925-1636](tel:+5583999251636)
+- Email: [rodrigo.guedes.f@gmail.com](mailto:rodrigo.guedes.f@gmail.com)
+- Localizacao: Joao Pessoa - PB, Brasil
+- Site: [rodrigodev.net](https://www.rodrigodev.net/)
+- LinkedIn: [rodrigogfernandes](https://www.linkedin.com/in/rodrigogfernandes/)
+- GitHub: [Rodrigogfernandes](https://github.com/Rodrigogfernandes)
+- Instagram: [@rodrigogfernandes1](https://www.instagram.com/rodrigogfernandes1/)
+
+---
+
+<div align="center">
+
+Desenvolvido por Rodrigo G Fernandes
+
+</div>

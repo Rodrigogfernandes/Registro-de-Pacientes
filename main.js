@@ -1,17 +1,34 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
 const marked = require('marked');
 const PDFDocument = require('pdfkit');
 const XLSX = require('xlsx-js-style'); // Altere esta linha
 
 let mainWindow;
 let helpWindow;
+let mongoClient;
+let mongoDb;
 
-// Adicionar nova função para gerenciar caminhos de arquivos
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
+const MONGO_DB_NAME = process.env.MONGODB_DB || 'registro_pacientes';
+const APP_DATA_COLLECTION = 'app_data';
+const DATA_TYPES = ['registros', 'pacientes', 'agendamentos', 'medicos-agenda', 'ocorrencias', 'ponto', 'config'];
+const MONGO_RECONNECT_INTERVAL_MS = 15000;
+
+let mongoOnline = false;
+let needsLocalSync = false;
+let reconnectTimer = null;
+let reconnectInProgress = false;
+
+// Adicionar nova funÃƒÂ§ÃƒÂ£o para gerenciar caminhos de arquivos
 function getDataFilePath(tipo) {
     const dataDir = path.join(__dirname, 'data');
     switch(tipo) {
+        case 'registros':
+            return path.join(dataDir, 'registros.json');
         case 'agendamentos':
             return path.join(dataDir, 'agendamentos.json');
         case 'medicos-agenda':
@@ -29,128 +46,439 @@ function getDataFilePath(tipo) {
     }
 }
 
-function ensureDataDir() {
+function getDefaultValue(tipo) {
+    if (tipo === 'ponto') {
+        return { funcionarios: [], registros: [] };
+    }
+    if (tipo === 'config') {
+        return {};
+    }
+    return [];
+}
+
+function cloneDefaultValue(tipo) {
+    const value = getDefaultValue(tipo);
+    return JSON.parse(JSON.stringify(value));
+}
+
+function parseJsonSafe(raw, fallbackValue) {
+    try {
+        return JSON.parse((raw || '').replace(/^\uFEFF/, ''));
+    } catch (error) {
+        return fallbackValue;
+    }
+}
+
+function lerDoArquivoLocal(tipo) {
+    const filePath = getDataFilePath(tipo);
+    const fallback = cloneDefaultValue(tipo);
+
+    if (!fs.existsSync(filePath)) {
+        return fallback;
+    }
+
+    const raw = fs.readFileSync(filePath, 'utf8');
+    return parseJsonSafe(raw, fallback);
+}
+
+function salvarNoArquivoLocal(tipo, payload) {
     const dataDir = path.join(__dirname, 'data');
     if (!fs.existsSync(dataDir)) {
         fs.mkdirSync(dataDir, { recursive: true });
     }
+
+    const filePath = getDataFilePath(tipo);
+    fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');
+}
+
+async function connectMongo() {
+    if (mongoDb) {
+        return mongoDb;
+    }
+
+    if (mongoClient) {
+        try {
+            await mongoClient.close();
+        } catch (error) {
+            console.warn('Falha ao fechar cliente MongoDB anterior:', error.message);
+        }
+    }
+
+    mongoClient = new MongoClient(MONGO_URI, {
+        serverSelectionTimeoutMS: 5000
+    });
+
+    await mongoClient.connect();
+    mongoDb = mongoClient.db(MONGO_DB_NAME);
+    mongoOnline = true;
+    return mongoDb;
+}
+
+function getCollection() {
+    if (!mongoDb) {
+        throw new Error('MongoDB nao inicializado');
+    }
+    return mongoDb.collection(APP_DATA_COLLECTION);
+}
+
+async function lerDoBanco(tipo) {
+    const collection = getCollection();
+    const doc = await collection.findOne({ _id: tipo });
+    if (!doc || doc.payload === undefined || doc.payload === null) {
+        return cloneDefaultValue(tipo);
+    }
+    return doc.payload;
+}
+
+async function salvarNoBanco(tipo, payload) {
+    const collection = getCollection();
+    await collection.updateOne(
+        { _id: tipo },
+        {
+            $set: {
+                payload,
+                updatedAt: new Date()
+            },
+            $setOnInsert: {
+                createdAt: new Date()
+            }
+        },
+        { upsert: true }
+    );
+}
+
+function marcarMongoOffline(contexto, error) {
+    if (mongoOnline) {
+        console.warn(`MongoDB offline (${contexto}):`, error.message);
+    }
+    mongoOnline = false;
+    mongoDb = null;
+}
+
+async function sincronizarLocalParaMongo() {
+    for (const tipo of DATA_TYPES) {
+        const payload = lerDoArquivoLocal(tipo);
+        await salvarNoBanco(tipo, payload);
+    }
+    needsLocalSync = false;
+}
+
+async function migrarJsonLegadoParaMongo() {
+    const collection = getCollection();
+
+    for (const tipo of DATA_TYPES) {
+        const existe = await collection.findOne({ _id: tipo }, { projection: { _id: 1 } });
+        if (existe) {
+            continue;
+        }
+
+        const payload = lerDoArquivoLocal(tipo);
+
+        await salvarNoBanco(tipo, payload);
+    }
+}
+
+async function lerDados(tipo) {
+    if (mongoOnline) {
+        try {
+            const payload = await lerDoBanco(tipo);
+            salvarNoArquivoLocal(tipo, payload);
+            return payload;
+        } catch (error) {
+            marcarMongoOffline(`leitura de ${tipo}`, error);
+        }
+    }
+
+    return lerDoArquivoLocal(tipo);
+}
+
+async function salvarDados(tipo, payload) {
+    salvarNoArquivoLocal(tipo, payload);
+
+    if (mongoOnline) {
+        try {
+            await salvarNoBanco(tipo, payload);
+            return;
+        } catch (error) {
+            needsLocalSync = true;
+            marcarMongoOffline(`gravacao de ${tipo}`, error);
+            return;
+        }
+    }
+
+    needsLocalSync = true;
+}
+
+async function manterConexaoMongo() {
+    if (reconnectInProgress) {
+        return;
+    }
+
+    reconnectInProgress = true;
+    try {
+        if (mongoOnline && mongoDb) {
+            await mongoDb.command({ ping: 1 });
+            return;
+        }
+
+        await connectMongo();
+        console.log('MongoDB reconectado.');
+        await migrarJsonLegadoParaMongo();
+
+        if (needsLocalSync) {
+            await sincronizarLocalParaMongo();
+            console.log('Sincronizacao local -> MongoDB concluida.');
+        }
+    } catch (error) {
+        marcarMongoOffline('reconexao automatica', error);
+    } finally {
+        reconnectInProgress = false;
+    }
+}
+
+function iniciarLoopReconexaoMongo() {
+    if (reconnectTimer) {
+        return;
+    }
+
+    reconnectTimer = setInterval(() => {
+        manterConexaoMongo().catch((error) => {
+            console.error('Erro no loop de reconexao MongoDB:', error);
+        });
+    }, MONGO_RECONNECT_INTERVAL_MS);
+}
+
+async function inicializarPersistencia() {
+    try {
+        await connectMongo();
+        await migrarJsonLegadoParaMongo();
+        mongoOnline = true;
+        return true;
+    } catch (error) {
+        marcarMongoOffline('inicializacao', error);
+        needsLocalSync = true;
+        return false;
+    } finally {
+        iniciarLoopReconexaoMongo();
+    }
+}
+
+function cpfSomenteDigitos(valor) {
+    return String(valor || '').replace(/\D/g, '');
+}
+
+function normalizarProntuario(valor) {
+    return String(valor || '').trim().toUpperCase();
+}
+
+function extrairIdentificadoresPaciente(item) {
+    const prontuario = normalizarProntuario(item?.prontuarioPaciente || item?.documentoPaciente || '');
+    const cpf = cpfSomenteDigitos(item?.cpfPaciente || '');
+    return { prontuario, cpf };
+}
+
+function extrairIdentificadoresRegistro(item) {
+    const prontuario = normalizarProntuario(item?.prontuarioPaciente || item?.documentoPaciente || item?.pacienteDocumento || '');
+    const cpf = cpfSomenteDigitos(item?.cpfPaciente || '');
+    return { prontuario, cpf };
+}
+
+function identificarPaciente(item) {
+    const { prontuario, cpf } = extrairIdentificadoresPaciente(item);
+    if (prontuario) {
+        return `prontuario:${prontuario}`;
+    }
+    if (cpf) {
+        return `cpf:${cpf}`;
+    }
+
+    const id = item?.id !== undefined && item?.id !== null ? String(item.id) : '';
+    if (id) {
+        return `id:${id}`;
+    }
+    return '';
+}
+
+function validarDuplicidadePacientes(pacientes) {
+    if (!Array.isArray(pacientes)) {
+        throw new Error('Dados de pacientes invalidos.');
+    }
+
+    const porProntuario = new Map();
+    const porCpf = new Map();
+
+    for (let i = 0; i < pacientes.length; i += 1) {
+        const paciente = pacientes[i];
+        const { prontuario, cpf } = extrairIdentificadoresPaciente(paciente);
+        const chavePaciente = identificarPaciente(paciente) || `anon:${i}`;
+
+        if (prontuario) {
+            const dono = porProntuario.get(prontuario);
+            if (dono && dono !== chavePaciente) {
+                throw new Error(`Duplicidade de paciente: prontuario ${prontuario} ja cadastrado.`);
+            }
+            porProntuario.set(prontuario, chavePaciente);
+        }
+
+        if (cpf) {
+            const dono = porCpf.get(cpf);
+            if (dono && dono !== chavePaciente) {
+                throw new Error(`Duplicidade de paciente: CPF ${cpf} ja cadastrado.`);
+            }
+            porCpf.set(cpf, chavePaciente);
+        }
+    }
+}
+
+function validarDuplicidadeRegistros(registros) {
+    if (!Array.isArray(registros)) {
+        throw new Error('Dados de registros invalidos.');
+    }
+
+    const cpfPorProntuario = new Map();
+    const prontuarioPorCpf = new Map();
+
+    for (const registro of registros) {
+        const { prontuario, cpf } = extrairIdentificadoresRegistro(registro);
+
+        if (prontuario && cpf) {
+            const cpfConhecido = cpfPorProntuario.get(prontuario);
+            if (cpfConhecido && cpfConhecido !== cpf) {
+                throw new Error(`Conflito de dados: prontuario ${prontuario} vinculado a CPF diferente.`);
+            }
+            cpfPorProntuario.set(prontuario, cpf);
+
+            const prontuarioConhecido = prontuarioPorCpf.get(cpf);
+            if (prontuarioConhecido && prontuarioConhecido !== prontuario) {
+                throw new Error(`Conflito de dados: CPF ${cpf} vinculado a prontuario diferente.`);
+            }
+            prontuarioPorCpf.set(cpf, prontuario);
+        }
+    }
+}
+
+async function obterPacientesMongoOuVazio() {
+    if (!mongoOnline) {
+        return [];
+    }
+
+    try {
+        const pacientes = await lerDoBanco('pacientes');
+        return Array.isArray(pacientes) ? pacientes : [];
+    } catch (error) {
+        marcarMongoOffline('validacao de duplicidade', error);
+        return [];
+    }
+}
+
+async function validarDuplicidadeGlobalPacientes(pacientesEntrada, registrosEntrada = null) {
+    const pacientesLocal = lerDoArquivoLocal('pacientes');
+    const pacientesMongo = await obterPacientesMongoOuVazio();
+    const pacientesBase = [
+        ...pacientesLocal,
+        ...pacientesMongo,
+        ...(Array.isArray(pacientesEntrada) ? pacientesEntrada : [])
+    ];
+
+    if (Array.isArray(registrosEntrada)) {
+        for (const registro of registrosEntrada) {
+            const { prontuario, cpf } = extrairIdentificadoresRegistro(registro);
+            if (!prontuario && !cpf) {
+                continue;
+            }
+
+            pacientesBase.push({
+                id: '',
+                prontuarioPaciente: prontuario,
+                cpfPaciente: cpf,
+                documentoPaciente: prontuario
+            });
+        }
+    }
+
+    validarDuplicidadePacientes(pacientesBase);
 }
 
 function setupIpcHandlers() {
-    const parseJsonSafe = (raw) => JSON.parse((raw || '').replace(/^\uFEFF/, ''));
-
-    ipcMain.handle('ler-registros', () => {
+    ipcMain.handle('ler-registros', async () => {
         try {
-            const filePath = getDataFilePath();
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return parseJsonSafe(data);
-            }
-            return [];
+            return await lerDados('registros');
         } catch (error) {
             console.error('Erro ao ler registros:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível ler os registros: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler os registros: ' + error.message);
             return [];
         }
     });
-
-    ipcMain.handle('salvar-registros', (event, registros) => {
+    ipcMain.handle('salvar-registros', async (event, registros) => {
         try {
-            ensureDataDir();
-            const filePath = getDataFilePath();
-            fs.writeFileSync(filePath, JSON.stringify(registros, null, 2), 'utf8');
+            validarDuplicidadeRegistros(registros);
+            await validarDuplicidadeGlobalPacientes(null, registros);
+            await salvarDados('registros', registros);
             return true;
         } catch (error) {
             console.error('Erro ao salvar registros:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar os registros: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar os registros: ' + error.message);
             return false;
         }
     });
-
-    ipcMain.handle('ler-pacientes', () => {
+    ipcMain.handle('ler-pacientes', async () => {
         try {
-            const filePath = getDataFilePath('pacientes');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return parseJsonSafe(data);
-            }
-            return [];
+            return await lerDados('pacientes');
         } catch (error) {
             console.error('Erro ao ler pacientes:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível ler os pacientes: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler os pacientes: ' + error.message);
             return [];
         }
     });
-
-    ipcMain.handle('salvar-pacientes', (event, pacientes) => {
+    ipcMain.handle('salvar-pacientes', async (event, pacientes) => {
         try {
-            ensureDataDir();
-            const filePath = getDataFilePath('pacientes');
-            fs.writeFileSync(filePath, JSON.stringify(pacientes, null, 2), 'utf8');
+            await validarDuplicidadeGlobalPacientes(pacientes);
+            await salvarDados('pacientes', pacientes);
             return true;
         } catch (error) {
             console.error('Erro ao salvar pacientes:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar os pacientes: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar os pacientes: ' + error.message);
             return false;
         }
     });
-
-    ipcMain.handle('ler-agendamentos', () => {
+    ipcMain.handle('ler-agendamentos', async () => {
         try {
-            const filePath = getDataFilePath('agendamentos');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return parseJsonSafe(data);
-            }
-            return [];
+            return await lerDados('agendamentos');
         } catch (error) {
             console.error('Erro ao ler agendamentos:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível ler os agendamentos: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler os agendamentos: ' + error.message);
             return [];
         }
     });
-
-    ipcMain.handle('salvar-agendamentos', (event, agendamentos) => {
+    ipcMain.handle('salvar-agendamentos', async (event, agendamentos) => {
         try {
-            ensureDataDir();
-            const filePath = getDataFilePath('agendamentos');
-            fs.writeFileSync(filePath, JSON.stringify(agendamentos, null, 2), 'utf8');
+            await salvarDados('agendamentos', agendamentos);
             return true;
         } catch (error) {
             console.error('Erro ao salvar agendamentos:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar os agendamentos: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar os agendamentos: ' + error.message);
             return false;
         }
     });
-
-    ipcMain.handle('ler-medicos-agenda', () => {
+    ipcMain.handle('ler-medicos-agenda', async () => {
         try {
-            const filePath = getDataFilePath('medicos-agenda');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return parseJsonSafe(data);
-            }
-            return [];
+            return await lerDados('medicos-agenda');
         } catch (error) {
-            console.error('Erro ao ler agendas mÃ©dicas:', error);
-            dialog.showErrorBox('Erro', 'NÃ£o foi possÃ­vel ler as agendas mÃ©dicas: ' + error.message);
+            console.error('Erro ao ler agendas medicas:', error);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler as agendas medicas: ' + error.message);
             return [];
         }
     });
-
-    ipcMain.handle('salvar-medicos-agenda', (event, medicosAgenda) => {
+    ipcMain.handle('salvar-medicos-agenda', async (event, medicosAgenda) => {
         try {
-            ensureDataDir();
-            const filePath = getDataFilePath('medicos-agenda');
-            fs.writeFileSync(filePath, JSON.stringify(medicosAgenda, null, 2), 'utf8');
+            await salvarDados('medicos-agenda', medicosAgenda);
             return true;
         } catch (error) {
-            console.error('Erro ao salvar agendas mÃ©dicas:', error);
-            dialog.showErrorBox('Erro', 'NÃ£o foi possÃ­vel salvar as agendas mÃ©dicas: ' + error.message);
+            console.error('Erro ao salvar agendas medicas:', error);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar as agendas medicas: ' + error.message);
             return false;
         }
     });
-
     ipcMain.handle('salvar-arquivo', async (event, {conteudo, tipo}) => {
         const options = {
             defaultPath: app.getPath('documents') + `/registros_${new Date().toISOString().slice(0,10)}.${tipo}`,
@@ -186,16 +514,16 @@ function setupIpcHandlers() {
 
             doc.pipe(stream);
 
-            // Cabeçalho
+            // CabeÃƒÂ§alho
             doc.fontSize(24)
                .font('Helvetica-Bold')
                .text('Registro de Pacientes', {align: 'center'});
             doc.moveDown();
 
-            // Data do relatório
+            // Data do relatÃƒÂ³rio
             doc.fontSize(8)
                .font('Helvetica')
-               .text(`Relatório gerado em: ${new Date().toLocaleString('pt-BR')}`, {align: 'right'});
+               .text(`RelatÃƒÂ³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, {align: 'right'});
             doc.moveDown(2);
 
             // Define larguras das colunas
@@ -208,21 +536,21 @@ function setupIpcHandlers() {
                 tecnico: 70
             };
 
-            // Cabeçalho da tabela com fundo azul claro
+            // CabeÃƒÂ§alho da tabela com fundo azul claro
             doc.font('Helvetica-Bold')
                .fontSize(10);
 
             const tableWidth = 560; // Largura total da tabela
-            const tableX = 20; // Posição X inicial da tabela
+            const tableX = 20; // PosiÃƒÂ§ÃƒÂ£o X inicial da tabela
             const headerY = doc.y;
 
-            // Cabeçalho com fundo azul claro
+            // CabeÃƒÂ§alho com fundo azul claro
             doc.fillColor('#e8eef7')
                .rect(tableX, headerY, tableWidth, 20)
                .fill()
                .fillColor('#000');
 
-            // Textos do cabeçalho
+            // Textos do cabeÃƒÂ§alho
             let currentX = tableX;
             doc.text('Nome', currentX, headerY + 5, {width: colWidths.nome});
             currentX += colWidths.nome;
@@ -234,7 +562,7 @@ function setupIpcHandlers() {
             currentX += colWidths.acesso;
             doc.text('Data/Hora', currentX, headerY + 5, {width: colWidths.dataHora});
             currentX += colWidths.dataHora;
-            doc.text('Técnico', currentX, headerY + 5, {width: colWidths.tecnico});
+            doc.text('TÃƒÂ©cnico', currentX, headerY + 5, {width: colWidths.tecnico});
 
             doc.moveDown();
 
@@ -267,7 +595,7 @@ function setupIpcHandlers() {
                 currentX += colWidths.dataHora;
                 doc.text(r.nomeTecnico || '', currentX, rowY + 5, {width: colWidths.tecnico});
 
-                // Observações adicionais
+                // ObservaÃƒÂ§ÃƒÂµes adicionais
                 if (r.observacoesAdicionais) {
                     doc.moveDown(0.7);
                     doc.fillColor('#666666')
@@ -280,14 +608,14 @@ function setupIpcHandlers() {
 
                 doc.moveDown();
 
-                // Adiciona nova página se necessário
+                // Adiciona nova pÃƒÂ¡gina se necessÃƒÂ¡rio
                 if (doc.y > 750) {
                     doc.addPage();
                     doc.fontSize(8);
                 }
             });
 
-            // Rodapé
+            // RodapÃƒÂ©
             doc.fontSize(8)
                .text(`Documento gerado automaticamente em ${new Date().toLocaleString('pt-BR')}`, 50, doc.page.height - 50, {
                    align: 'center'
@@ -383,26 +711,26 @@ function setupIpcHandlers() {
                 { v: r.observacoesAdicionais || '', s: index % 2 ? styles.celulaAlternada : styles.celula }
             ]));
 
-            // Adiciona cabeçalho
+            // Adiciona cabeÃƒÂ§alho
             dados.unshift([
                 { v: 'Nome do Paciente', s: styles.cabecalho },
                 { v: 'Modalidade', s: styles.cabecalho },
                 { v: 'Exame', s: styles.cabecalho },
-                { v: 'Número de Acesso', s: styles.cabecalho },
+                { v: 'NÃƒÂºmero de Acesso', s: styles.cabecalho },
                 { v: 'Data/Hora', s: styles.cabecalho },
-                { v: 'Técnico', s: styles.cabecalho },
-                { v: 'Observações', s: styles.cabecalho }
+                { v: 'TÃƒÂ©cnico', s: styles.cabecalho },
+                { v: 'ObservaÃƒÂ§ÃƒÂµes', s: styles.cabecalho }
             ]);
 
-            // Adiciona título
+            // Adiciona tÃƒÂ­tulo
             dados.unshift([{ v: 'Registro de Pacientes', s: styles.titulo }], 
-                         [{ v: `Relatório gerado em: ${new Date().toLocaleString('pt-BR')}`, s: styles.celula }],
+                         [{ v: `RelatÃƒÂ³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, s: styles.celula }],
                          []);
 
             // Cria a planilha
             const ws = XLSX.utils.aoa_to_sheet(dados);
 
-            // Configura mesclagem de células
+            // Configura mesclagem de cÃƒÂ©lulas
             ws['!merges'] = [
                 { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
                 { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }
@@ -413,10 +741,10 @@ function setupIpcHandlers() {
                 { wch: 60 }, // Nome do Paciente
                 { wch: 15 }, // Modalidade
                 { wch: 30 }, // Exame
-                { wch: 20 }, // Número de Acesso
+                { wch: 20 }, // NÃƒÂºmero de Acesso
                 { wch: 20 }, // Data/Hora
-                { wch: 20 }, // Técnico
-                { wch: 80 }  // Observações
+                { wch: 20 }, // TÃƒÂ©cnico
+                { wch: 80 }  // ObservaÃƒÂ§ÃƒÂµes
             ];
 
             // Adiciona a planilha ao workbook
@@ -459,115 +787,80 @@ function setupIpcHandlers() {
         }
       });
 
-    // Adicionar handlers para ocorrências
-    ipcMain.handle('ler-ocorrencias', () => {
+    // Adicionar handlers para ocorrÃƒÂªncias
+    ipcMain.handle('ler-ocorrencias', async () => {
         try {
-            const filePath = getDataFilePath('ocorrencias');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return JSON.parse(data);
-            }
-            return [];
+            return await lerDados('ocorrencias');
         } catch (error) {
-            console.error('Erro ao ler ocorrências:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível ler as ocorrências: ' + error.message);
+            console.error('Erro ao ler ocorrencias:', error);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler as ocorrencias: ' + error.message);
             return [];
         }
     });
-
-    ipcMain.handle('salvar-ocorrencias', (event, ocorrencias) => {
+    ipcMain.handle('salvar-ocorrencias', async (event, ocorrencias) => {
         try {
-            const filePath = getDataFilePath('ocorrencias');
-            fs.writeFileSync(filePath, JSON.stringify(ocorrencias, null, 2), 'utf8');
+            await salvarDados('ocorrencias', ocorrencias);
             return true;
         } catch (error) {
-            console.error('Erro ao salvar ocorrências:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar as ocorrências: ' + error.message);
+            console.error('Erro ao salvar ocorrencias:', error);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar as ocorrencias: ' + error.message);
             return false;
         }
     });
-
     // Adicionar handlers para ponto
-    ipcMain.handle('ler-ponto', () => {
+    ipcMain.handle('ler-ponto', async () => {
         try {
-            const filePath = getDataFilePath('ponto');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return JSON.parse(data);
-            }
-            // Retornar estrutura vazia se o arquivo não existir
-            return { funcionarios: [], registros: [] };
+            return await lerDados('ponto');
         } catch (error) {
             console.error('Erro ao ler ponto:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível ler os dados de ponto: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel ler os dados de ponto: ' + error.message);
             return { funcionarios: [], registros: [] };
         }
     });
-
-    ipcMain.handle('salvar-ponto', (event, dados) => {
+    ipcMain.handle('salvar-ponto', async (event, dados) => {
         try {
-            const filePath = getDataFilePath('ponto');
-            // Garantir que o diretório existe
-            const dataDir = path.dirname(filePath);
-            if (!fs.existsSync(dataDir)) {
-                fs.mkdirSync(dataDir, { recursive: true });
-            }
-            fs.writeFileSync(filePath, JSON.stringify(dados, null, 2), 'utf8');
+            await salvarDados('ponto', dados);
             return true;
         } catch (error) {
             console.error('Erro ao salvar ponto:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar os dados de ponto: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar os dados de ponto: ' + error.message);
             return false;
         }
     });
-
-    // Handler para ler configuração
-    ipcMain.handle('ler-config', () => {
+    // Handler para ler configuraÃƒÂ§ÃƒÂ£o
+    ipcMain.handle('ler-config', async () => {
         try {
-            const filePath = getDataFilePath('config');
-            if (fs.existsSync(filePath)) {
-                const data = fs.readFileSync(filePath, 'utf8');
-                return JSON.parse(data);
-            }
-            return {};
+            return await lerDados('config');
         } catch (error) {
             console.error('Erro ao ler config:', error);
             return {};
         }
     });
-
-    // Handler para salvar configuração
-    ipcMain.handle('salvar-config', (event, config) => {
+    // Handler para salvar configuraÃƒÂ§ÃƒÂ£o
+    ipcMain.handle('salvar-config', async (event, config) => {
         try {
-            const filePath = getDataFilePath('config');
-            // Garantir que o diretório existe
-            const dataDir = path.dirname(filePath);
-            if (!fs.existsSync(dataDir)) {
-                fs.mkdirSync(dataDir, { recursive: true });
-            }
-            fs.writeFileSync(filePath, JSON.stringify(config, null, 2), 'utf8');
+            await salvarDados('config', config);
             return true;
         } catch (error) {
             console.error('Erro ao salvar config:', error);
-            dialog.showErrorBox('Erro', 'Não foi possível salvar a configuração: ' + error.message);
+            dialog.showErrorBox('Erro', 'Nao foi possivel salvar a configuracao: ' + error.message);
             return false;
         }
     });
-
 }
 
 
-// Função auxiliar para formatar campos do CSV
+// FunÃƒÂ§ÃƒÂ£o auxiliar para formatar campos do CSV
 function formatCsvField(value, maxWidth) {
     if (value === null || value === undefined) {
         value = '';
     }
     value = value.toString();
     
-    // Remove quebras de linha e vírgulas
+    // Remove quebras de linha e vÃƒÂ­rgulas
     value = value.replace(/[\r\n]+/g, ' ').replace(/,/g, ';');
     
-    // Trunca o texto se exceder a largura máxima
+    // Trunca o texto se exceder a largura mÃƒÂ¡xima
     if (value.length > maxWidth) {
         value = value.substring(0, maxWidth - 3) + '...';
     }
@@ -579,12 +872,8 @@ function formatCsvField(value, maxWidth) {
 
 async function fazerBackup() {
     try {
-        const sourceFile = getDataFilePath();
-        if (!fs.existsSync(sourceFile)) {
-            throw new Error('Arquivo de registros não encontrado');
-        }
-
-        const data = fs.readFileSync(sourceFile);
+        const registros = await lerDados('registros');
+        const data = JSON.stringify(registros, null, 2);
         
         const hoje = new Date().toISOString().slice(0,10);
         const options = {
@@ -595,7 +884,7 @@ async function fazerBackup() {
 
         const { filePath } = await dialog.showSaveDialog(mainWindow, options);
         if (filePath) {
-            fs.writeFileSync(filePath, data);
+            fs.writeFileSync(filePath, data, 'utf8');
             dialog.showMessageBox(mainWindow, {
                 type: 'info',
                 title: 'Sucesso',
@@ -617,28 +906,30 @@ async function importarBackup() {
 
         const { filePaths } = await dialog.showOpenDialog(mainWindow, options);
         if (filePaths.length > 0) {
-            // Lê o arquivo de backup
+            // LÃƒÂª o arquivo de backup
             const backupData = fs.readFileSync(filePaths[0], 'utf8');
             
-            // Tenta fazer o parse para garantir que é um JSON válido
-            JSON.parse(backupData);
+            // Tenta fazer o parse para garantir que ÃƒÂ© um JSON vÃƒÂ¡lido
+            const parsedData = JSON.parse(backupData);
+            if (!Array.isArray(parsedData)) {
+                throw new Error('Formato de backup invalido. Esperado: array de registros.');
+            }
 
-            // Confirma com o usuário
+            // Confirma com o usuÃƒÂ¡rio
             const { response } = await dialog.showMessageBox(mainWindow, {
                 type: 'warning',
-                buttons: ['Sim', 'Não'],
-                title: 'Confirmação',
-                message: 'Isso substituirá todos os registros atuais. Deseja continuar?'
+                buttons: ['Sim', 'NÃƒÂ£o'],
+                title: 'ConfirmaÃƒÂ§ÃƒÂ£o',
+                message: 'Isso substituirÃƒÂ¡ todos os registros atuais. Deseja continuar?'
             });
 
             if (response === 0) { // Se clicou em 'Sim'
-                const destFile = getDataFilePath();
-                fs.writeFileSync(destFile, backupData);
+                await salvarDados('registros', parsedData);
                 
                 dialog.showMessageBox(mainWindow, {
                     type: 'info',
                     title: 'Sucesso',
-                    message: 'Backup importado com sucesso! A aplicação será reiniciada.',
+                    message: 'Backup importado com sucesso! A aplicaÃƒÂ§ÃƒÂ£o serÃƒÂ¡ reiniciada.',
                     buttons: ['OK']
                 }).then(() => {
                     app.relaunch();
@@ -656,7 +947,7 @@ function createWindow() {
         width: 1400,
         height: 1000,
         show: false,
-        title: 'Registro de Pacientes v2.0', // Adicionado título com versão
+        title: 'Registro de Pacientes v2.0', // Adicionado tÃƒÂ­tulo com versÃƒÂ£o
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -803,12 +1094,12 @@ function createHelpWindow() {
         
         // Adiciona manipulador de erro
         helpWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-            console.error('Erro ao carregar conteúdo:', errorDescription);
+            console.error('Erro ao carregar conteÃƒÂºdo:', errorDescription);
             dialog.showErrorBox('Erro', 'Falha ao carregar o manual: ' + errorDescription);
         });
     } catch (error) {
         console.error('Erro ao carregar o manual:', error);
-        dialog.showErrorBox('Erro', 'Não foi possível carregar o manual: ' + error.message);
+        dialog.showErrorBox('Erro', 'NÃƒÂ£o foi possÃƒÂ­vel carregar o manual: ' + error.message);
     }
 
     helpWindow.on('closed', () => {
@@ -816,13 +1107,29 @@ function createHelpWindow() {
     });
 }
 
-app.whenReady().then(() => {
-    setupIpcHandlers();
-    createWindow();
-    // Copiar o manual para o diretório de instalação
-    const manualSourcePath = path.join(__dirname, 'MANUAL.md');
-    const manualDestPath = path.join(__dirname, 'MANUAL.md');
-    fs.copyFileSync(manualSourcePath, manualDestPath);
+app.whenReady().then(async () => {
+    try {
+        const onlineNoInicio = await inicializarPersistencia();
+        setupIpcHandlers();
+        createWindow();
+
+        if (!onlineNoInicio) {
+            dialog.showMessageBox(mainWindow, {
+                type: 'warning',
+                title: 'Modo Offline',
+                message: 'Sem conexao com MongoDB. Os dados serao salvos localmente e sincronizados quando a conexao voltar.'
+            });
+        }
+
+        // Copiar o manual para o diretÃƒÂ³rio de instalaÃƒÂ§ÃƒÂ£o
+        const manualSourcePath = path.join(__dirname, 'MANUAL.md');
+        const manualDestPath = path.join(__dirname, 'MANUAL.md');
+        fs.copyFileSync(manualSourcePath, manualDestPath);
+    } catch (error) {
+        console.error('Falha ao iniciar a aplicacao:', error);
+        dialog.showErrorBox('Erro de Inicializacao', 'Nao foi possivel iniciar a aplicacao: ' + error.message);
+        app.quit();
+    }
 });
 
 app.on('window-all-closed', () => {
@@ -836,3 +1143,17 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+app.on('before-quit', () => {
+    if (reconnectTimer) {
+        clearInterval(reconnectTimer);
+        reconnectTimer = null;
+    }
+
+    if (mongoClient) {
+        mongoClient.close().catch((error) => {
+            console.error('Erro ao fechar conexao com MongoDB:', error);
+        });
+    }
+});
+
