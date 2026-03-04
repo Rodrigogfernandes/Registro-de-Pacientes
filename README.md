@@ -99,7 +99,7 @@ Registro-de-Pacientes/
 
 1. Clone o repositorio
 ```bash
-git clone <URL_DO_SEU_REPOSITORIO>
+git clone https://github.com/Rodrigogfernandes/Registro-de-Pacientes.git
 ```
 
 2. Entre na pasta
