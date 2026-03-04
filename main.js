@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const marked = require('marked');
@@ -22,6 +23,9 @@ let mongoOnline = false;
 let needsLocalSync = false;
 let reconnectTimer = null;
 let reconnectInProgress = false;
+let currentSession = null;
+
+const AUTH_ROLES = ['admin', 'recepcao', 'tecnico'];
 
 // Adicionar nova funÃƒÂ§ÃƒÂ£o para gerenciar caminhos de arquivos
 function getDataFilePath(tipo) {
@@ -399,7 +403,282 @@ async function validarDuplicidadeGlobalPacientes(pacientesEntrada, registrosEntr
     validarDuplicidadePacientes(pacientesBase);
 }
 
+function normalizarTextoBusca(valor) {
+    return String(valor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+function montarDocumentoBusca(item) {
+    const prontuario = normalizarProntuario(item?.prontuarioPaciente || item?.documentoPaciente || item?.pacienteDocumento || '');
+    const cpf = cpfSomenteDigitos(item?.cpfPaciente || '');
+    const numeroAcesso = String(item?.numeroAcesso || '').trim();
+    const nomePaciente = String(item?.nomePaciente || '').trim();
+    const modalidade = String(item?.modalidade || '').trim();
+    const exame = String(item?.observacoes || item?.exame || '').trim();
+    const tecnico = String(item?.nomeTecnico || '').trim();
+
+    return normalizarTextoBusca([
+        nomePaciente,
+        cpf,
+        prontuario,
+        numeroAcesso,
+        modalidade,
+        exame,
+        tecnico
+    ].join(' '));
+}
+
+function criarResultadoBusca(origem, item, rota) {
+    const prontuario = normalizarProntuario(item?.prontuarioPaciente || item?.documentoPaciente || item?.pacienteDocumento || '');
+    const cpf = cpfSomenteDigitos(item?.cpfPaciente || '');
+    const numeroAcesso = String(item?.numeroAcesso || '').trim();
+    const nomePaciente = String(item?.nomePaciente || '').trim();
+    const dataHora = String(item?.dataHoraExame || item?.dataHora || '').trim();
+    const exame = String(item?.observacoes || item?.exame || '').trim();
+
+    return {
+        origem,
+        rota,
+        id: item?.id ?? '',
+        nomePaciente,
+        cpfPaciente: cpf,
+        prontuarioPaciente: prontuario,
+        numeroAcesso,
+        dataHora,
+        exame
+    };
+}
+
+function deduplicarResultadosBusca(resultados) {
+    const vistos = new Set();
+    const filtrados = [];
+
+    for (const item of resultados) {
+        const chave = [
+            item.origem,
+            item.id,
+            item.nomePaciente,
+            item.cpfPaciente,
+            item.prontuarioPaciente,
+            item.numeroAcesso
+        ].join('|');
+
+        if (vistos.has(chave)) {
+            continue;
+        }
+
+        vistos.add(chave);
+        filtrados.push(item);
+    }
+
+    return filtrados;
+}
+
+function hashSenha(senha) {
+    return crypto.createHash('sha256').update(String(senha || '')).digest('hex');
+}
+
+function normalizarRole(role) {
+    const valor = String(role || '').trim().toLowerCase();
+    return AUTH_ROLES.includes(valor) ? valor : 'recepcao';
+}
+
+function sanitizeAuthUser(user) {
+    return {
+        id: String(user?.id || Date.now()),
+        username: String(user?.username || '').trim().toLowerCase(),
+        nome: String(user?.nome || user?.username || '').trim(),
+        role: normalizarRole(user?.role),
+        passwordHash: String(user?.passwordHash || ''),
+        active: user?.active !== false
+    };
+}
+
+async function obterConfigAuth() {
+    const config = await lerDados('config');
+    const configSeguro = (config && typeof config === 'object') ? config : {};
+    if (!Array.isArray(configSeguro.authUsers)) {
+        configSeguro.authUsers = [];
+    }
+    return configSeguro;
+}
+
+function validarListaUsuarios(users) {
+    if (!Array.isArray(users) || users.length === 0) {
+        throw new Error('Lista de usuarios invalida.');
+    }
+
+    const usernames = new Set();
+    let temAdmin = false;
+
+    for (const item of users) {
+        const user = sanitizeAuthUser(item);
+        if (!user.username) {
+            throw new Error('Usuario sem login.');
+        }
+        if (!user.passwordHash) {
+            throw new Error(`Usuario ${user.username} sem senha.`);
+        }
+        if (usernames.has(user.username)) {
+            throw new Error(`Usuario duplicado: ${user.username}.`);
+        }
+        usernames.add(user.username);
+        if (user.role === 'admin' && user.active) {
+            temAdmin = true;
+        }
+    }
+
+    if (!temAdmin) {
+        throw new Error('E necessario ao menos um usuario admin ativo.');
+    }
+}
+
+async function garantirUsuariosAuth() {
+    const config = await obterConfigAuth();
+    if (config.authUsers.length > 0) {
+        return config;
+    }
+
+    config.authUsers = [{
+        id: 'admin-default',
+        username: 'admin',
+        nome: 'Administrador',
+        role: 'admin',
+        passwordHash: hashSenha('admin123'),
+        active: true
+    }];
+    await salvarDados('config', config);
+    return config;
+}
+
+function montarSessao(user) {
+    return {
+        username: user.username,
+        nome: user.nome || user.username,
+        role: normalizarRole(user.role),
+        loginAt: new Date().toISOString()
+    };
+}
+
+function obterSessaoAtual() {
+    return currentSession ? { ...currentSession } : null;
+}
+
+function exigirAdmin() {
+    if (!currentSession) {
+        throw new Error('Sessao nao autenticada.');
+    }
+    if (currentSession.role !== 'admin') {
+        throw new Error('Permissao negada. Requer perfil admin.');
+    }
+}
+
+function normalizarTema(theme) {
+    const valor = String(theme || '').trim().toLowerCase();
+    if (valor === 'dark') return 'dark';
+    if (valor === 'light') return 'light';
+    if (valor === 'azul' || valor === 'blue' || valor === 'theme-azul') return 'blue';
+    return 'blue';
+}
+
 function setupIpcHandlers() {
+    ipcMain.handle('auth-login', async (event, credenciais) => {
+        try {
+            const username = String(credenciais?.username || '').trim().toLowerCase();
+            const senha = String(credenciais?.password || '');
+
+            if (!username || !senha) {
+                throw new Error('Informe usuario e senha.');
+            }
+
+            const config = await garantirUsuariosAuth();
+            const users = config.authUsers.map(sanitizeAuthUser);
+            const user = users.find((item) => item.username === username && item.active);
+
+            if (!user) {
+                throw new Error('Usuario ou senha invalidos.');
+            }
+
+            if (user.passwordHash !== hashSenha(senha)) {
+                throw new Error('Usuario ou senha invalidos.');
+            }
+
+            currentSession = montarSessao(user);
+            return { ok: true, session: obterSessaoAtual() };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('auth-logout', async () => {
+        currentSession = null;
+        return { ok: true };
+    });
+
+    ipcMain.handle('auth-get-session', async () => {
+        await garantirUsuariosAuth();
+        return obterSessaoAtual();
+    });
+
+    ipcMain.handle('auth-list-users', async () => {
+        try {
+            exigirAdmin();
+            const config = await garantirUsuariosAuth();
+            const users = config.authUsers.map((item) => {
+                const user = sanitizeAuthUser(item);
+                return {
+                    id: user.id,
+                    username: user.username,
+                    nome: user.nome,
+                    role: user.role,
+                    active: user.active
+                };
+            });
+            return { ok: true, users };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('auth-save-users', async (event, usersInput) => {
+        try {
+            exigirAdmin();
+            const lista = Array.isArray(usersInput) ? usersInput : [];
+            const configAtual = await garantirUsuariosAuth();
+            const usersAtuais = configAtual.authUsers.map(sanitizeAuthUser);
+
+            const users = lista.map((item) => {
+                const username = String(item?.username || '').trim().toLowerCase();
+                const existente = usersAtuais.find((u) => u.username === username);
+                const senha = String(item?.password || '');
+                const passwordHash = senha
+                    ? hashSenha(senha)
+                    : String(item?.passwordHash || existente?.passwordHash || '');
+
+                return sanitizeAuthUser({
+                    id: item?.id || existente?.id || Date.now(),
+                    username,
+                    nome: item?.nome || existente?.nome || username,
+                    role: item?.role || existente?.role || 'recepcao',
+                    passwordHash,
+                    active: item?.active !== false
+                });
+            });
+
+            validarListaUsuarios(users);
+            await salvarDados('config', {
+                ...configAtual,
+                authUsers: users
+            });
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
     ipcMain.handle('ler-registros', async () => {
         try {
             return await lerDados('registros');
@@ -477,6 +756,49 @@ function setupIpcHandlers() {
             console.error('Erro ao salvar agendas medicas:', error);
             dialog.showErrorBox('Erro', 'Nao foi possivel salvar as agendas medicas: ' + error.message);
             return false;
+        }
+    });
+    ipcMain.handle('buscar-global', async (event, termo) => {
+        try {
+            const consulta = normalizarTextoBusca(termo);
+            if (!consulta) {
+                return [];
+            }
+
+            const [pacientes, agendamentos, registros] = await Promise.all([
+                lerDados('pacientes'),
+                lerDados('agendamentos'),
+                lerDados('registros')
+            ]);
+
+            const resultados = [];
+
+            const pacientesArray = Array.isArray(pacientes) ? pacientes : [];
+            for (const item of pacientesArray) {
+                if (montarDocumentoBusca(item).includes(consulta)) {
+                    resultados.push(criarResultadoBusca('Pacientes', item, 'agendamento/agendamento.html'));
+                }
+            }
+
+            const agendamentosArray = Array.isArray(agendamentos) ? agendamentos : [];
+            for (const item of agendamentosArray) {
+                if (montarDocumentoBusca(item).includes(consulta)) {
+                    resultados.push(criarResultadoBusca('Agendamentos', item, 'agendamento/agendamento.html'));
+                }
+            }
+
+            const registrosArray = Array.isArray(registros) ? registros : [];
+            for (const item of registrosArray) {
+                if (montarDocumentoBusca(item).includes(consulta)) {
+                    resultados.push(criarResultadoBusca('Registros', item, 'registros/registros.html'));
+                }
+            }
+
+            return deduplicarResultadosBusca(resultados).slice(0, 100);
+        } catch (error) {
+            console.error('Erro na busca global:', error);
+            dialog.showErrorBox('Erro', 'Nao foi possivel realizar a busca global: ' + error.message);
+            return [];
         }
     });
     ipcMain.handle('salvar-arquivo', async (event, {conteudo, tipo}) => {
@@ -847,6 +1169,31 @@ function setupIpcHandlers() {
             return false;
         }
     });
+
+    ipcMain.handle('get-theme', async () => {
+        try {
+            const config = await lerDados('config');
+            return normalizarTema(config?.theme);
+        } catch (error) {
+            console.error('Erro ao obter tema:', error);
+            return 'blue';
+        }
+    });
+
+    ipcMain.handle('set-theme', async (event, theme) => {
+        try {
+            const temaNormalizado = normalizarTema(theme);
+            const configAtual = await lerDados('config');
+            const novoConfig = (configAtual && typeof configAtual === 'object')
+                ? { ...configAtual, theme: temaNormalizado }
+                : { theme: temaNormalizado };
+            await salvarDados('config', novoConfig);
+            return { ok: true, theme: temaNormalizado };
+        } catch (error) {
+            console.error('Erro ao salvar tema:', error);
+            return { ok: false, message: error.message };
+        }
+    });
 }
 
 
@@ -955,7 +1302,7 @@ function createWindow() {
         }
     });
 
-    mainWindow.loadFile(path.join(__dirname, 'src', 'pages', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, 'src', 'pages', 'auth', 'login.html'));
     mainWindow.maximize();
     mainWindow.show();
 

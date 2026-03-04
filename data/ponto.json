@@ -1,8 +1,33 @@
 {
   "funcionarios": [
-    
+    {
+      "id": 1772599922221,
+      "nome": "funcionario1",
+      "cpf": "99999999999",
+      "valor_hora": 30,
+      "multiplicador_extra": 1,
+      "tipo_carga_horaria": "meio",
+      "horarios": {
+        "manha_entrada": "07:00",
+        "manha_saida": "13:00",
+        "tarde_entrada": "13:00",
+        "tarde_saida": "19:00"
+      },
+      "senha": "1234"
+    }
   ],
   "registros": [
-   
+    {
+      "id": 1772601940417,
+      "funcionario_id": 1772599922221,
+      "data": "2026-03-04",
+      "turno_manha_entrada": "",
+      "turno_manha_saida": "",
+      "turno_tarde_entrada": "13:00",
+      "turno_tarde_saida": "19:00",
+      "horas_extras": 0,
+      "total_horas_trabalhadas": 6,
+      "valor_diario": 180
+    }
   ]
 }

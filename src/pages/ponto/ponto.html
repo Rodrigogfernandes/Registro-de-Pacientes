@@ -71,7 +71,6 @@
             Permitir exclusão de ponto pelo funcionario
         </label>
       </div>
-        <button id="btn-admin" class="admin-button">Administrador</button>
   </div>
 
   <!-- Modal para Adicionar Funcionário -->
@@ -230,36 +229,6 @@
 
   <div id="overlay" class="overlay" onclick="closeModal()"></div>
 
-  
-  <!-- Adicione o modal de admin -->
-  <div id="modal-admin" class="modal">
-    <h3>Acesso Administrativo</h3>
-    <form id="form-admin">
-      <input type="password" name="senha_admin" placeholder="Senha do Administrador" required>
-      <button type="submit">Acessar</button>
-      <button type="button" onclick="closeModal()">Cancelar</button>
-    </form>
-  </div>
-  
-  <!-- Modal de Opções do Administrador -->
-  <div id="modal-opcoes-admin" class="modal">
-    <h3>Opções do Administrador</h3>
-    <button onclick="openModal('alterar-senha-admin')">Alterar Senha</button>
-    <button onclick="logoutAdmin()">Logout</button>
-    <button onclick="closeModal()">Cancelar</button>
-  </div>
-  
-  <!-- Modal de Alterar Senha do Administrador -->
-  <div id="modal-alterar-senha-admin" class="modal">
-    <h3>Alterar Senha do Administrador</h3>
-    <form id="form-alterar-senha-admin">
-      <input type="password" name="senha_atual" placeholder="Senha Atual" required><br>
-      <input type="password" name="nova_senha" placeholder="Nova Senha" required><br>
-      <input type="password" name="confirmar_senha" placeholder="Confirmar Nova Senha" required><br>
-      <button type="submit">Alterar</button>
-      <button type="button" onclick="closeModal()">Cancelar</button>
-    </form>
-  </div>
   
   <!-- Modal para Mensagens -->
   <div id="modal-mensagem" class="modal">

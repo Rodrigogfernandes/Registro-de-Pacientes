@@ -310,7 +310,7 @@ tr.selected {
 }
 
 #modalExportar h2 {
-    color: 2c3e50;
+    color: var(--modal-title);
     margin-bottom: 20px;
     text-align: center;
     padding-bottom: 15px;
@@ -371,7 +371,7 @@ tr.selected {
     background-color: #28a745;
 }
 
-export-buttons button:first-child:hover {
+.export-buttons button:first-child:hover {
     background-color: #218838;
 }
 
@@ -607,83 +607,6 @@ form select:focus {
 #modalExportar.show .modal-content {
     transform: scale(1);
     opacity: 1;
-}
-
-/* Estilos para o filtro avançado */
-#filtroAvancadoContainer {
-    display: flex;
-    justify-items: right;
-    margin: 20px 0;
-}
-
-.filter-content {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    max-width: 500px
-}
-
-.filter-options {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.filter-options label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.filter-options label span {
-    font-size: 14px;
-    color: #495057;
-    font-weight: 500;
-}
-
-.filter-options select {
-    padding: 10px;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    font-size: 14px;
-    background-color: white;
-}
-
-.date-range {
-    display: flex;
-    gap: 15px;
-}
-
-.filter-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: flex-end;
-}
-
-.filter-buttons button {
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-#btnAplicarFiltroAvancado {
-    background-color: #007bff;
-    color: white;
-}
-
-#btnAplicarFiltroAvancado:hover {
-    background-color: #0056b3;
-}
-
-#btnLimparFiltroAvancado {
-    background-color: #6c757d;
-    color: white;
-}
-
-#btnLimparFiltroAvancado:hover {
-    background-color: #5a6268;
 }
 
 /* Adicione/atualize os estilos do modal de edição */
@@ -980,19 +903,19 @@ th[data-sort] {
 }
 
 th[data-sort]::after {
-    content: '▼';
+    content: '\25BC';
     font-size: 0.8em;
     margin-left: 5px;
     opacity: 0.5;
 }
 
 th[data-sort="asc"]::after {
-    content: '▼';
+    content: '\25BC';
     opacity: 1;
 }
 
 th[data-sort="desc"]::after {
-    content: '▲';
+    content: '\25B2';
     opacity: 1;
 }
 
@@ -1136,11 +1059,6 @@ body.dark-theme .export-filter label:hover {
 }
 
 body.dark-theme #exportDateFields {
-    background-color: #363650;
-    border-color: #4a4a6a;
-}
-
-body.dark-theme .filter-content {
     background-color: #363650;
     border-color: #4a4a6a;
 }
@@ -1590,16 +1508,11 @@ body.dark-theme #modalImportacao p {
 
 
 
-.search-input-container input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
-}
-
 .clear-search {
     position: absolute;
-    left: 90%;
-    /* Ajusta a posição baseado na largura do input (30%) menos um pouco */
+    left: auto;
+    right: 8px;
+    /* Botao de limpar alinhado ao final do input */
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -1741,7 +1654,7 @@ body.dark-theme #modalGrafico .dropdown-menu li:hover {
 }
 
 #modalGrafico .dropdown-button::after {
-    content: '▼';
+    content: '\25BC';
     margin-left: 10px;
     font-size: 0.8em;
 }
@@ -1996,4 +1909,100 @@ body.dark-theme .clear-search {
 body.dark-theme .clear-search:hover {
     background-color: #4a4a6a;
     transform: translateY(-50%) scale(1.1);
+}
+
+/* ============================================
+   Normalizacao de Tema (fallback consistente)
+   ============================================ */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.table-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.thead-info th {
+    background-color: var(--bg-secondary);
+}
+
+.thead-columns th {
+    background-color: var(--table-header);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.thead-columns th:hover {
+    background-color: var(--modal-button-hover);
+}
+
+td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+tr:hover {
+    background-color: var(--table-row-hover);
+}
+
+tr.selecionado,
+tr.selected {
+    background-color: var(--selected-row) !important;
+}
+
+tbody::-webkit-scrollbar-track {
+    background: var(--button-bg);
+}
+
+tbody::-webkit-scrollbar-thumb {
+    background: var(--cancel-color);
+}
+
+tbody::-webkit-scrollbar-thumb:hover {
+    background: var(--cancel-hover);
+}
+
+button {
+    background-color: var(--button-primary);
+    color: #fff;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+}
+
+.modal {
+    background-color: var(--modal-background);
+}
+
+.modal-content {
+    background-color: var(--modal-content-background);
+    color: var(--modal-text);
+    border: 1px solid var(--modal-border);
+}
+
+.modal .close {
+    color: var(--text-secondary);
+}
+
+.modal .close:hover {
+    color: var(--text-primary);
+}
+
+input,
+select,
+textarea {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 20%, transparent);
 }

@@ -1,4 +1,20 @@
 ﻿const { ipcRenderer } = require('electron');
+async function garantirAcesso(rolesPermitidos) {
+    const session = await ipcRenderer.invoke('auth-get-session');
+    if (!session) {
+        window.location.href = '../auth/login.html';
+        throw new Error('Sessao nao autenticada');
+    }
+
+    const role = String(session.role || '').toLowerCase();
+    if (Array.isArray(rolesPermitidos) && rolesPermitidos.length > 0 && !rolesPermitidos.includes(role)) {
+        window.location.href = '../index.html';
+        throw new Error('Sem permissao para este modulo');
+    }
+
+    return session;
+}
+
 let registros = [];
 let pacientes = [];
 let registroSelecionado = null;
@@ -6,6 +22,7 @@ let registrosFiltrados = [];
 let registrosPorPagina = 50;
 let paginaAtual = 1;
 let registroAtualId = null;
+let resizeTimer = null;
 
 // Adicionar estas variÃ¡veis no inÃ­cio do arquivo
  // NÃºmero de registros exibidos inicialmente
@@ -57,12 +74,14 @@ loadTheme();
 
 // FunÃ§Ãµes de InicializaÃ§Ã£o
 document.addEventListener('DOMContentLoaded', async () => {
+    await garantirAcesso(['admin', 'recepcao', 'tecnico']);
     // Carregar tema novamente para garantir
     loadTheme();
     
     await carregarPacientes();
     await carregarRegistros();
     setupEventListeners();
+    registrosPorPagina = calcularRegistrosPorPagina();
     atualizarTabela();
     atualizarBotoesAcao(); // Adicione esta linha para desabilitar os botÃµes ao iniciar
 });
@@ -132,6 +151,15 @@ function setupEventListeners() {
     const prontuarioInput = document.getElementById('prontuarioPaciente');
     if (cpfInput) cpfInput.addEventListener('blur', preencherPacientePorCpfOuProntuario);
     if (prontuarioInput) prontuarioInput.addEventListener('blur', preencherPacientePorCpfOuProntuario);
+
+    window.addEventListener('resize', () => {
+        if (resizeTimer) {
+            clearTimeout(resizeTimer);
+        }
+        resizeTimer = setTimeout(() => {
+            ajustarPaginacaoResponsiva();
+        }, 150);
+    });
 }
 
 // Adicione estes listeners logo apÃ³s a definiÃ§Ã£o dos outros event listeners
@@ -388,6 +416,23 @@ window.fecharModal = fecharModal;
 window.limparCampos = limparCampos;
 
 // FunÃ§Ãµes de UI
+function calcularRegistrosPorPagina() {
+    const alturaViewport = window.innerHeight || 900;
+    const alturaUtil = Math.max(320, alturaViewport - 360);
+    const linhasEstimadas = Math.floor(alturaUtil / 42);
+    return Math.max(12, Math.min(80, linhasEstimadas));
+}
+
+function ajustarPaginacaoResponsiva() {
+    const novoValor = calcularRegistrosPorPagina();
+    if (novoValor === registrosPorPagina) {
+        return;
+    }
+    registrosPorPagina = novoValor;
+    paginaAtual = 1;
+    atualizarTabela();
+}
+
 function atualizarTabela() {
     registrosAtuais = registrosFiltrados;
     const tbody = document.getElementById('listaExames');
@@ -399,16 +444,18 @@ function atualizarTabela() {
     tbody.innerHTML = ''; // Limpa a tabela
     
     const inicio = 0;
-    const fim = Math.min(registrosPorPagina, registrosAtuais.length);
+    const fim = Math.min(registrosPorPagina * paginaAtual, registrosAtuais.length);
     
+    const fragment = document.createDocumentFragment();
     for (let i = inicio; i < fim; i++) {
         const registro = registrosAtuais[i];
         const tr = criarLinhaTabela(registro);
         if (registroSelecionado && registro.id === registroSelecionado.id) {
             tr.classList.add('selected');
         }
-        tbody.appendChild(tr);
+        fragment.appendChild(tr);
     }
+    tbody.appendChild(fragment);
 
     atualizarBotaoCarregarMais(registrosAtuais.length);
     atualizarInfoRegistros(registrosAtuais.length);
@@ -435,25 +482,14 @@ function atualizarBotaoCarregarMais(totalRegistros) {
 
 // Adicionar funÃ§Ã£o para carregar mais registros
 function carregarMaisRegistros() {
-    const tbody = document.getElementById('listaExames');
-    const inicio = registrosPorPagina * paginaAtual;
-    const fim = Math.min(inicio + registrosPorPagina, registrosAtuais.length);
-    
-    for (let i = inicio; i < fim; i++) {
-        const registro = registrosAtuais[i];
-        const tr = criarLinhaTabela(registro);
-        tbody.appendChild(tr);
-    }
-    
     paginaAtual++;
-    atualizarBotaoCarregarMais(registrosAtuais.length);
-    atualizarInfoRegistros(registrosAtuais.length);
+    atualizarTabela();
 }
 
 // Adicionar reset da paginaÃ§Ã£o quando aplicar filtros ou fazer pesquisa
 function resetPaginacao() {
     paginaAtual = 1;
-    registrosPorPagina = 20;
+    registrosPorPagina = calcularRegistrosPorPagina();
 }
 
 // FunÃ§Ãµes de Modal
@@ -808,13 +844,13 @@ function criarLinhaTabela(registro) {
         ? `${registro.nomePaciente || ''} (${documentoExibicao})`
         : (registro.nomePaciente || '');
     tr.innerHTML = `
-        <td>${nomeComDocumento}</td>
-        <td>${registro.modalidade || ''}</td>
-        <td>${registro.observacoes || ''}</td>
-        <td>${registro.numeroAcesso || ''}</td>
-        <td>${formatarData(registro.dataHoraExame) || ''}</td>
-        <td>${registro.nomeTecnico || ''}</td>
-        <td class="cell-with-obs">${registro.observacoesAdicionais ? '<span class="obs-icon">📝</span>' : ''}</td>
+        <td data-label="Paciente">${nomeComDocumento}</td>
+        <td data-label="Modalidade">${registro.modalidade || ''}</td>
+        <td data-label="Exame">${registro.observacoes || ''}</td>
+        <td data-label="No Acesso">${registro.numeroAcesso || ''}</td>
+        <td data-label="Data/Hora">${formatarData(registro.dataHoraExame) || ''}</td>
+        <td data-label="Tecnico">${registro.nomeTecnico || ''}</td>
+        <td data-label="Obs" class="cell-with-obs">${registro.observacoesAdicionais ? '<span class="obs-icon">📝</span>' : ''}</td>
     `;
     return tr;
 }
@@ -1254,9 +1290,9 @@ function atualizarGrafico() {
             return passaAno && passaModalidade;
         });
         
-        // Agrupar por mÃªs
+        // Agrupar por mes
         const dadosPorMes = {};
-        const meses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 
+        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         
         registrosFiltrados.forEach(registro => {
@@ -1363,8 +1399,8 @@ function atualizarRelatorio(registrosFiltrados, dadosPorMes) {
         html += '</ul>';
     }
     
-    html += '<p><strong>Por MÃªs:</strong></p><ul>';
-    const meses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 
+    html += '<p><strong>Por Mês:</strong></p><ul>';
+    const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
                    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     
     meses.forEach(mes => {
@@ -1410,7 +1446,7 @@ async function exportarGraficoPDF() {
             const modalidade = registro.modalidade || 'Não especificado';
             totalPorModalidade[modalidade] = (totalPorModalidade[modalidade] || 0) + 1;
             
-            // Por mÃªs
+            // Por mes
             const data = new Date(registro.dataHoraExame);
             if (!isNaN(data.getTime())) {
                 const mes = data.getMonth();
@@ -1485,16 +1521,16 @@ async function exportarGraficoPDF() {
             });
         }
         
-        // Por mÃªs
+        // Por mês
         yPos += 3;
         pdf.setFont(undefined, 'bold');
-        pdf.text('Por MÃªs:', 20, yPos);
+        pdf.text('Por Mês:', 20, yPos);
         yPos += 7;
         pdf.setFont(undefined, 'normal');
         
         meses.forEach(mes => {
             const quantidade = dadosPorMes[mes] || 0;
-            pdf.text(`  â€¢ ${mes}: ${quantidade}`, 25, yPos);
+            pdf.text(`  • ${mes}: ${quantidade}`, 25, yPos);
             yPos += 6;
             
             // Quebra de pÃ¡gina se necessÃ¡rio

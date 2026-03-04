@@ -1,7 +1,33 @@
 {
   "admin_password": "123456",
   "contadores": {
-    "prontuarioAtual": 0,
-    "numeroAcessoAtual": 89742983474
-  }
+    "prontuarioAtual": 5,
+    "numeroAcessoAtual": 89742983475
+  },
+  "authUsers": [
+    {
+      "id": "admin-default",
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin",
+      "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "active": true
+    },
+    {
+      "id": "1772600454165-d8993a",
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes",
+      "role": "recepcao",
+      "passwordHash": "434f4d14c1eb231306b51aaa160c021b63670ac6ca67fb8e403f4500983dd1e4",
+      "active": true
+    },
+    {
+      "id": "1772600505387-8d3474",
+      "username": "ronny",
+      "nome": "Ronny Guedes",
+      "role": "tecnico",
+      "passwordHash": "434f4d14c1eb231306b51aaa160c021b63670ac6ca67fb8e403f4500983dd1e4",
+      "active": true
+    }
+  ]
 }

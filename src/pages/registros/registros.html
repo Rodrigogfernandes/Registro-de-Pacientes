@@ -119,48 +119,49 @@
                 </div>
             </div>
 
-            <div id="filtroAvancadoContainer" style="display: none;">
-                <div class="filter-content">
-                    <div class="filter-options">
-                        <label>
-                            <span>Modalidade:</span>
-                            <select id="filtroModalidade">
-                                <option value="">Todas as Modalidades</option>
-                                <option value="Raiox">RX</option>
-                                <option value="Tomografia">TC</option>
-                                <option value="Ressonancia">RM</option>
-                                <option value="Densitometria">DO</option>
-                                <option value="Mamografia">MG</option>
-                            </select>
-                        </label>
+            <div class="search-filters-inline">
+                <div id="filtroAvancadoContainer" style="display: none;">
+                    <div class="afv-panel">
+                        <div class="afv-grid">
+                            <label class="afv-field afv-mod">
+                                <span class="afv-label">Modalidade</span>
+                                <select id="filtroModalidade">
+                                    <option value="">Todas as Modalidades</option>
+                                    <option value="Raiox">RX</option>
+                                    <option value="Tomografia">TC</option>
+                                    <option value="Ressonancia">RM</option>
+                                    <option value="Densitometria">DO</option>
+                                    <option value="Mamografia">MG</option>
+                                </select>
+                            </label>
 
-                        <div class="date-range">
-                            <div class="date-field">
-                                <label>Data e Hora Inicial:</label>
-                                <div class="datetime-input">
-                                    <input type="date" id="dataInicio">
-                                    <input type="time" id="horaInicio" value="00:00">
+                            <div class="afv-range">
+                                <div class="afv-field">
+                                    <label class="afv-label">Data e Hora Inicial</label>
+                                    <div class="afv-datetime">
+                                        <input type="date" id="dataInicio">
+                                        <input type="time" id="horaInicio" value="00:00">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="date-field">
-                                <label>Data e Hora Final:</label>
-                                <div class="datetime-input">
-                                    <input type="date" id="dataFim">
-                                    <input type="time" id="horaFim" value="23:59">
+                                <div class="afv-field">
+                                    <label class="afv-label">Data e Hora Final</label>
+                                    <div class="afv-datetime">
+                                        <input type="date" id="dataFim">
+                                        <input type="time" id="horaFim" value="23:59">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="filter-buttons">
-                        <button type="button" id="btnAplicarFiltroAvancado">Aplicar Filtro</button>
-                        <button type="button" id="btnLimparFiltroAvancado">Limpar Filtro</button>
+                        <div class="afv-actions">
+                            <button type="button" id="btnAplicarFiltroAvancado">Aplicar Filtro</button>
+                            <button type="button" id="btnLimparFiltroAvancado">Limpar Filtro</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <table>
-
                 <thead class="thead-info">
                     <tr>
                         <th colspan="2" style="text-align: left;">
@@ -172,8 +173,8 @@
                         </th>
                         <th colspan="5" id="infoRegistros"
                             style="text-align: right; padding-right: 10px; font-weight: 600; font-size: .75rem;">
-                            Exibindo 0 de 0 registros</th>
-
+                            Exibindo 0 de 0 registros
+                        </th>
                     </tr>
                 </thead>
                 <thead class="thead-columns">

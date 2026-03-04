@@ -42,5 +42,16 @@
     "enderecoPaciente": "",
     "planoPaciente": "GEAP",
     "dataNascimentoPaciente": "1988-01-21"
+  },
+  {
+    "id": "1772595528585",
+    "nomePaciente": "Paciente teste mongodb",
+    "cpfPaciente": "98765432123",
+    "prontuarioPaciente": "P000005",
+    "documentoPaciente": "P000005",
+    "telefonePaciente": "83988036721",
+    "enderecoPaciente": "Rua teste de campo endereço",
+    "planoPaciente": "UNIMED",
+    "dataNascimentoPaciente": "1988-01-21"
   }
 ]

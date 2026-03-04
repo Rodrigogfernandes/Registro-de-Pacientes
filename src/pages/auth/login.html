@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Registro de Pacientes</title>
+    <link rel="stylesheet" href="../../styles/auth.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+</head>
+<body>
+    <main class="auth-shell">
+        <section class="auth-card">
+            <h1>Registro de Pacientes</h1>
+            <p class="auth-subtitle">Faça login para continuar</p>
+
+            <form id="loginForm" class="auth-form">
+                <label for="username">Usuário</label>
+                <input id="username" name="username" type="text" autocomplete="username" required>
+
+                <label for="password">Senha</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+                <button type="submit">Entrar</button>
+            </form>
+
+            <p id="loginMessage" class="auth-message">Use suas credenciais de acesso.</p>
+        </section>
+    </main>
+
+    <script src="../../scripts/auth/login.js"></script>
+</body>
+</html>

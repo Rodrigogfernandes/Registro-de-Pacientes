@@ -44,6 +44,10 @@
                     <img src="../assets/images/import.png" alt="Importar" width="20">
                     Importar
                 </button>
+                <button id="manageUsersBtn" class="config-button" onclick="openUsersModal()">
+                    <img src="../assets/images/config.png" alt="Usuários" width="20">
+                    Usuários
+                </button>
             </div>
         </div>
     </div>
@@ -103,32 +107,98 @@
         </div>
     </div>
 
+    <div id="searchModal" class="export-modal">
+        <div class="export-modal-content search-modal-content">
+            <span class="close" onclick="closeSearchModal()">&times;</span>
+            <h2>Busca Global</h2>
+            <div class="search-controls">
+                <input type="search" id="globalSearchInput" placeholder="Nome, CPF, prontuário ou número de acesso">
+                <button class="export-button" onclick="runGlobalSearch()">Buscar</button>
+            </div>
+            <p id="globalSearchStatus" class="search-status">Digite um termo para pesquisar.</p>
+            <div id="globalSearchResults" class="search-results"></div>
+        </div>
+    </div>
+
+    <div id="usersModal" class="export-modal">
+        <div class="export-modal-content users-modal-content">
+            <span class="close" onclick="closeUsersModal()">&times;</span>
+            <h2>Gestão de Usuários</h2>
+            <div class="users-layout">
+                <section class="users-panel users-panel-list">
+                    <p id="usersStatus" class="search-status">Carregando usuários...</p>
+                    <div id="usersList" class="users-list"></div>
+                </section>
+
+                <section class="users-panel users-panel-form">
+                    <form id="userForm" class="users-form">
+                        <input type="hidden" id="userId">
+
+                        <label for="userUsername">Usuário</label>
+                        <input type="text" id="userUsername" required>
+
+                        <label for="userNome">Nome</label>
+                        <input type="text" id="userNome" required>
+
+                        <label for="userRole">Perfil</label>
+                        <select id="userRole" required>
+                            <option value="admin">admin</option>
+                            <option value="recepcao">recepcao</option>
+                            <option value="tecnico">tecnico</option>
+                        </select>
+
+                        <label for="userPassword">Senha (somente para criar/alterar)</label>
+                        <input type="password" id="userPassword" autocomplete="new-password">
+
+                        <label class="users-checkbox">
+                            <input type="checkbox" id="userActive" checked>
+                            Usuário ativo
+                        </label>
+
+                        <div class="users-form-actions">
+                            <button type="button" class="export-button" onclick="resetUserForm()">Novo</button>
+                            <button type="submit" class="export-button">Salvar</button>
+                            <button type="button" id="deleteUserBtn" class="export-button users-danger" onclick="deleteSelectedUser()">Excluir</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
     <div class="table-container">
         <h1>Bem-vindo!</h1>
         <hr>
+        <div class="session-bar">
+            <span id="sessionInfo">Usuário não autenticado</span>
+            <button id="logoutBtn" class="global-search-button">Sair</button>
+        </div>
+        <div class="home-actions">
+            <button class="global-search-button" onclick="openSearchModal()">Busca Global</button>
+        </div>
         <div class="button-group">
-            <div class="button-group1" onclick="window.location.href='agendamento/agendamento.html'">
+            <div class="button-group1" data-module="agendamento" data-route="agendamento/agendamento.html">
                 <div class="icon-container">
                     <img src="../assets/images/agendamento.png" alt="Agendamentos">
                 </div>
                 <div class="button-label">Agendamento</div>
             </div>
 
-            <div class="button-group1" onclick="window.location.href='registros/registros.html'">
+            <div class="button-group1" data-module="registros" data-route="registros/registros.html">
                 <div class="icon-container">
                     <img src="../assets/images/registro.png" alt="Registros">
                 </div>
                 <div class="button-label">Registros</div>
             </div>
 
-            <div class="button-group1" onclick="window.location.href='ocorrencias/ocorrencias.html'">
+            <div class="button-group1" data-module="ocorrencias" data-route="ocorrencias/ocorrencias.html">
                 <div class="icon-container">
                     <img src="../assets/images/ocorrencia.png" alt="Ocorrências">
                 </div>
                 <div class="button-label">Livro de Ocorrências</div>
             </div>
 
-            <div class="button-group1" onclick="window.location.href='ponto/ponto.html'">
+            <div class="button-group1" data-module="ponto" data-route="ponto/ponto.html">
                 <div class="icon-container">
                     <img src="../assets/images/ponto.png" alt="Ponto">
                 </div>

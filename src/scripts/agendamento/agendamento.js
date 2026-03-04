@@ -1,5 +1,21 @@
 ﻿const { ipcRenderer } = require('electron');
 
+async function garantirAcesso(rolesPermitidos) {
+    const session = await ipcRenderer.invoke('auth-get-session');
+    if (!session) {
+        window.location.href = '../auth/login.html';
+        throw new Error('Sessao nao autenticada');
+    }
+
+    const role = String(session.role || '').toLowerCase();
+    if (Array.isArray(rolesPermitidos) && rolesPermitidos.length > 0 && !rolesPermitidos.includes(role)) {
+        window.location.href = '../index.html';
+        throw new Error('Sem permissao para este modulo');
+    }
+
+    return session;
+}
+
 const DEFAULT_MEDICOS_AGENDA = [
     {
         id: 'ronny',
@@ -2262,6 +2278,7 @@ window.excluirAgendaMedico = async function() {
 ipcRenderer.on('change-theme', (event, theme) => setTheme(theme));
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await garantirAcesso(['admin', 'recepcao']);
     carregarTema();
     await carregarMedicosAgenda();
     popularSelectMedicos();

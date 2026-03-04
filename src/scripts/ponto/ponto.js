@@ -1,12 +1,27 @@
 // Importar módulos do Node.js
 const { ipcRenderer } = require('electron');
 
+async function garantirAcesso(rolesPermitidos) {
+    const session = await ipcRenderer.invoke('auth-get-session');
+    if (!session) {
+        window.location.href = '../auth/login.html';
+        throw new Error('Sessao nao autenticada');
+    }
+
+    const role = String(session.role || '').toLowerCase();
+    if (Array.isArray(rolesPermitidos) && rolesPermitidos.length > 0 && !rolesPermitidos.includes(role)) {
+        window.location.href = '../index.html';
+        throw new Error('Sem permissao para este modulo');
+    }
+
+    return session;
+}
 // Variáveis globais
 let funcionarios = [];
 let registros = [];
 let funcionarioSelecionado = null;
 let adminMode = false;
-let ADMIN_PASSWORD = '123456'; // Senha padrão do administrador
+let currentSession = null;
 
 // Função para aplicar tema (definida no início para garantir que seja executada primeiro)
 function setTheme(theme) {
@@ -243,7 +258,7 @@ function selecionarFuncionario(id) {
         const senhaDigitada = form.senha.value;
         
         // Verificar senha do funcionário ou do admin
-        if (senhaDigitada === funcionario.senha || senhaDigitada === ADMIN_PASSWORD) {
+        if (senhaDigitada === funcionario.senha) {
             funcionarioSelecionado = id;
             document.getElementById('titulo-registro-ponto').textContent = `Registros de ${funcionario.nome}`;
             document.getElementById('btn-bater-ponto').style.display = 'inline-block';
@@ -858,7 +873,6 @@ document.getElementById('form-alterar-senha').addEventListener('submit', functio
 
 // Nova função para inicializar/reinicializar a página
 async function inicializarPagina() {
-  await carregarConfiguracao(); // Carregar configuração primeiro
   // Limpar seleções e estados
   funcionarioSelecionado = null;
   
@@ -877,76 +891,26 @@ async function inicializarPagina() {
   // Configurar mês padrão
   setDefaultMonth();
   
-  adminMode = false;
+  adminMode = String(currentSession?.role || '').toLowerCase() === 'admin';
   const adminIndicator = document.querySelector('.admin-mode');
-  if (adminIndicator) {
+  if (adminIndicator && !adminMode) {
     adminIndicator.remove();
   }
+  aplicarUIAdminDaSessao();
 }
 
 // Adicione após a função configurarEventListeners
-function configurarAdminMode() {
-    const btnAdmin = document.getElementById('btn-admin');
-    const formAdmin = document.getElementById('form-admin');
+function aplicarUIAdminDaSessao() {
     const btnAddFuncionario = document.getElementById('btn-add-funcionario');
     const allowDeleteControl = document.querySelector('.allow-delete-control');
 
-    btnAdmin.onclick = () => {
-        if (adminMode) {
-            openModal('opcoes-admin');
-        } else {
-            openModal('admin');
-        }
-    };
-
-    formAdmin.onsubmit = function(e) {
-        e.preventDefault();
-        const senhaDigitada = this.senha_admin.value;
-
-        if (senhaDigitada === ADMIN_PASSWORD) {
-            adminMode = true;
-            closeModal();
-            btnAddFuncionario.style.display = 'block';
-            
-            // Mostrar checkbox de controle de exclusão
-            if (allowDeleteControl) {
-                allowDeleteControl.classList.add('visible');
-            }
-            
-            const adminIndicator = document.createElement('div');
-            adminIndicator.className = 'admin-mode';
-            adminIndicator.textContent = 'Modo Administrador';
-            document.body.appendChild(adminIndicator);
-            
-            updateUI();
-            showModalMessage('Modo administrador ativado');
-        } else {
-            showModalMessage('Senha incorreta!');
-        }
-        this.reset();
-    };
-}
-
-// Função de logout do administrador
-function logoutAdmin() {
-    adminMode = false;
-    const adminIndicator = document.querySelector('.admin-mode');
-    const allowDeleteControl = document.querySelector('.allow-delete-control');
-    
-    if (adminIndicator) {
-        adminIndicator.remove();
-    }
-    if (allowDeleteControl) {
-        allowDeleteControl.classList.remove('visible');
-    }
-    
-    const btnAddFuncionario = document.getElementById('btn-add-funcionario');
     if (btnAddFuncionario) {
-        btnAddFuncionario.style.display = 'none';
+        btnAddFuncionario.style.display = adminMode ? 'block' : 'none';
     }
-    
-    closeModal();
-    inicializarPagina();
+
+    if (allowDeleteControl) {
+        allowDeleteControl.classList.toggle('visible', adminMode);
+    }
 }
 
 // Modificar a função de abrir modal de exportação
@@ -1108,11 +1072,11 @@ try {
 
 // Garantir que a função seja chamada quando a página carregar
 document.addEventListener('DOMContentLoaded', async () => {
+    currentSession = await garantirAcesso(['admin', 'recepcao', 'tecnico']);
     // Carregar tema novamente para garantir
     loadTheme();
     
     await inicializarPagina();
-    configurarAdminMode();
     configurarEventListeners();
     
     // Adicionar listener para o campo de mês para garantir que o filtro seja aplicado
@@ -1162,56 +1126,6 @@ function logoutFuncionario() {
     filtrarPorMes();
 }
 
-// Modificar a função de alterar senha do administrador
-document.getElementById('form-alterar-senha-admin').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const senhaAtual = this.senha_atual.value;
-    const novaSenha = this.nova_senha.value;
-    const confirmarSenha = this.confirmar_senha.value;
-    
-    if (senhaAtual !== ADMIN_PASSWORD) {
-        showModalMessage('Senha atual incorreta!');
-        return;
-    }
-    
-    if (novaSenha !== confirmarSenha) {
-        showModalMessage('As senhas não coincidem!');
-        return;
-    }
-    
-    // Atualizar a senha do administrador
-    ADMIN_PASSWORD = novaSenha;
-    
-    // Salvar a nova senha no arquivo de configuração
-    try {
-        const config = { admin_password: ADMIN_PASSWORD };
-        const sucesso = await ipcRenderer.invoke('salvar-config', config);
-        if (sucesso) {
-            closeModal();
-            this.reset();
-            showModalMessage('Senha do administrador alterada com sucesso!');
-        } else {
-            showModalMessage('Erro ao salvar nova senha');
-        }
-    } catch (error) {
-        console.error('Erro ao salvar nova senha:', error);
-        showModalMessage('Erro ao salvar nova senha');
-    }
-});
-
-// Adicionar função para carregar senha salva ao iniciar
-async function carregarConfiguracao() {
-    try {
-        const config = await ipcRenderer.invoke('ler-config');
-        if (config && config.admin_password) {
-            ADMIN_PASSWORD = config.admin_password;
-        }
-    } catch (error) {
-        console.error('Erro ao carregar configuração:', error);
-        // Manter senha padrão em caso de erro
-    }
-}
 
 // Modificar a função de excluir registro
 function excluirRegistro(registro) {
@@ -1245,3 +1159,4 @@ function confirmarExclusao(registroId) {
     closeModal();
     filtrarPorMes();
 }
+
