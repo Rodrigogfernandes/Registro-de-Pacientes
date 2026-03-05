@@ -21,6 +21,50 @@ let ocorrenciasFiltradas = [];
 let registrosPorPagina = 50;
 let paginaAtual = 1;
 let registroAtualId = null;
+let dataVersionOcorrencias = 0;
+
+function toIsoDateOnly(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+}
+
+function normalizarPrioridade(valor) {
+    const v = String(valor || '').trim().toLowerCase();
+    if (v === 'alta') return 'Alta';
+    if (v === 'baixa') return 'Baixa';
+    return 'Media';
+}
+
+function calcularPrazoEfetivo(ocorrencia) {
+    const prazoDireto = toIsoDateOnly(ocorrencia?.prazo || '');
+    if (prazoDireto) return prazoDireto;
+    const dataBase = toIsoDateOnly(ocorrencia?.data || '');
+    if (!dataBase) return '';
+
+    const base = new Date(`${dataBase}T00:00:00`);
+    if (Number.isNaN(base.getTime())) return '';
+    const prioridade = normalizarPrioridade(ocorrencia?.prioridade);
+    const dias = prioridade === 'Alta' ? 1 : (prioridade === 'Baixa' ? 5 : 3);
+    base.setDate(base.getDate() + dias);
+    return base.toISOString().slice(0, 10);
+}
+
+function calcularSla(ocorrencia) {
+    const statusNorm = obterStatusNormalizado(ocorrencia?.status);
+    if (statusNorm === 'concluido') return 'Concluida';
+    const prazo = calcularPrazoEfetivo(ocorrencia);
+    if (!prazo) return 'Sem prazo';
+
+    const hoje = new Date();
+    const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    const hojeIso = hojeLocal.toISOString().slice(0, 10);
+    if (prazo < hojeIso) return 'Atrasada';
+    if (prazo === hojeIso) return 'Vence hoje';
+    return 'No prazo';
+}
 
 // Função para aplicar tema (definida no início para garantir que seja executada primeiro)
 function setTheme(theme) {
@@ -74,18 +118,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     await carregarOcorrencias();
     setupEventListeners();
+    aplicarFiltroInicialPorUrl();
     atualizarTabela();
     atualizarBotoesAcao();
 });
 
+function obterStatusNormalizado(valor) {
+    return String(valor || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+function aplicarFiltroInicialPorUrl() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const pendenciaId = String(params.get('pendencia_id') || '').trim();
+        if (!pendenciaId) return;
+
+        const alvo = ocorrencias.find((o) => String(o?.id ?? '') === pendenciaId);
+        if (!alvo) return;
+
+        const pendentes = ocorrencias.filter((o) => obterStatusNormalizado(o?.status) !== 'concluido');
+        ocorrenciasFiltradas = pendentes.length > 0 ? pendentes : [...ocorrencias];
+        paginaAtual = 1;
+        ocorrenciaSelecionada = alvo;
+
+        const inputPesquisa = document.getElementById('inputPesquisa');
+        if (inputPesquisa) {
+            inputPesquisa.value = String(alvo.descricao || alvo.responsavel || '').slice(0, 80);
+        }
+    } catch (error) {
+        console.error('Erro ao aplicar filtro inicial por URL:', error);
+    }
+}
+
 async function carregarOcorrencias() {
     ocorrencias = await ipcRenderer.invoke('ler-ocorrencias');
+    ocorrencias = (Array.isArray(ocorrencias) ? ocorrencias : []).map((item) => ({
+        ...item,
+        prioridade: normalizarPrioridade(item?.prioridade),
+        prazo: toIsoDateOnly(item?.prazo || '')
+    }));
+    const v = await ipcRenderer.invoke('data-get-version', 'ocorrencias');
+    dataVersionOcorrencias = Number(v?.version || 0);
     ocorrenciasFiltradas = [...ocorrencias];
     atualizarTabela();
 }
 
 async function salvarOcorrencias() {
-    await ipcRenderer.invoke('salvar-ocorrencias', ocorrencias);
+    const ok = await ipcRenderer.invoke('salvar-ocorrencias', {
+        data: ocorrencias,
+        expectedVersion: dataVersionOcorrencias,
+        detalhe: 'Atualizacao via modulo de ocorrencias'
+    });
+    if (!ok) {
+        throw new Error('Falha ao salvar ocorrências (possível conflito).');
+    }
+    const v = await ipcRenderer.invoke('data-get-version', 'ocorrencias');
+    dataVersionOcorrencias = Number(v?.version || dataVersionOcorrencias);
 }
 
 // Funções para o Modal de Alerta
@@ -102,7 +194,7 @@ function fecharModalAlerta() {
     setTimeout(() => modal.style.display = 'none', 300);
 }
 
-window.salvarOcorrencia = function(event) {
+window.salvarOcorrencia = async function(event) {
     event.preventDefault(); // Previne o envio do formulário
     const form = document.getElementById('formOcorrencia');
     
@@ -117,6 +209,8 @@ window.salvarOcorrencia = function(event) {
         turno: form.turno.value,
         descricao: form.descricao.value,
         responsavel: form.responsavel.value,
+        prazo: toIsoDateOnly(form.prazo?.value || ''),
+        prioridade: normalizarPrioridade(form.prioridade?.value || 'Media'),
         status: form.status.value
     };
 
@@ -127,7 +221,13 @@ window.salvarOcorrencia = function(event) {
         ocorrencias.unshift(novaOcorrencia);
     }
 
-    salvarOcorrencias();
+    try {
+        await salvarOcorrencias();
+    } catch (error) {
+        mostrarAlerta(error.message || 'Erro ao salvar ocorrência.');
+        await carregarOcorrencias();
+        return;
+    }
     ocorrenciasFiltradas = [...ocorrencias];
     ocorrenciaSelecionada = null;
     paginaAtual = 1;
@@ -140,11 +240,16 @@ window.salvarOcorrencia = function(event) {
 function criarLinhaTabela(ocorrencia) {
     const tr = document.createElement('tr');
     tr.dataset.id = ocorrencia.id.toString();
+    const prazoExibicao = formatarData(calcularPrazoEfetivo(ocorrencia));
+    const sla = calcularSla(ocorrencia);
     tr.innerHTML = `
         <td>${formatarData(ocorrencia.data)}</td>
         <td>${ocorrencia.turno}</td>
         <td>${ocorrencia.descricao}</td>
         <td>${ocorrencia.responsavel}</td>
+        <td>${prazoExibicao}</td>
+        <td>${ocorrencia.prioridade || 'Media'}</td>
+        <td>${sla}</td>
         <td>${ocorrencia.status}</td>
     `;
     return tr;
@@ -160,7 +265,7 @@ function atualizarTabela() {
     tbody.innerHTML = '';
     
     const inicio = 0;
-    const fim = Math.min(registrosPorPagina, ocorrenciasFiltradas.length);
+    const fim = Math.min(registrosPorPagina * paginaAtual, ocorrenciasFiltradas.length);
     
     for (let i = inicio; i < fim; i++) {
         const ocorrencia = ocorrenciasFiltradas[i];
@@ -170,6 +275,21 @@ function atualizarTabela() {
         }
         tbody.appendChild(tr);
     }
+    atualizarResumoOcorrencias();
+}
+
+function atualizarResumoOcorrencias() {
+    const info = document.getElementById('ocorrenciasInfo');
+    const btnMais = document.getElementById('btnCarregarMaisOcorrencias');
+    const total = ocorrenciasFiltradas.length;
+    const exibidos = Math.min(registrosPorPagina * paginaAtual, total);
+    if (info) info.textContent = `Exibindo ${exibidos} de ${total} ocorrências`;
+    if (btnMais) btnMais.style.display = exibidos < total ? 'inline-flex' : 'none';
+}
+
+window.carregarMaisOcorrencias = function() {
+    paginaAtual += 1;
+    atualizarTabela();
 }
 
 // Funções de UI
@@ -185,6 +305,8 @@ window.abrirModal = function(tipo) {
         form.turno.value = ocorrenciaSelecionada.turno;
         form.descricao.value = ocorrenciaSelecionada.descricao;
         form.responsavel.value = ocorrenciaSelecionada.responsavel;
+        form.prazo.value = toIsoDateOnly(ocorrenciaSelecionada.prazo || '');
+        form.prioridade.value = normalizarPrioridade(ocorrenciaSelecionada.prioridade || 'Media');
         form.status.value = ocorrenciaSelecionada.status;
         document.getElementById('modalTitle').textContent = 'Editar Ocorrência';
     }
@@ -224,7 +346,10 @@ function confirmarExclusao() {
     if (index !== -1) {
         ocorrencias.splice(index, 1);
         ocorrenciasFiltradas = [...ocorrencias];
-        salvarOcorrencias();
+        salvarOcorrencias().catch(async (error) => {
+            mostrarAlerta(error.message || 'Erro ao excluir ocorrência.');
+            await carregarOcorrencias();
+        });
         ocorrenciaSelecionada = null;
         atualizarTabela();
         atualizarBotoesAcao();
@@ -242,6 +367,9 @@ window.filtrarOcorrencias = function() {
             ocorrencia.turno.toLowerCase().includes(termoPesquisa) ||
             ocorrencia.descricao.toLowerCase().includes(termoPesquisa) ||
             ocorrencia.responsavel.toLowerCase().includes(termoPesquisa) ||
+            String(ocorrencia.prazo || '').toLowerCase().includes(termoPesquisa) ||
+            String(ocorrencia.prioridade || '').toLowerCase().includes(termoPesquisa) ||
+            calcularSla(ocorrencia).toLowerCase().includes(termoPesquisa) ||
             ocorrencia.status.toLowerCase().includes(termoPesquisa)
         );
     });
@@ -255,6 +383,7 @@ window.limparPesquisa = function() {
     const input = document.getElementById('inputPesquisa');
     input.value = '';
     ocorrenciasFiltradas = [...ocorrencias];
+    paginaAtual = 1;
     atualizarTabela();
     document.querySelector('.clear-search').style.display = 'none';
 }
@@ -285,7 +414,10 @@ function salvarObservacoes() {
     
     if (index !== -1) {
         ocorrencias[index].descricao = descricao;
-        salvarOcorrencias();
+        salvarOcorrencias().catch(async (error) => {
+            mostrarAlerta(error.message || 'Erro ao salvar observações.');
+            await carregarOcorrencias();
+        });
         atualizarTabela();
         fecharModalObservacoes();
     }
@@ -329,6 +461,7 @@ function setupEventListeners() {
     document.getElementById('inputPesquisa').addEventListener('input', (event) => {
         if (event.target.value === '') {
             ocorrenciasFiltradas = [...ocorrencias];
+            paginaAtual = 1;
             atualizarTabela();
         }
     });
@@ -359,7 +492,7 @@ function setupEventListeners() {
 
 // Adicione a função de ordenação
 function ordenarTabela(th) {
-    const colunas = ['data', 'turno', 'descricao', 'responsavel', 'status'];
+    const colunas = ['data', 'turno', 'descricao', 'responsavel', 'prazo', 'prioridade', 'sla', 'status'];
     const coluna = colunas[Array.from(th.parentElement.children).indexOf(th)];
     const direcaoAtual = th.dataset.sort;
     
@@ -373,8 +506,8 @@ function ordenarTabela(th) {
     th.dataset.sort = direcaoNova;
 
     ocorrenciasFiltradas.sort((a, b) => {
-        let valorA = a[coluna];
-        let valorB = b[coluna];
+        let valorA = coluna === 'sla' ? calcularSla(a) : a[coluna];
+        let valorB = coluna === 'sla' ? calcularSla(b) : b[coluna];
 
         if (coluna === 'data') {
             valorA = new Date(valorA);
@@ -414,3 +547,4 @@ try {
 } catch (error) {
     console.error('Erro ao configurar listener de tema:', error);
 }
+

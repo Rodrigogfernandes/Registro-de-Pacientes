@@ -44,6 +44,10 @@
                     <img src="../assets/images/import.png" alt="Importar" width="20">
                     Importar
                 </button>
+                <button id="manageAutoBackupBtn" class="config-button" onclick="openAutoBackupModal()">
+                    <img src="../assets/images/json.png" alt="Backups" width="20">
+                    Backups Automáticos
+                </button>
                 <button id="manageUsersBtn" class="config-button" onclick="openUsersModal()">
                     <img src="../assets/images/config.png" alt="Usuários" width="20">
                     Usuários
@@ -90,6 +94,24 @@
         </div>
     </div>
 
+    <div id="autoBackupModal" class="export-modal">
+        <div class="export-modal-content auto-backup-modal-content">
+            <span class="close" onclick="closeAutoBackupModal()">&times;</span>
+            <h2>Backups Automáticos</h2>
+            <p id="autoBackupStatus" class="search-status">Carregando backups...</p>
+            <div class="auto-backup-layout">
+                <div id="autoBackupList" class="search-results"></div>
+                <div class="auto-backup-preview">
+                    <h3>Preview do Backup</h3>
+                    <div id="autoBackupPreviewContent" class="search-results">
+                        <div class="search-status">Selecione um backup para visualizar detalhes.</div>
+                    </div>
+                    <button id="autoBackupRestoreBtn" class="export-button" disabled>Restaurar Backup Selecionado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="importModal" class="export-modal">
         <div class="export-modal-content">
             <span class="close" onclick="closeImportModal()">&times;</span>
@@ -128,39 +150,62 @@
                 <section class="users-panel users-panel-list">
                     <p id="usersStatus" class="search-status">Carregando usuários...</p>
                     <div id="usersList" class="users-list"></div>
+                    <div class="active-users-box">
+                        <h3>Usuários Logados</h3>
+                        <p id="activeUsersStatus" class="search-status">Carregando sessões ativas...</p>
+                        <div id="activeUsersList" class="active-users-list"></div>
+                    </div>
                 </section>
 
                 <section class="users-panel users-panel-form">
-                    <form id="userForm" class="users-form">
-                        <input type="hidden" id="userId">
+                    <div class="users-form-layout">
+                        <form id="userForm" class="users-form">
+                            <input type="hidden" id="userId">
 
-                        <label for="userUsername">Usuário</label>
-                        <input type="text" id="userUsername" required>
+                            <label for="userUsername">Usuário</label>
+                            <input type="text" id="userUsername" required>
 
-                        <label for="userNome">Nome</label>
-                        <input type="text" id="userNome" required>
+                            <label for="userNome">Nome</label>
+                            <input type="text" id="userNome" required>
 
-                        <label for="userRole">Perfil</label>
-                        <select id="userRole" required>
-                            <option value="admin">admin</option>
-                            <option value="recepcao">recepcao</option>
-                            <option value="tecnico">tecnico</option>
-                        </select>
+                            <label for="userRole">Perfil</label>
+                            <select id="userRole" required>
+                                <option value="admin">admin</option>
+                                <option value="recepcao">recepcao</option>
+                                <option value="tecnico">tecnico</option>
+                            </select>
 
-                        <label for="userPassword">Senha (somente para criar/alterar)</label>
-                        <input type="password" id="userPassword" autocomplete="new-password">
+                            <label for="userPassword">Senha (mín. 8, maiúscula, minúscula, número e símbolo)</label>
+                            <input type="password" id="userPassword" autocomplete="new-password">
 
-                        <label class="users-checkbox">
-                            <input type="checkbox" id="userActive" checked>
-                            Usuário ativo
-                        </label>
+                            <label class="users-checkbox">
+                                <input type="checkbox" id="userActive" checked>
+                                Usuário ativo
+                            </label>
 
-                        <div class="users-form-actions">
-                            <button type="button" class="export-button" onclick="resetUserForm()">Novo</button>
-                            <button type="submit" class="export-button">Salvar</button>
-                            <button type="button" id="deleteUserBtn" class="export-button users-danger" onclick="deleteSelectedUser()">Excluir</button>
-                        </div>
-                    </form>
+                            <div class="users-form-actions">
+                                <button type="button" class="export-button" onclick="resetUserForm()">Novo</button>
+                                <button type="submit" class="export-button">Salvar</button>
+                                <button type="button" id="deleteUserBtn" class="export-button users-danger" onclick="deleteSelectedUser()">Excluir</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </section>
+                <section class="users-panel users-panel-audit">
+                <div class="active-users-box users-audit-box">
+                    <h3>Últimas Alterações</h3>
+                    <p id="auditStatus" class="search-status">Carregando auditoria...</p>
+                    <div class="audit-actions">
+                        <button id="exportUserAuditBtn" class="search-open-button" type="button" style="display:none;">Exportar Log do Usuário</button>
+                    </div>
+                    <div id="auditList" class="active-users-list"></div>
+                    <div class="audit-pagination">
+                        <button id="auditPrevPageBtn" class="search-open-button" type="button">Anterior</button>
+                        <span id="auditPageInfo" class="users-item-meta">Página 1 de 1</span>
+                        <button id="auditNextPageBtn" class="search-open-button" type="button">Próxima</button>
+                    </div>
+                </div>
                 </section>
             </div>
         </div>
@@ -176,6 +221,28 @@
         <div class="home-actions">
             <button class="global-search-button" onclick="openSearchModal()">Busca Global</button>
         </div>
+        <section class="home-dashboard" aria-label="Resumo operacional">
+            <article class="dash-card">
+                <span class="dash-label">Registros Hoje</span>
+                <strong id="dashRegistrosHoje">0</strong>
+            </article>
+            <article class="dash-card">
+                <span class="dash-label">Agendamentos Hoje</span>
+                <strong id="dashAgendamentosHoje">0</strong>
+            </article>
+            <article class="dash-card">
+                <span class="dash-label">Pendências</span>
+                <strong id="dashPendencias">0</strong>
+            </article>
+            <article class="dash-card">
+                <span class="dash-label">Usuários Ativos</span>
+                <strong id="dashUsuariosAtivos">0</strong>
+            </article>
+        </section>
+        <section class="home-alerts">
+            <h2>Alertas Internos</h2>
+            <div id="homeAlertsList" class="home-alerts-list">Sem alertas no momento.</div>
+        </section>
         <div class="button-group">
             <div class="button-group1" data-module="agendamento" data-route="agendamento/agendamento.html">
                 <div class="icon-container">
@@ -206,6 +273,28 @@
             </div>
         </div>
     </div>
+
+    <button id="chatFab" class="chat-fab" type="button" aria-label="Abrir chat">
+        Chat
+        <span id="chatUnreadBadge" class="chat-unread-badge" style="display:none;">0</span>
+    </button>
+
+    <section id="chatPanel" class="chat-panel" aria-label="Chat interno">
+        <div class="chat-panel-header">
+            <strong>Chat Interno <span id="chatTargetLabel">(Todos)</span></strong>
+            <button id="chatCloseBtn" class="search-open-button" type="button">Fechar</button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="search-status">Carregando mensagens...</div>
+        </div>
+        <form id="chatForm" class="chat-form">
+            <select id="chatTargetSelect" title="Destinatário">
+                <option value="">Todos</option>
+            </select>
+            <input type="text" id="chatInput" maxlength="1000" placeholder="Digite uma mensagem..." autocomplete="off">
+            <button id="chatSendBtn" class="search-open-button" type="submit">Enviar</button>
+        </form>
+    </section>
 
     <script src="../scripts/index/index.js"></script>
 </body>

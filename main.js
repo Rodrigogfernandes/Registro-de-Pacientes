@@ -1,7 +1,8 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+﻿const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const os = require('os');
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const marked = require('marked');
@@ -16,18 +17,42 @@ let mongoDb;
 const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
 const MONGO_DB_NAME = process.env.MONGODB_DB || 'registro_pacientes';
 const APP_DATA_COLLECTION = 'app_data';
-const DATA_TYPES = ['registros', 'pacientes', 'agendamentos', 'medicos-agenda', 'ocorrencias', 'ponto', 'config'];
+const DATA_TYPES = [
+    'registros',
+    'pacientes',
+    'agendamentos',
+    'medicos-agenda',
+    'ocorrencias',
+    'ponto',
+    'config',
+    'auth-presence',
+    'audit-log',
+    'data-meta',
+    'chat-messages'
+];
 const MONGO_RECONNECT_INTERVAL_MS = 15000;
+const AUTH_PRESENCE_HEARTBEAT_MS = 15000;
+const AUTH_PRESENCE_TTL_MS = 45000;
+const AUTH_PASSWORD_MIN_LENGTH = 8;
+const AUTH_PASSWORD_MAX_ATTEMPTS = 5;
+const AUTH_PASSWORD_LOCK_MINUTES = 15;
+const AUTH_PASSWORD_MAX_AGE_DAYS = 90;
+const AUTO_BACKUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const AUTO_BACKUP_RETENTION = 30;
 
 let mongoOnline = false;
 let needsLocalSync = false;
 let reconnectTimer = null;
 let reconnectInProgress = false;
 let currentSession = null;
+let authPresenceTimer = null;
+let autoBackupTimer = null;
+const appInstanceId = `${os.hostname()}-${process.pid}-${crypto.randomBytes(4).toString('hex')}`;
+const authFailedAttempts = new Map();
 
 const AUTH_ROLES = ['admin', 'recepcao', 'tecnico'];
 
-// Adicionar nova funÃƒÂ§ÃƒÂ£o para gerenciar caminhos de arquivos
+// Adicionar nova funÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o para gerenciar caminhos de arquivos
 function getDataFilePath(tipo) {
     const dataDir = path.join(__dirname, 'data');
     switch(tipo) {
@@ -43,6 +68,14 @@ function getDataFilePath(tipo) {
             return path.join(dataDir, 'ponto.json');
         case 'config':
             return path.join(dataDir, 'config.json');
+        case 'auth-presence':
+            return path.join(dataDir, 'auth_presence.json');
+        case 'audit-log':
+            return path.join(dataDir, 'audit_log.json');
+        case 'data-meta':
+            return path.join(dataDir, 'data_meta.json');
+        case 'chat-messages':
+            return path.join(dataDir, 'chat_messages.json');
         case 'pacientes':
             return path.join(dataDir, 'pacientes.json');
         default:
@@ -56,6 +89,18 @@ function getDefaultValue(tipo) {
     }
     if (tipo === 'config') {
         return {};
+    }
+    if (tipo === 'auth-presence') {
+        return [];
+    }
+    if (tipo === 'audit-log') {
+        return [];
+    }
+    if (tipo === 'data-meta') {
+        return { versions: {} };
+    }
+    if (tipo === 'chat-messages') {
+        return [];
     }
     return [];
 }
@@ -477,6 +522,529 @@ function deduplicarResultadosBusca(resultados) {
     return filtrados;
 }
 
+async function montarTimelinePaciente({ documento = '', nome = '' }) {
+    const docNorm = normalizarProntuario(documento).toLowerCase();
+    const cpfNorm = cpfSomenteDigitos(documento);
+    const nomeNorm = normalizarTextoBusca(nome);
+
+    const [pacientes, agendamentos, registros] = await Promise.all([
+        lerDados('pacientes'),
+        lerDados('agendamentos'),
+        lerDados('registros')
+    ]);
+
+    const pacientesArray = Array.isArray(pacientes) ? pacientes : [];
+    const agArray = Array.isArray(agendamentos) ? agendamentos : [];
+    const regArray = Array.isArray(registros) ? registros : [];
+
+    const matchPaciente = (item) => {
+        const prontuario = normalizarProntuario(item?.prontuarioPaciente || item?.documentoPaciente || item?.pacienteDocumento || '').toLowerCase();
+        const cpf = cpfSomenteDigitos(item?.cpfPaciente || '');
+        const nomeItem = normalizarTextoBusca(item?.nomePaciente || '');
+        const porDoc = docNorm && prontuario && prontuario === docNorm;
+        const porCpf = cpfNorm && cpf && cpf === cpfNorm;
+        const porNome = !docNorm && !cpfNorm && nomeNorm && nomeItem === nomeNorm;
+        return porDoc || porCpf || porNome;
+    };
+
+    const histAg = agArray
+        .filter(matchPaciente)
+        .map((a) => ({
+            origem: 'Agendamento',
+            data: String(a?.dataHora || ''),
+            status: String(a?.statusExame || ''),
+            modalidade: String(a?.modalidade || ''),
+            exame: String(a?.exame || ''),
+            tecnico: String(a?.nomeTecnico || ''),
+            acesso: String(a?.numeroAcesso || '')
+        }));
+
+    const histReg = regArray
+        .filter(matchPaciente)
+        .map((r) => ({
+            origem: 'Registro',
+            data: String(r?.dataHoraExame || ''),
+            status: String(r?.statusExame || 'Realizado'),
+            modalidade: String(r?.modalidade || ''),
+            exame: String(r?.observacoes || ''),
+            tecnico: String(r?.nomeTecnico || ''),
+            acesso: String(r?.numeroAcesso || '')
+        }));
+
+    const timeline = [...histAg, ...histReg]
+        .sort((a, b) => Date.parse(b.data || '') - Date.parse(a.data || ''));
+
+    const paciente = pacientesArray.find(matchPaciente);
+    const nomeExibicao = String(paciente?.nomePaciente || nome || 'Paciente');
+    const documentoExibicao = String(
+        paciente?.prontuarioPaciente ||
+        paciente?.documentoPaciente ||
+        paciente?.cpfPaciente ||
+        documento ||
+        ''
+    );
+
+    return {
+        nomeExibicao,
+        documentoExibicao,
+        timeline
+    };
+}
+
+function obterActorAuditoria() {
+    return {
+        username: currentSession?.username || 'system',
+        role: currentSession?.role || 'system',
+        nome: currentSession?.nome || 'Sistema',
+        sessionId: currentSession?.id || ''
+    };
+}
+
+function descreverMudancaColecao(antes, depois) {
+    const listaAntes = Array.isArray(antes) ? antes : [];
+    const listaDepois = Array.isArray(depois) ? depois : [];
+    const idsAntes = new Set(listaAntes.map((item) => String(item?.id ?? '')));
+    const idsDepois = new Set(listaDepois.map((item) => String(item?.id ?? '')));
+
+    let adicionados = 0;
+    let removidos = 0;
+    idsDepois.forEach((id) => {
+        if (id && !idsAntes.has(id)) adicionados += 1;
+    });
+    idsAntes.forEach((id) => {
+        if (id && !idsDepois.has(id)) removidos += 1;
+    });
+
+    return {
+        totalAntes: listaAntes.length,
+        totalDepois: listaDepois.length,
+        adicionados,
+        removidos
+    };
+}
+
+async function registrarAuditoria({ acao, tipo, antes, depois, detalhe = '' }) {
+    try {
+        const atual = await lerDados('audit-log');
+        const lista = Array.isArray(atual) ? atual : [];
+        const actor = obterActorAuditoria();
+        lista.push({
+            id: `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+            at: new Date().toISOString(),
+            acao: String(acao || 'update'),
+            tipo: String(tipo || ''),
+            actor,
+            resumo: descreverMudancaColecao(antes, depois),
+            detalhe: String(detalhe || '').slice(0, 400)
+        });
+        const limite = 5000;
+        const final = lista.length > limite ? lista.slice(lista.length - limite) : lista;
+        await salvarDados('audit-log', final);
+    } catch (error) {
+        console.warn('Falha ao registrar auditoria:', error.message);
+    }
+}
+
+function normalizarDataMeta(meta) {
+    const base = (meta && typeof meta === 'object') ? meta : {};
+    const versions = (base.versions && typeof base.versions === 'object') ? base.versions : {};
+    return { ...base, versions };
+}
+
+async function obterVersaoTipo(tipo) {
+    const metaRaw = await lerDados('data-meta');
+    const meta = normalizarDataMeta(metaRaw);
+    return Number(meta.versions?.[tipo] || 0);
+}
+
+async function incrementarVersaoTipo(tipo) {
+    const metaRaw = await lerDados('data-meta');
+    const meta = normalizarDataMeta(metaRaw);
+    const atual = Number(meta.versions?.[tipo] || 0);
+    const proxima = atual + 1;
+    meta.versions[tipo] = proxima;
+    await salvarDados('data-meta', meta);
+    return proxima;
+}
+
+function normalizarPayloadSalvar(input) {
+    if (input && typeof input === 'object' && !Array.isArray(input) && Object.prototype.hasOwnProperty.call(input, 'data')) {
+        return {
+            data: input.data,
+            expectedVersion: input.expectedVersion,
+            detalhe: input.detalhe
+        };
+    }
+    return {
+        data: input,
+        expectedVersion: null,
+        detalhe: ''
+    };
+}
+
+async function validarConcorrenciaOuFalhar(tipo, expectedVersion) {
+    if (!Number.isFinite(Number(expectedVersion))) {
+        return;
+    }
+    const atual = await obterVersaoTipo(tipo);
+    const esperado = Number(expectedVersion);
+    if (atual !== esperado) {
+        throw new Error(`Conflito de atualizaÃ§Ã£o em ${tipo}. VersÃ£o atual: ${atual}. Recarregue a tela.`);
+    }
+}
+
+function normalizarFiltroAuditoria(filtro) {
+    const base = (filtro && typeof filtro === 'object') ? filtro : {};
+    return {
+        username: String(base.username || '').trim().toLowerCase(),
+        acao: normalizarTextoBusca(base.acao || ''),
+        tipo: normalizarTextoBusca(base.tipo || ''),
+        dateFrom: String(base.dateFrom || '').slice(0, 10),
+        dateTo: String(base.dateTo || '').slice(0, 10),
+        search: normalizarTextoBusca(base.search || ''),
+        limit: Math.max(1, Math.min(5000, Number(base.limit) || 200)),
+        page: Math.max(1, Number(base.page) || 1),
+        pageSize: Math.max(1, Math.min(200, Number(base.pageSize) || 20))
+    };
+}
+
+function aplicarFiltroAuditoria(logs, filtroInput, options = {}) {
+    const paginar = options.paginar !== false;
+    const filtro = normalizarFiltroAuditoria(filtroInput);
+    const lista = Array.isArray(logs) ? logs : [];
+
+    const fromMs = filtro.dateFrom ? Date.parse(`${filtro.dateFrom}T00:00:00.000Z`) : NaN;
+    const toMs = filtro.dateTo ? Date.parse(`${filtro.dateTo}T23:59:59.999Z`) : NaN;
+
+    let filtrados = lista.filter((item) => {
+        const actorUsername = String(item?.actor?.username || '').trim().toLowerCase();
+        const acaoNorm = normalizarTextoBusca(item?.acao || '');
+        const tipoNorm = normalizarTextoBusca(item?.tipo || '');
+        const detalheNorm = normalizarTextoBusca(item?.detalhe || '');
+        const actorNomeNorm = normalizarTextoBusca(item?.actor?.nome || '');
+        const atMs = Date.parse(String(item?.at || ''));
+
+        if (filtro.username && actorUsername !== filtro.username) return false;
+        if (filtro.acao && !acaoNorm.includes(filtro.acao)) return false;
+        if (filtro.tipo && !tipoNorm.includes(filtro.tipo)) return false;
+        if (Number.isFinite(fromMs) && (!Number.isFinite(atMs) || atMs < fromMs)) return false;
+        if (Number.isFinite(toMs) && (!Number.isFinite(atMs) || atMs > toMs)) return false;
+
+        if (filtro.search) {
+            const doc = normalizarTextoBusca([
+                item?.id,
+                item?.acao,
+                item?.tipo,
+                item?.detalhe,
+                item?.actor?.username,
+                item?.actor?.nome
+            ].join(' '));
+            if (!doc.includes(filtro.search) && !detalheNorm.includes(filtro.search) && !actorNomeNorm.includes(filtro.search)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    filtrados = filtrados.sort((a, b) => Date.parse(String(b?.at || '')) - Date.parse(String(a?.at || '')));
+    const total = filtrados.length;
+    const totalPages = Math.max(1, Math.ceil(total / filtro.pageSize));
+    const page = Math.min(filtro.page, totalPages);
+    const start = (page - 1) * filtro.pageSize;
+    const end = start + filtro.pageSize;
+    const items = paginar
+        ? filtrados.slice(start, end)
+        : filtrados.slice(0, filtro.limit);
+
+    return { items, total, filtro, page, pageSize: filtro.pageSize, totalPages };
+}
+
+function escaparCsv(valor) {
+    const texto = String(valor ?? '');
+    if (!/[",\n;]/.test(texto)) {
+        return texto;
+    }
+    return `"${texto.replace(/"/g, '""')}"`;
+}
+
+function converterAuditoriaParaCsv(logs) {
+    const cabecalho = [
+        'id',
+        'at',
+        'username',
+        'nome',
+        'perfil',
+        'acao',
+        'tipo',
+        'detalhe',
+        'totalAntes',
+        'totalDepois',
+        'adicionados',
+        'removidos'
+    ];
+    const linhas = [cabecalho.join(';')];
+    const lista = Array.isArray(logs) ? logs : [];
+    for (const item of lista) {
+        const resumo = (item?.resumo && typeof item.resumo === 'object') ? item.resumo : {};
+        const linha = [
+            item?.id,
+            item?.at,
+            item?.actor?.username,
+            item?.actor?.nome,
+            item?.actor?.role,
+            item?.acao,
+            item?.tipo,
+            item?.detalhe,
+            resumo?.totalAntes ?? '',
+            resumo?.totalDepois ?? '',
+            resumo?.adicionados ?? '',
+            resumo?.removidos ?? ''
+        ].map(escaparCsv).join(';');
+        linhas.push(linha);
+    }
+    return `${linhas.join('\n')}\n`;
+}
+
+const ACAO_POR_HANDLER = {
+    'ler-registros': ['admin', 'recepcao', 'tecnico'],
+    'salvar-registros': ['admin', 'recepcao', 'tecnico'],
+    'ler-pacientes': ['admin', 'recepcao', 'tecnico'],
+    'salvar-pacientes': ['admin', 'recepcao', 'tecnico'],
+    'ler-agendamentos': ['admin', 'recepcao'],
+    'salvar-agendamentos': ['admin', 'recepcao'],
+    'ler-medicos-agenda': ['admin', 'recepcao'],
+    'salvar-medicos-agenda': ['admin', 'recepcao'],
+    'ler-ocorrencias': ['admin', 'recepcao', 'tecnico'],
+    'salvar-ocorrencias': ['admin', 'recepcao', 'tecnico'],
+    'ler-ponto': ['admin', 'recepcao', 'tecnico'],
+    'salvar-ponto': ['admin', 'recepcao', 'tecnico'],
+    'buscar-global': ['admin', 'recepcao', 'tecnico'],
+    'salvar-arquivo': ['admin', 'recepcao'],
+    'salvar-config': ['admin'],
+    'set-theme': ['admin', 'recepcao', 'tecnico'],
+    'get-theme': ['admin', 'recepcao', 'tecnico'],
+    'importar-arquivo': ['admin', 'recepcao'],
+    'exportar-pdf': ['admin', 'recepcao'],
+    'exportar-csv': ['admin', 'recepcao'],
+    'backup-list-auto': ['admin'],
+    'backup-preview-auto': ['admin'],
+    'backup-restore-auto': ['admin'],
+    'dashboard-summary': ['admin'],
+    'patient-timeline': ['admin', 'recepcao', 'tecnico'],
+    'audit-list-user': ['admin'],
+    'audit-export-user': ['admin'],
+    'audit-query': ['admin'],
+    'audit-export-csv': ['admin'],
+    'chat-list': ['admin', 'recepcao', 'tecnico'],
+    'chat-send': ['admin', 'recepcao', 'tecnico'],
+    'chat-mark-read': ['admin', 'recepcao', 'tecnico'],
+    'chat-users': ['admin', 'recepcao', 'tecnico'],
+    'auth-list-online-users': ['admin', 'recepcao', 'tecnico']
+};
+
+function exigirPermissaoAcao(handlerName) {
+    const permitidos = ACAO_POR_HANDLER[handlerName];
+    if (!permitidos) return;
+    if (!currentSession) {
+        throw new Error('Sessao nao autenticada.');
+    }
+    const role = String(currentSession.role || '').toLowerCase();
+    if (!permitidos.includes(role)) {
+        throw new Error(`Permissao negada para ${handlerName}.`);
+    }
+}
+
+function validarSenhaForteOuFalhar(senha) {
+    const valor = String(senha || '');
+    if (valor.length < AUTH_PASSWORD_MIN_LENGTH) {
+        throw new Error(`A senha deve ter ao menos ${AUTH_PASSWORD_MIN_LENGTH} caracteres.`);
+    }
+    if (!/[A-Z]/.test(valor) || !/[a-z]/.test(valor) || !/\d/.test(valor) || !/[^A-Za-z0-9]/.test(valor)) {
+        throw new Error('Senha fraca: use letras maiÃºsculas/minÃºsculas, nÃºmero e sÃ­mbolo.');
+    }
+}
+
+function senhaExpirada(user) {
+    const updatedAt = Date.parse(String(user?.passwordUpdatedAt || ''));
+    if (!Number.isFinite(updatedAt)) return false;
+    const idadeMs = Date.now() - updatedAt;
+    return idadeMs > (AUTH_PASSWORD_MAX_AGE_DAYS * 24 * 60 * 60 * 1000);
+}
+
+function obterStatusTentativas(username) {
+    const key = String(username || '').toLowerCase();
+    const atual = authFailedAttempts.get(key) || { count: 0, lockedUntil: 0 };
+    if (atual.lockedUntil && Date.now() > atual.lockedUntil) {
+        authFailedAttempts.delete(key);
+        return { count: 0, lockedUntil: 0 };
+    }
+    return atual;
+}
+
+function registrarFalhaLogin(username) {
+    const key = String(username || '').toLowerCase();
+    const atual = obterStatusTentativas(key);
+    const proximo = { ...atual, count: atual.count + 1 };
+    if (proximo.count >= AUTH_PASSWORD_MAX_ATTEMPTS) {
+        proximo.lockedUntil = Date.now() + (AUTH_PASSWORD_LOCK_MINUTES * 60 * 1000);
+    }
+    authFailedAttempts.set(key, proximo);
+    return proximo;
+}
+
+function limparTentativasLogin(username) {
+    const key = String(username || '').toLowerCase();
+    authFailedAttempts.delete(key);
+}
+
+function obterDiretorioAutoBackup() {
+    return path.join(__dirname, 'data', 'backups', 'auto');
+}
+
+async function criarBackupAutomatico() {
+    const snapshot = {};
+    for (const tipo of ['registros', 'pacientes', 'agendamentos', 'medicos-agenda', 'ocorrencias', 'ponto', 'config', 'chat-messages']) {
+        snapshot[tipo] = await lerDados(tipo);
+    }
+
+    const dir = obterDiretorioAutoBackup();
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filePath = path.join(dir, `backup_auto_${timestamp}.json`);
+    fs.writeFileSync(filePath, JSON.stringify({
+        generatedAt: new Date().toISOString(),
+        appInstanceId,
+        snapshot
+    }, null, 2), 'utf8');
+
+    const arquivos = fs.readdirSync(dir)
+        .filter((nome) => nome.startsWith('backup_auto_') && nome.endsWith('.json'))
+        .sort();
+    while (arquivos.length > AUTO_BACKUP_RETENTION) {
+        const nome = arquivos.shift();
+        if (!nome) break;
+        try {
+            fs.unlinkSync(path.join(dir, nome));
+        } catch (error) {
+            console.warn('Falha ao limpar backup antigo:', error.message);
+            break;
+        }
+    }
+}
+
+function iniciarLoopBackupAutomatico() {
+    if (autoBackupTimer) {
+        return;
+    }
+    autoBackupTimer = setInterval(() => {
+        criarBackupAutomatico().catch((error) => {
+            console.warn('Falha no backup automatico:', error.message);
+        });
+    }, AUTO_BACKUP_INTERVAL_MS);
+}
+
+function listarBackupsAutomaticos() {
+    const dir = obterDiretorioAutoBackup();
+    if (!fs.existsSync(dir)) {
+        return [];
+    }
+    return fs.readdirSync(dir)
+        .filter((nome) => nome.startsWith('backup_auto_') && nome.endsWith('.json'))
+        .sort()
+        .reverse()
+        .map((nome) => ({
+            nome,
+            caminho: path.join(dir, nome),
+            criadoEm: fs.statSync(path.join(dir, nome)).mtime.toISOString()
+        }));
+}
+
+async function restaurarBackupAutomatico(nomeArquivo) {
+    const arquivos = listarBackupsAutomaticos();
+    const alvo = arquivos.find((item) => item.nome === nomeArquivo);
+    if (!alvo) {
+        throw new Error('Backup automatico nao encontrado.');
+    }
+    const raw = fs.readFileSync(alvo.caminho, 'utf8');
+    const parsed = JSON.parse(raw);
+    const snapshot = parsed?.snapshot;
+    if (!snapshot || typeof snapshot !== 'object') {
+        throw new Error('Backup invalido: snapshot ausente.');
+    }
+
+    const tiposRestauraveis = ['registros', 'pacientes', 'agendamentos', 'medicos-agenda', 'ocorrencias', 'ponto', 'config', 'chat-messages'];
+    for (const tipo of tiposRestauraveis) {
+        if (!Object.prototype.hasOwnProperty.call(snapshot, tipo)) {
+            continue;
+        }
+        await salvarDados(tipo, snapshot[tipo]);
+        await incrementarVersaoTipo(tipo);
+    }
+    await registrarAuditoria({
+        acao: 'restore-backup',
+        tipo: 'sistema',
+        antes: [],
+        depois: [],
+        detalhe: `Restauracao automatica a partir de ${nomeArquivo}`
+    });
+}
+
+function construirResumoColecao(lista, dataFields = []) {
+    const arr = Array.isArray(lista) ? lista : [];
+    const datas = [];
+    for (const item of arr) {
+        for (const field of dataFields) {
+            const raw = String(item?.[field] || '').trim();
+            const parsed = Date.parse(raw);
+            if (Number.isFinite(parsed)) {
+                datas.push(parsed);
+            }
+        }
+    }
+    datas.sort((a, b) => a - b);
+    return {
+        total: arr.length,
+        primeiraData: datas.length > 0 ? new Date(datas[0]).toISOString() : '',
+        ultimaData: datas.length > 0 ? new Date(datas[datas.length - 1]).toISOString() : ''
+    };
+}
+
+function obterPreviewBackupAutomatico(nomeArquivo) {
+    const arquivos = listarBackupsAutomaticos();
+    const alvo = arquivos.find((item) => item.nome === nomeArquivo);
+    if (!alvo) {
+        throw new Error('Backup automatico nao encontrado.');
+    }
+    const raw = fs.readFileSync(alvo.caminho, 'utf8');
+    const parsed = JSON.parse(raw);
+    const snapshot = parsed?.snapshot;
+    if (!snapshot || typeof snapshot !== 'object') {
+        throw new Error('Backup invalido: snapshot ausente.');
+    }
+
+    return {
+        nome: alvo.nome,
+        criadoEm: alvo.criadoEm,
+        geradoEm: String(parsed?.generatedAt || ''),
+        colecoes: {
+            registros: construirResumoColecao(snapshot.registros, ['dataHoraExame']),
+            pacientes: construirResumoColecao(snapshot.pacientes, ['createdAt', 'updatedAt']),
+            agendamentos: construirResumoColecao(snapshot.agendamentos, ['dataHora']),
+            'medicos-agenda': construirResumoColecao(snapshot['medicos-agenda'], []),
+            ocorrencias: construirResumoColecao(snapshot.ocorrencias, ['data']),
+            'chat-messages': construirResumoColecao(snapshot['chat-messages'], ['at']),
+            ponto: {
+                totalFuncionarios: Array.isArray(snapshot?.ponto?.funcionarios) ? snapshot.ponto.funcionarios.length : 0,
+                totalRegistros: Array.isArray(snapshot?.ponto?.registros) ? snapshot.ponto.registros.length : 0
+            }
+        }
+    };
+}
+
 function hashSenha(senha) {
     return crypto.createHash('sha256').update(String(senha || '')).digest('hex');
 }
@@ -487,13 +1055,18 @@ function normalizarRole(role) {
 }
 
 function sanitizeAuthUser(user) {
+    const passwordUpdatedAtRaw = String(user?.passwordUpdatedAt || '').trim();
+    const passwordUpdatedAt = Number.isFinite(Date.parse(passwordUpdatedAtRaw))
+        ? new Date(passwordUpdatedAtRaw).toISOString()
+        : new Date().toISOString();
     return {
         id: String(user?.id || Date.now()),
         username: String(user?.username || '').trim().toLowerCase(),
         nome: String(user?.nome || user?.username || '').trim(),
         role: normalizarRole(user?.role),
         passwordHash: String(user?.passwordHash || ''),
-        active: user?.active !== false
+        active: user?.active !== false,
+        passwordUpdatedAt
     };
 }
 
@@ -548,7 +1121,8 @@ async function garantirUsuariosAuth() {
         nome: 'Administrador',
         role: 'admin',
         passwordHash: hashSenha('admin123'),
-        active: true
+        active: true,
+        passwordUpdatedAt: new Date().toISOString()
     }];
     await salvarDados('config', config);
     return config;
@@ -556,6 +1130,7 @@ async function garantirUsuariosAuth() {
 
 function montarSessao(user) {
     return {
+        id: crypto.randomBytes(16).toString('hex'),
         username: user.username,
         nome: user.nome || user.username,
         role: normalizarRole(user.role),
@@ -573,6 +1148,114 @@ function exigirAdmin() {
     }
     if (currentSession.role !== 'admin') {
         throw new Error('Permissao negada. Requer perfil admin.');
+    }
+}
+
+function toValidIsoDate(value, fallbackIso) {
+    const parsed = Date.parse(String(value || ''));
+    return Number.isFinite(parsed) ? new Date(parsed).toISOString() : fallbackIso;
+}
+
+function sanitizePresenceSession(session, fallbackIso) {
+    return {
+        id: String(session?.id || ''),
+        username: String(session?.username || '').trim().toLowerCase(),
+        nome: String(session?.nome || session?.username || '').trim(),
+        role: normalizarRole(session?.role),
+        loginAt: toValidIsoDate(session?.loginAt, fallbackIso)
+    };
+}
+
+function sanitizePresenceEntry(item, fallbackIso) {
+    const session = sanitizePresenceSession(item, fallbackIso);
+    const lastSeen = toValidIsoDate(item?.lastSeen, fallbackIso);
+    return {
+        sessionId: session.id,
+        username: session.username,
+        nome: session.nome,
+        role: session.role,
+        loginAt: session.loginAt,
+        lastSeen,
+        hostname: String(item?.hostname || os.hostname()),
+        appInstanceId: String(item?.appInstanceId || '')
+    };
+}
+
+function filtrarPresencasAtivas(items) {
+    const now = Date.now();
+    const maxIdle = AUTH_PRESENCE_TTL_MS;
+    const entries = Array.isArray(items) ? items : [];
+    return entries
+        .map((item) => sanitizePresenceEntry(item, new Date().toISOString()))
+        .filter((entry) => entry.sessionId && entry.username)
+        .filter((entry) => (now - Date.parse(entry.lastSeen)) <= maxIdle);
+}
+
+async function salvarPresencaSessaoAtual() {
+    if (!currentSession?.id) {
+        return;
+    }
+
+    const nowIso = new Date().toISOString();
+    const safeSession = sanitizePresenceSession(currentSession, nowIso);
+    const atuais = await lerDados('auth-presence');
+    const ativos = filtrarPresencasAtivas(atuais);
+    const semAtual = ativos.filter((item) => item.sessionId !== safeSession.id);
+
+    semAtual.push({
+        sessionId: safeSession.id,
+        username: safeSession.username,
+        nome: safeSession.nome,
+        role: safeSession.role,
+        loginAt: safeSession.loginAt,
+        lastSeen: nowIso,
+        hostname: os.hostname(),
+        appInstanceId
+    });
+
+    await salvarDados('auth-presence', semAtual);
+}
+
+async function removerPresencaSessaoAtual() {
+    const sessionId = String(currentSession?.id || '');
+    const atuais = await lerDados('auth-presence');
+    const ativos = filtrarPresencasAtivas(atuais);
+    const filtrados = sessionId ? ativos.filter((item) => item.sessionId !== sessionId) : ativos;
+    await salvarDados('auth-presence', filtrados);
+}
+
+function pararHeartbeatPresenca() {
+    if (!authPresenceTimer) {
+        return;
+    }
+    clearInterval(authPresenceTimer);
+    authPresenceTimer = null;
+}
+
+function iniciarHeartbeatPresenca() {
+    pararHeartbeatPresenca();
+    authPresenceTimer = setInterval(() => {
+        if (!currentSession) {
+            return;
+        }
+        salvarPresencaSessaoAtual().catch((error) => {
+            console.warn('Falha ao atualizar presenca da sessao:', error.message);
+        });
+    }, AUTH_PRESENCE_HEARTBEAT_MS);
+}
+
+async function encerrarSessaoAtual() {
+    if (!currentSession) {
+        pararHeartbeatPresenca();
+        return;
+    }
+    try {
+        await removerPresencaSessaoAtual();
+    } catch (error) {
+        console.warn('Falha ao remover presenca da sessao:', error.message);
+    } finally {
+        currentSession = null;
+        pararHeartbeatPresenca();
     }
 }
 
@@ -594,19 +1277,37 @@ function setupIpcHandlers() {
                 throw new Error('Informe usuario e senha.');
             }
 
+            const tentativas = obterStatusTentativas(username);
+            if (tentativas.lockedUntil && tentativas.lockedUntil > Date.now()) {
+                const restanteMin = Math.ceil((tentativas.lockedUntil - Date.now()) / 60000);
+                throw new Error(`Usuario bloqueado temporariamente. Tente novamente em ${restanteMin} minuto(s).`);
+            }
+
             const config = await garantirUsuariosAuth();
             const users = config.authUsers.map(sanitizeAuthUser);
             const user = users.find((item) => item.username === username && item.active);
 
             if (!user) {
+                registrarFalhaLogin(username);
                 throw new Error('Usuario ou senha invalidos.');
             }
 
             if (user.passwordHash !== hashSenha(senha)) {
+                registrarFalhaLogin(username);
                 throw new Error('Usuario ou senha invalidos.');
             }
 
+            if (senhaExpirada(user)) {
+                throw new Error('Senha expirada. Solicite ao administrador a redefinicao da senha.');
+            }
+
+            if (currentSession?.id) {
+                await encerrarSessaoAtual();
+            }
             currentSession = montarSessao(user);
+            limparTentativasLogin(username);
+            await salvarPresencaSessaoAtual();
+            iniciarHeartbeatPresenca();
             return { ok: true, session: obterSessaoAtual() };
         } catch (error) {
             return { ok: false, message: error.message };
@@ -614,12 +1315,15 @@ function setupIpcHandlers() {
     });
 
     ipcMain.handle('auth-logout', async () => {
-        currentSession = null;
+        await encerrarSessaoAtual();
         return { ok: true };
     });
 
     ipcMain.handle('auth-get-session', async () => {
         await garantirUsuariosAuth();
+        if (currentSession) {
+            await salvarPresencaSessaoAtual();
+        }
         return obterSessaoAtual();
     });
 
@@ -643,6 +1347,32 @@ function setupIpcHandlers() {
         }
     });
 
+    ipcMain.handle('auth-list-active-users', async () => {
+        try {
+            exigirAdmin();
+            const presencas = await lerDados('auth-presence');
+            const ativos = filtrarPresencasAtivas(presencas)
+                .sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
+            await salvarDados('auth-presence', ativos);
+            return { ok: true, activeUsers: ativos };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('auth-list-online-users', async () => {
+        try {
+            exigirPermissaoAcao('auth-list-online-users');
+            const presencas = await lerDados('auth-presence');
+            const ativos = filtrarPresencasAtivas(presencas)
+                .sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
+            const usernames = [...new Set(ativos.map((item) => String(item?.username || '').toLowerCase()).filter(Boolean))];
+            return { ok: true, usernames };
+        } catch (error) {
+            return { ok: false, message: error.message, usernames: [] };
+        }
+    });
+
     ipcMain.handle('auth-save-users', async (event, usersInput) => {
         try {
             exigirAdmin();
@@ -654,6 +1384,9 @@ function setupIpcHandlers() {
                 const username = String(item?.username || '').trim().toLowerCase();
                 const existente = usersAtuais.find((u) => u.username === username);
                 const senha = String(item?.password || '');
+                if (!existente || senha) {
+                    validarSenhaForteOuFalhar(senha);
+                }
                 const passwordHash = senha
                     ? hashSenha(senha)
                     : String(item?.passwordHash || existente?.passwordHash || '');
@@ -664,7 +1397,8 @@ function setupIpcHandlers() {
                     nome: item?.nome || existente?.nome || username,
                     role: item?.role || existente?.role || 'recepcao',
                     passwordHash,
-                    active: item?.active !== false
+                    active: item?.active !== false,
+                    passwordUpdatedAt: senha ? new Date().toISOString() : (existente?.passwordUpdatedAt || new Date().toISOString())
                 });
             });
 
@@ -679,8 +1413,483 @@ function setupIpcHandlers() {
         }
     });
 
+    ipcMain.handle('data-get-version', async (event, tipo) => {
+        try {
+            if (!currentSession) throw new Error('Sessao nao autenticada.');
+            const tipoSeguro = String(tipo || '').trim();
+            if (!tipoSeguro) throw new Error('Tipo invalido.');
+            const version = await obterVersaoTipo(tipoSeguro);
+            return { ok: true, version };
+        } catch (error) {
+            return { ok: false, message: error.message, version: 0 };
+        }
+    });
+
+    ipcMain.handle('audit-list', async (event, limitInput) => {
+        try {
+            exigirAdmin();
+            const limit = Math.max(1, Math.min(200, Number(limitInput) || 50));
+            const logs = await lerDados('audit-log');
+            const lista = Array.isArray(logs) ? logs : [];
+            return { ok: true, logs: lista.slice(-limit).reverse() };
+        } catch (error) {
+            return { ok: false, message: error.message, logs: [] };
+        }
+    });
+
+    ipcMain.handle('audit-list-user', async (event, filtro) => {
+        try {
+            exigirPermissaoAcao('audit-list-user');
+            const username = String(filtro?.username || '').trim().toLowerCase();
+            if (!username) {
+                throw new Error('Informe o usuário para filtrar a auditoria.');
+            }
+            const limit = Math.max(1, Math.min(5000, Number(filtro?.limit) || 200));
+            const logs = await lerDados('audit-log');
+            const lista = Array.isArray(logs) ? logs : [];
+            const filtrados = lista.filter((item) => String(item?.actor?.username || '').trim().toLowerCase() === username);
+            return { ok: true, logs: filtrados.slice(-limit).reverse() };
+        } catch (error) {
+            return { ok: false, message: error.message, logs: [] };
+        }
+    });
+
+    ipcMain.handle('audit-export-user', async (event, filtro) => {
+        try {
+            exigirPermissaoAcao('audit-export-user');
+            const username = String(filtro?.username || '').trim().toLowerCase();
+            if (!username) {
+                throw new Error('Informe o usuário para exportar auditoria.');
+            }
+
+            const logs = await lerDados('audit-log');
+            const lista = Array.isArray(logs) ? logs : [];
+            const filtrados = lista.filter((item) => String(item?.actor?.username || '').trim().toLowerCase() === username);
+
+            const options = {
+                title: 'Exportar Auditoria por Usuário',
+                defaultPath: app.getPath('documents') + `/auditoria_${username}_${new Date().toISOString().slice(0,10)}.json`,
+                filters: [{ name: 'JSON', extensions: ['json'] }]
+            };
+
+            const { filePath } = await dialog.showSaveDialog(mainWindow, options);
+            if (!filePath) {
+                return { ok: false, message: 'Exportação cancelada pelo usuário.' };
+            }
+
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                username,
+                total: filtrados.length,
+                logs: filtrados
+            };
+            fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');
+            return { ok: true, filePath, total: filtrados.length };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('audit-query', async (event, filtro) => {
+        try {
+            exigirPermissaoAcao('audit-query');
+            const logs = await lerDados('audit-log');
+            const lista = Array.isArray(logs) ? logs : [];
+            const resultado = aplicarFiltroAuditoria(lista, filtro);
+            return {
+                ok: true,
+                logs: resultado.items,
+                total: resultado.total,
+                appliedFilters: resultado.filtro,
+                pagination: {
+                    page: resultado.page,
+                    pageSize: resultado.pageSize,
+                    totalPages: resultado.totalPages
+                }
+            };
+        } catch (error) {
+            return { ok: false, message: error.message, logs: [], total: 0 };
+        }
+    });
+
+    ipcMain.handle('audit-export-csv', async (event, filtro) => {
+        try {
+            exigirPermissaoAcao('audit-export-csv');
+            const logs = await lerDados('audit-log');
+            const lista = Array.isArray(logs) ? logs : [];
+            const filtroSeguro = normalizarFiltroAuditoria({
+                ...(filtro && typeof filtro === 'object' ? filtro : {}),
+                limit: 5000
+            });
+            const resultado = aplicarFiltroAuditoria(lista, filtroSeguro, { paginar: false });
+            const csv = converterAuditoriaParaCsv(resultado.items);
+
+            const tagUsuario = filtroSeguro.username ? `_${filtroSeguro.username}` : '';
+            const options = {
+                title: 'Exportar Auditoria CSV',
+                defaultPath: app.getPath('documents') + `/auditoria${tagUsuario}_${new Date().toISOString().slice(0,10)}.csv`,
+                filters: [{ name: 'CSV', extensions: ['csv'] }]
+            };
+
+            const { filePath } = await dialog.showSaveDialog(mainWindow, options);
+            if (!filePath) {
+                return { ok: false, message: 'Exportacao cancelada pelo usuario.' };
+            }
+
+            fs.writeFileSync(filePath, csv, 'utf8');
+            return { ok: true, filePath, total: resultado.items.length };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-list', async (event, options) => {
+        try {
+            exigirPermissaoAcao('chat-list');
+            const limit = Math.max(1, Math.min(500, Number(options?.limit) || 200));
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const raw = await lerDados('chat-messages');
+            const lista = Array.isArray(raw) ? raw : [];
+            const visiveis = lista.filter((item) => {
+                const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+                const toUsername = String(item?.to?.username || '').trim().toLowerCase();
+                if (!toUsername) return true;
+                return toUsername === username || fromUsername === username;
+            });
+            const mensagens = visiveis
+                .sort((a, b) => Date.parse(String(a?.at || '')) - Date.parse(String(b?.at || '')))
+                .slice(-limit);
+
+            const unread = mensagens.filter((item) => {
+                const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+                const readBy = Array.isArray(item?.readBy) ? item.readBy.map((r) => String(r || '').toLowerCase()) : [];
+                return fromUsername !== username && !readBy.includes(username);
+            }).length;
+
+            return { ok: true, messages: mensagens, unread };
+        } catch (error) {
+            return { ok: false, message: error.message, messages: [], unread: 0 };
+        }
+    });
+
+    ipcMain.handle('chat-send', async (event, payload) => {
+        try {
+            exigirPermissaoAcao('chat-send');
+            const text = String(payload?.text || '').trim();
+            const toUsername = String(payload?.toUsername || '').trim().toLowerCase();
+            if (!text) {
+                throw new Error('Mensagem vazia.');
+            }
+            if (text.length > 1000) {
+                throw new Error('Mensagem muito longa (max. 1000 caracteres).');
+            }
+
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const nome = String(currentSession?.nome || username || 'Usuário');
+            const role = String(currentSession?.role || '').trim().toLowerCase();
+            let to = null;
+            if (toUsername) {
+                const config = await garantirUsuariosAuth();
+                const target = config.authUsers
+                    .map(sanitizeAuthUser)
+                    .find((u) => u.username === toUsername && u.active);
+                if (!target) {
+                    throw new Error('Destinatário inválido ou inativo.');
+                }
+                if (target.username === username) {
+                    throw new Error('Não é possível enviar mensagem privada para si mesmo.');
+                }
+                to = { username: target.username, nome: target.nome || target.username };
+            }
+            const raw = await lerDados('chat-messages');
+            const lista = Array.isArray(raw) ? raw : [];
+
+            const message = {
+                id: `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+                at: new Date().toISOString(),
+                from: { username, nome, role },
+                to,
+                text,
+                readBy: [username]
+            };
+
+            lista.push(message);
+            const limite = 5000;
+            const final = lista.length > limite ? lista.slice(lista.length - limite) : lista;
+            await salvarDados('chat-messages', final);
+            await registrarAuditoria({
+                acao: 'chat-send',
+                tipo: 'chat',
+                antes: [],
+                depois: [],
+                detalhe: `Mensagem enviada por @${username}`
+            });
+            return { ok: true, message };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-users', async () => {
+        try {
+            exigirPermissaoAcao('chat-users');
+            const config = await garantirUsuariosAuth();
+            const users = config.authUsers
+                .map(sanitizeAuthUser)
+                .filter((u) => u.active)
+                .map((u) => ({
+                    username: u.username,
+                    nome: u.nome || u.username,
+                    role: u.role
+                }))
+                .sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+            return { ok: true, users };
+        } catch (error) {
+            return { ok: false, message: error.message, users: [] };
+        }
+    });
+
+    ipcMain.handle('chat-mark-read', async (event, input) => {
+        try {
+            exigirPermissaoAcao('chat-mark-read');
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const ids = Array.isArray(input?.ids) ? input.ids.map((id) => String(id || '')) : [];
+            const marcarTodos = Boolean(input?.all) || ids.length === 0;
+            const alvoIds = new Set(ids);
+
+            const raw = await lerDados('chat-messages');
+            const lista = Array.isArray(raw) ? raw : [];
+            let mudou = false;
+
+            const atualizado = lista.map((item) => {
+                const id = String(item?.id || '');
+                const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+                const readBy = Array.isArray(item?.readBy)
+                    ? item.readBy.map((r) => String(r || '').toLowerCase())
+                    : [];
+                const deveMarcar = fromUsername !== username && (marcarTodos || alvoIds.has(id));
+                if (!deveMarcar || readBy.includes(username)) {
+                    return item;
+                }
+                mudou = true;
+                return {
+                    ...item,
+                    readBy: [...readBy, username]
+                };
+            });
+
+            if (mudou) {
+                await salvarDados('chat-messages', atualizado);
+            }
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('dashboard-summary', async () => {
+        try {
+            exigirPermissaoAcao('dashboard-summary');
+            const [registros, agendamentos, ocorrencias, presencas] = await Promise.all([
+                lerDados('registros'),
+                lerDados('agendamentos'),
+                lerDados('ocorrencias'),
+                lerDados('auth-presence')
+            ]);
+            const hoje = new Date().toISOString().slice(0, 10);
+            const registrosHoje = (Array.isArray(registros) ? registros : [])
+                .filter((r) => String(r?.dataHoraExame || '').slice(0, 10) === hoje).length;
+            const agendamentosHoje = (Array.isArray(agendamentos) ? agendamentos : [])
+                .filter((a) => String(a?.dataHora || '').slice(0, 10) === hoje).length;
+
+            const ocorrenciasArray = Array.isArray(ocorrencias) ? ocorrencias : [];
+            const ocorrenciasPendentes = ocorrenciasArray.filter((o) => normalizarTextoBusca(o?.status || '') !== 'concluido');
+            const pendencias = ocorrenciasPendentes.length;
+            const prioridadeDiasPadrao = (prioridadeRaw) => {
+                const prioridade = normalizarTextoBusca(prioridadeRaw || 'media');
+                if (prioridade === 'alta') return 1;
+                if (prioridade === 'baixa') return 5;
+                return 3;
+            };
+            const prazoEfetivoOcorrencia = (o) => {
+                const prazo = String(o?.prazo || '').slice(0, 10);
+                if (prazo && Number.isFinite(Date.parse(`${prazo}T00:00:00`))) {
+                    return prazo;
+                }
+                const data = String(o?.data || '').slice(0, 10);
+                if (!data || !Number.isFinite(Date.parse(`${data}T00:00:00`))) {
+                    return '';
+                }
+                const base = new Date(`${data}T00:00:00`);
+                base.setDate(base.getDate() + prioridadeDiasPadrao(o?.prioridade));
+                return base.toISOString().slice(0, 10);
+            };
+            const hojeLocal = new Date();
+            const hojeIso = new Date(hojeLocal.getFullYear(), hojeLocal.getMonth(), hojeLocal.getDate()).toISOString().slice(0, 10);
+
+            const ativos = filtrarPresencasAtivas(presencas);
+            const inconsistencias = [];
+            const alertasDetalhados = [];
+            try {
+                validarDuplicidadeRegistros(Array.isArray(registros) ? registros : []);
+            } catch (error) {
+                inconsistencias.push(error.message);
+                alertasDetalhados.push({ tipo: 'sistema', mensagem: error.message });
+            }
+
+            const pendentesAntigas = ocorrenciasPendentes.filter((o) => {
+                const data = Date.parse(String(o?.data || ''));
+                if (!Number.isFinite(data)) return false;
+                return (Date.now() - data) > (7 * 24 * 60 * 60 * 1000);
+            });
+            if (pendentesAntigas.length > 0) {
+                const mensagem = `${pendentesAntigas.length} ocorrência(s) pendente(s) há mais de 7 dias.`;
+                inconsistencias.push(mensagem);
+                alertasDetalhados.push({ tipo: 'sistema', mensagem });
+            }
+
+            const backups = listarBackupsAutomaticos();
+            if (backups.length === 0) {
+                const mensagem = 'Sem backup automático disponível.';
+                inconsistencias.push(mensagem);
+                alertasDetalhados.push({ tipo: 'sistema', mensagem });
+            }
+
+            if (ocorrenciasPendentes.length > 0) {
+                const detalhadas = [...ocorrenciasPendentes]
+                    .map((o) => {
+                        const dataIso = String(o?.data || '').trim();
+                        const data = Date.parse(dataIso);
+                        const dataBr = Number.isFinite(data)
+                            ? new Date(data).toLocaleDateString('pt-BR')
+                            : 'data não informada';
+                        const status = String(o?.status || 'Pendente').trim() || 'Pendente';
+                        const responsavel = String(o?.responsavel || '').trim() || 'sem responsável';
+                        const prazoEfetivo = prazoEfetivoOcorrencia(o);
+                        const sla = prazoEfetivo
+                            ? (prazoEfetivo < hojeIso ? 'Atrasada' : (prazoEfetivo === hojeIso ? 'Vence hoje' : 'No prazo'))
+                            : 'Sem prazo';
+                        const prazoBr = prazoEfetivo
+                            ? new Date(`${prazoEfetivo}T00:00:00`).toLocaleDateString('pt-BR')
+                            : 'sem prazo';
+                        const descricao = String(o?.descricao || '').trim().replace(/\s+/g, ' ');
+                        const trecho = descricao.length > 80 ? `${descricao.slice(0, 80)}...` : descricao;
+                        return {
+                            id: String(o?.id ?? ''),
+                            sortKey: Number.isFinite(data) ? data : Number.MAX_SAFE_INTEGER,
+                            responsavel,
+                            sla,
+                            text: `Pendência: ${dataBr} | ${status} | Resp: ${responsavel} | SLA: ${sla} (${prazoBr}) | ${trecho || 'sem descrição'}`
+                        };
+                    })
+                    .sort((a, b) => a.sortKey - b.sortKey);
+
+                const porResponsavel = new Map();
+                let atrasadas = 0;
+                let vencendoHoje = 0;
+                detalhadas.forEach((item) => {
+                    porResponsavel.set(item.responsavel, Number(porResponsavel.get(item.responsavel) || 0) + 1);
+                    if (item.sla === 'Atrasada') atrasadas += 1;
+                    if (item.sla === 'Vence hoje') vencendoHoje += 1;
+                });
+
+                const topResponsaveis = [...porResponsavel.entries()]
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3);
+                topResponsaveis.forEach(([responsavel, total]) => {
+                    const mensagem = `Pendências por responsável: ${responsavel} (${total}).`;
+                    inconsistencias.push(mensagem);
+                    alertasDetalhados.push({ tipo: 'sistema', mensagem });
+                });
+                if (atrasadas > 0) {
+                    const mensagem = `${atrasadas} pendência(s) com SLA atrasado.`;
+                    inconsistencias.push(mensagem);
+                    alertasDetalhados.push({ tipo: 'sistema', mensagem });
+                }
+                if (vencendoHoje > 0) {
+                    const mensagem = `${vencendoHoje} pendência(s) vencendo hoje.`;
+                    inconsistencias.push(mensagem);
+                    alertasDetalhados.push({ tipo: 'sistema', mensagem });
+                }
+
+                detalhadas.slice(0, 10).forEach((item) => {
+                    inconsistencias.push(item.text);
+                    alertasDetalhados.push({
+                        tipo: 'pendencia-ocorrencia',
+                        mensagem: item.text,
+                        ocorrenciaId: item.id
+                    });
+                });
+                if (detalhadas.length > 10) {
+                    const mensagem = `... e mais ${detalhadas.length - 10} pendência(s).`;
+                    inconsistencias.push(mensagem);
+                    alertasDetalhados.push({ tipo: 'sistema', mensagem });
+                }
+            }
+
+            return {
+                ok: true,
+                summary: {
+                    registrosHoje,
+                    agendamentosHoje,
+                    pendenciasOcorrencias: pendencias,
+                    usuariosAtivos: ativos.length,
+                    alertas: inconsistencias,
+                    alertasDetalhados
+                }
+            };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('backup-list-auto', async () => {
+        try {
+            exigirPermissaoAcao('backup-list-auto');
+            return { ok: true, backups: listarBackupsAutomaticos() };
+        } catch (error) {
+            return { ok: false, message: error.message, backups: [] };
+        }
+    });
+
+    ipcMain.handle('backup-preview-auto', async (event, nomeArquivo) => {
+        try {
+            exigirPermissaoAcao('backup-preview-auto');
+            const preview = obterPreviewBackupAutomatico(String(nomeArquivo || ''));
+            return { ok: true, preview };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('backup-restore-auto', async (event, nomeArquivo) => {
+        try {
+            exigirPermissaoAcao('backup-restore-auto');
+            await restaurarBackupAutomatico(String(nomeArquivo || ''));
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('patient-timeline', async (event, filtro) => {
+        try {
+            exigirPermissaoAcao('patient-timeline');
+            const documento = String(filtro?.documento || '').trim();
+            const nome = String(filtro?.nome || '').trim();
+            if (!documento && !nome) {
+                throw new Error('Informe documento ou nome para consultar o histÃ³rico.');
+            }
+            const result = await montarTimelinePaciente({ documento, nome });
+            return { ok: true, ...result };
+        } catch (error) {
+            return { ok: false, message: error.message, timeline: [] };
+        }
+    });
+
     ipcMain.handle('ler-registros', async () => {
         try {
+            exigirPermissaoAcao('ler-registros');
             return await lerDados('registros');
         } catch (error) {
             console.error('Erro ao ler registros:', error);
@@ -688,11 +1897,18 @@ function setupIpcHandlers() {
             return [];
         }
     });
-    ipcMain.handle('salvar-registros', async (event, registros) => {
+    ipcMain.handle('salvar-registros', async (event, registrosInput) => {
         try {
+            exigirPermissaoAcao('salvar-registros');
+            const payload = normalizarPayloadSalvar(registrosInput);
+            const registros = payload.data;
+            await validarConcorrenciaOuFalhar('registros', payload.expectedVersion);
+            const antes = await lerDados('registros');
             validarDuplicidadeRegistros(registros);
             await validarDuplicidadeGlobalPacientes(null, registros);
             await salvarDados('registros', registros);
+            await incrementarVersaoTipo('registros');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'registros', antes, depois: registros, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar registros:', error);
@@ -702,6 +1918,7 @@ function setupIpcHandlers() {
     });
     ipcMain.handle('ler-pacientes', async () => {
         try {
+            exigirPermissaoAcao('ler-pacientes');
             return await lerDados('pacientes');
         } catch (error) {
             console.error('Erro ao ler pacientes:', error);
@@ -709,10 +1926,17 @@ function setupIpcHandlers() {
             return [];
         }
     });
-    ipcMain.handle('salvar-pacientes', async (event, pacientes) => {
+    ipcMain.handle('salvar-pacientes', async (event, pacientesInput) => {
         try {
+            exigirPermissaoAcao('salvar-pacientes');
+            const payload = normalizarPayloadSalvar(pacientesInput);
+            const pacientes = payload.data;
+            await validarConcorrenciaOuFalhar('pacientes', payload.expectedVersion);
+            const antes = await lerDados('pacientes');
             await validarDuplicidadeGlobalPacientes(pacientes);
             await salvarDados('pacientes', pacientes);
+            await incrementarVersaoTipo('pacientes');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'pacientes', antes, depois: pacientes, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar pacientes:', error);
@@ -722,6 +1946,7 @@ function setupIpcHandlers() {
     });
     ipcMain.handle('ler-agendamentos', async () => {
         try {
+            exigirPermissaoAcao('ler-agendamentos');
             return await lerDados('agendamentos');
         } catch (error) {
             console.error('Erro ao ler agendamentos:', error);
@@ -729,9 +1954,16 @@ function setupIpcHandlers() {
             return [];
         }
     });
-    ipcMain.handle('salvar-agendamentos', async (event, agendamentos) => {
+    ipcMain.handle('salvar-agendamentos', async (event, agendamentosInput) => {
         try {
+            exigirPermissaoAcao('salvar-agendamentos');
+            const payload = normalizarPayloadSalvar(agendamentosInput);
+            const agendamentos = payload.data;
+            await validarConcorrenciaOuFalhar('agendamentos', payload.expectedVersion);
+            const antes = await lerDados('agendamentos');
             await salvarDados('agendamentos', agendamentos);
+            await incrementarVersaoTipo('agendamentos');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'agendamentos', antes, depois: agendamentos, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar agendamentos:', error);
@@ -741,6 +1973,7 @@ function setupIpcHandlers() {
     });
     ipcMain.handle('ler-medicos-agenda', async () => {
         try {
+            exigirPermissaoAcao('ler-medicos-agenda');
             return await lerDados('medicos-agenda');
         } catch (error) {
             console.error('Erro ao ler agendas medicas:', error);
@@ -748,9 +1981,16 @@ function setupIpcHandlers() {
             return [];
         }
     });
-    ipcMain.handle('salvar-medicos-agenda', async (event, medicosAgenda) => {
+    ipcMain.handle('salvar-medicos-agenda', async (event, medicosAgendaInput) => {
         try {
+            exigirPermissaoAcao('salvar-medicos-agenda');
+            const payload = normalizarPayloadSalvar(medicosAgendaInput);
+            const medicosAgenda = payload.data;
+            await validarConcorrenciaOuFalhar('medicos-agenda', payload.expectedVersion);
+            const antes = await lerDados('medicos-agenda');
             await salvarDados('medicos-agenda', medicosAgenda);
+            await incrementarVersaoTipo('medicos-agenda');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'medicos-agenda', antes, depois: medicosAgenda, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar agendas medicas:', error);
@@ -760,6 +2000,7 @@ function setupIpcHandlers() {
     });
     ipcMain.handle('buscar-global', async (event, termo) => {
         try {
+            exigirPermissaoAcao('buscar-global');
             const consulta = normalizarTextoBusca(termo);
             if (!consulta) {
                 return [];
@@ -802,6 +2043,7 @@ function setupIpcHandlers() {
         }
     });
     ipcMain.handle('salvar-arquivo', async (event, {conteudo, tipo}) => {
+        exigirPermissaoAcao('salvar-arquivo');
         const options = {
             defaultPath: app.getPath('documents') + `/registros_${new Date().toISOString().slice(0,10)}.${tipo}`,
             filters: [
@@ -819,6 +2061,7 @@ function setupIpcHandlers() {
 
     ipcMain.handle('exportar-pdf', async (event, registros) => {
         try {
+            exigirPermissaoAcao('exportar-pdf');
             const options = {
                 title: 'Salvar PDF',
                 defaultPath: app.getPath('documents') + `/registros_${new Date().toISOString().slice(0,10)}.pdf`,
@@ -836,16 +2079,16 @@ function setupIpcHandlers() {
 
             doc.pipe(stream);
 
-            // CabeÃƒÂ§alho
+            // CabeÃƒÆ’Ã‚Â§alho
             doc.fontSize(24)
                .font('Helvetica-Bold')
                .text('Registro de Pacientes', {align: 'center'});
             doc.moveDown();
 
-            // Data do relatÃƒÂ³rio
+            // Data do relatÃƒÆ’Ã‚Â³rio
             doc.fontSize(8)
                .font('Helvetica')
-               .text(`RelatÃƒÂ³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, {align: 'right'});
+               .text(`RelatÃƒÆ’Ã‚Â³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, {align: 'right'});
             doc.moveDown(2);
 
             // Define larguras das colunas
@@ -858,21 +2101,21 @@ function setupIpcHandlers() {
                 tecnico: 70
             };
 
-            // CabeÃƒÂ§alho da tabela com fundo azul claro
+            // CabeÃƒÆ’Ã‚Â§alho da tabela com fundo azul claro
             doc.font('Helvetica-Bold')
                .fontSize(10);
 
             const tableWidth = 560; // Largura total da tabela
-            const tableX = 20; // PosiÃƒÂ§ÃƒÂ£o X inicial da tabela
+            const tableX = 20; // PosiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o X inicial da tabela
             const headerY = doc.y;
 
-            // CabeÃƒÂ§alho com fundo azul claro
+            // CabeÃƒÆ’Ã‚Â§alho com fundo azul claro
             doc.fillColor('#e8eef7')
                .rect(tableX, headerY, tableWidth, 20)
                .fill()
                .fillColor('#000');
 
-            // Textos do cabeÃƒÂ§alho
+            // Textos do cabeÃƒÆ’Ã‚Â§alho
             let currentX = tableX;
             doc.text('Nome', currentX, headerY + 5, {width: colWidths.nome});
             currentX += colWidths.nome;
@@ -884,7 +2127,7 @@ function setupIpcHandlers() {
             currentX += colWidths.acesso;
             doc.text('Data/Hora', currentX, headerY + 5, {width: colWidths.dataHora});
             currentX += colWidths.dataHora;
-            doc.text('TÃƒÂ©cnico', currentX, headerY + 5, {width: colWidths.tecnico});
+            doc.text('TÃƒÆ’Ã‚Â©cnico', currentX, headerY + 5, {width: colWidths.tecnico});
 
             doc.moveDown();
 
@@ -917,7 +2160,7 @@ function setupIpcHandlers() {
                 currentX += colWidths.dataHora;
                 doc.text(r.nomeTecnico || '', currentX, rowY + 5, {width: colWidths.tecnico});
 
-                // ObservaÃƒÂ§ÃƒÂµes adicionais
+                // ObservaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes adicionais
                 if (r.observacoesAdicionais) {
                     doc.moveDown(0.7);
                     doc.fillColor('#666666')
@@ -930,14 +2173,14 @@ function setupIpcHandlers() {
 
                 doc.moveDown();
 
-                // Adiciona nova pÃƒÂ¡gina se necessÃƒÂ¡rio
+                // Adiciona nova pÃƒÆ’Ã‚Â¡gina se necessÃƒÆ’Ã‚Â¡rio
                 if (doc.y > 750) {
                     doc.addPage();
                     doc.fontSize(8);
                 }
             });
 
-            // RodapÃƒÂ©
+            // RodapÃƒÆ’Ã‚Â©
             doc.fontSize(8)
                .text(`Documento gerado automaticamente em ${new Date().toLocaleString('pt-BR')}`, 50, doc.page.height - 50, {
                    align: 'center'
@@ -969,6 +2212,7 @@ function setupIpcHandlers() {
 
     ipcMain.handle('exportar-csv', async (event, registros) => {
         try {
+            exigirPermissaoAcao('exportar-csv');
             const options = {
                 title: 'Salvar Excel',
                 defaultPath: app.getPath('documents') + `/registros_${new Date().toISOString().slice(0,10)}.xlsx`,
@@ -1033,26 +2277,26 @@ function setupIpcHandlers() {
                 { v: r.observacoesAdicionais || '', s: index % 2 ? styles.celulaAlternada : styles.celula }
             ]));
 
-            // Adiciona cabeÃƒÂ§alho
+            // Adiciona cabeÃƒÆ’Ã‚Â§alho
             dados.unshift([
                 { v: 'Nome do Paciente', s: styles.cabecalho },
                 { v: 'Modalidade', s: styles.cabecalho },
                 { v: 'Exame', s: styles.cabecalho },
-                { v: 'NÃƒÂºmero de Acesso', s: styles.cabecalho },
+                { v: 'NÃƒÆ’Ã‚Âºmero de Acesso', s: styles.cabecalho },
                 { v: 'Data/Hora', s: styles.cabecalho },
-                { v: 'TÃƒÂ©cnico', s: styles.cabecalho },
-                { v: 'ObservaÃƒÂ§ÃƒÂµes', s: styles.cabecalho }
+                { v: 'TÃƒÆ’Ã‚Â©cnico', s: styles.cabecalho },
+                { v: 'ObservaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes', s: styles.cabecalho }
             ]);
 
-            // Adiciona tÃƒÂ­tulo
+            // Adiciona tÃƒÆ’Ã‚Â­tulo
             dados.unshift([{ v: 'Registro de Pacientes', s: styles.titulo }], 
-                         [{ v: `RelatÃƒÂ³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, s: styles.celula }],
+                         [{ v: `RelatÃƒÆ’Ã‚Â³rio gerado em: ${new Date().toLocaleString('pt-BR')}`, s: styles.celula }],
                          []);
 
             // Cria a planilha
             const ws = XLSX.utils.aoa_to_sheet(dados);
 
-            // Configura mesclagem de cÃƒÂ©lulas
+            // Configura mesclagem de cÃƒÆ’Ã‚Â©lulas
             ws['!merges'] = [
                 { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
                 { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }
@@ -1063,10 +2307,10 @@ function setupIpcHandlers() {
                 { wch: 60 }, // Nome do Paciente
                 { wch: 15 }, // Modalidade
                 { wch: 30 }, // Exame
-                { wch: 20 }, // NÃƒÂºmero de Acesso
+                { wch: 20 }, // NÃƒÆ’Ã‚Âºmero de Acesso
                 { wch: 20 }, // Data/Hora
-                { wch: 20 }, // TÃƒÂ©cnico
-                { wch: 80 }  // ObservaÃƒÂ§ÃƒÂµes
+                { wch: 20 }, // TÃƒÆ’Ã‚Â©cnico
+                { wch: 80 }  // ObservaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
             ];
 
             // Adiciona a planilha ao workbook
@@ -1089,6 +2333,7 @@ function setupIpcHandlers() {
 
     ipcMain.handle('importar-arquivo', async (event) => {
         try {
+          exigirPermissaoAcao('importar-arquivo');
           const result = await dialog.showOpenDialog({
             properties: ['openFile'],
             filters: [
@@ -1109,9 +2354,10 @@ function setupIpcHandlers() {
         }
       });
 
-    // Adicionar handlers para ocorrÃƒÂªncias
+    // Adicionar handlers para ocorrÃƒÆ’Ã‚Âªncias
     ipcMain.handle('ler-ocorrencias', async () => {
         try {
+            exigirPermissaoAcao('ler-ocorrencias');
             return await lerDados('ocorrencias');
         } catch (error) {
             console.error('Erro ao ler ocorrencias:', error);
@@ -1119,9 +2365,16 @@ function setupIpcHandlers() {
             return [];
         }
     });
-    ipcMain.handle('salvar-ocorrencias', async (event, ocorrencias) => {
+    ipcMain.handle('salvar-ocorrencias', async (event, ocorrenciasInput) => {
         try {
+            exigirPermissaoAcao('salvar-ocorrencias');
+            const payload = normalizarPayloadSalvar(ocorrenciasInput);
+            const ocorrencias = payload.data;
+            await validarConcorrenciaOuFalhar('ocorrencias', payload.expectedVersion);
+            const antes = await lerDados('ocorrencias');
             await salvarDados('ocorrencias', ocorrencias);
+            await incrementarVersaoTipo('ocorrencias');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'ocorrencias', antes, depois: ocorrencias, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar ocorrencias:', error);
@@ -1132,6 +2385,7 @@ function setupIpcHandlers() {
     // Adicionar handlers para ponto
     ipcMain.handle('ler-ponto', async () => {
         try {
+            exigirPermissaoAcao('ler-ponto');
             return await lerDados('ponto');
         } catch (error) {
             console.error('Erro ao ler ponto:', error);
@@ -1139,9 +2393,16 @@ function setupIpcHandlers() {
             return { funcionarios: [], registros: [] };
         }
     });
-    ipcMain.handle('salvar-ponto', async (event, dados) => {
+    ipcMain.handle('salvar-ponto', async (event, dadosInput) => {
         try {
+            exigirPermissaoAcao('salvar-ponto');
+            const payload = normalizarPayloadSalvar(dadosInput);
+            const dados = payload.data;
+            await validarConcorrenciaOuFalhar('ponto', payload.expectedVersion);
+            const antes = await lerDados('ponto');
             await salvarDados('ponto', dados);
+            await incrementarVersaoTipo('ponto');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'ponto', antes, depois: dados, detalhe: payload.detalhe });
             return true;
         } catch (error) {
             console.error('Erro ao salvar ponto:', error);
@@ -1149,7 +2410,7 @@ function setupIpcHandlers() {
             return false;
         }
     });
-    // Handler para ler configuraÃƒÂ§ÃƒÂ£o
+    // Handler para ler configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
     ipcMain.handle('ler-config', async () => {
         try {
             return await lerDados('config');
@@ -1158,10 +2419,14 @@ function setupIpcHandlers() {
             return {};
         }
     });
-    // Handler para salvar configuraÃƒÂ§ÃƒÂ£o
+    // Handler para salvar configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
     ipcMain.handle('salvar-config', async (event, config) => {
         try {
+            exigirPermissaoAcao('salvar-config');
+            const antes = await lerDados('config');
             await salvarDados('config', config);
+            await incrementarVersaoTipo('config');
+            await registrarAuditoria({ acao: 'salvar', tipo: 'config', antes, depois: config, detalhe: 'Atualizacao de configuracao' });
             return true;
         } catch (error) {
             console.error('Erro ao salvar config:', error);
@@ -1172,6 +2437,7 @@ function setupIpcHandlers() {
 
     ipcMain.handle('get-theme', async () => {
         try {
+            exigirPermissaoAcao('get-theme');
             const config = await lerDados('config');
             return normalizarTema(config?.theme);
         } catch (error) {
@@ -1182,12 +2448,15 @@ function setupIpcHandlers() {
 
     ipcMain.handle('set-theme', async (event, theme) => {
         try {
+            exigirPermissaoAcao('set-theme');
             const temaNormalizado = normalizarTema(theme);
             const configAtual = await lerDados('config');
             const novoConfig = (configAtual && typeof configAtual === 'object')
                 ? { ...configAtual, theme: temaNormalizado }
                 : { theme: temaNormalizado };
             await salvarDados('config', novoConfig);
+            await incrementarVersaoTipo('config');
+            await registrarAuditoria({ acao: 'tema', tipo: 'config', antes: configAtual, depois: novoConfig, detalhe: `Tema: ${temaNormalizado}` });
             return { ok: true, theme: temaNormalizado };
         } catch (error) {
             console.error('Erro ao salvar tema:', error);
@@ -1197,17 +2466,17 @@ function setupIpcHandlers() {
 }
 
 
-// FunÃƒÂ§ÃƒÂ£o auxiliar para formatar campos do CSV
+// FunÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o auxiliar para formatar campos do CSV
 function formatCsvField(value, maxWidth) {
     if (value === null || value === undefined) {
         value = '';
     }
     value = value.toString();
     
-    // Remove quebras de linha e vÃƒÂ­rgulas
+    // Remove quebras de linha e vÃƒÆ’Ã‚Â­rgulas
     value = value.replace(/[\r\n]+/g, ' ').replace(/,/g, ';');
     
-    // Trunca o texto se exceder a largura mÃƒÂ¡xima
+    // Trunca o texto se exceder a largura mÃƒÆ’Ã‚Â¡xima
     if (value.length > maxWidth) {
         value = value.substring(0, maxWidth - 3) + '...';
     }
@@ -1253,21 +2522,21 @@ async function importarBackup() {
 
         const { filePaths } = await dialog.showOpenDialog(mainWindow, options);
         if (filePaths.length > 0) {
-            // LÃƒÂª o arquivo de backup
+            // LÃƒÆ’Ã‚Âª o arquivo de backup
             const backupData = fs.readFileSync(filePaths[0], 'utf8');
             
-            // Tenta fazer o parse para garantir que ÃƒÂ© um JSON vÃƒÂ¡lido
+            // Tenta fazer o parse para garantir que ÃƒÆ’Ã‚Â© um JSON vÃƒÆ’Ã‚Â¡lido
             const parsedData = JSON.parse(backupData);
             if (!Array.isArray(parsedData)) {
                 throw new Error('Formato de backup invalido. Esperado: array de registros.');
             }
 
-            // Confirma com o usuÃƒÂ¡rio
+            // Confirma com o usuÃƒÆ’Ã‚Â¡rio
             const { response } = await dialog.showMessageBox(mainWindow, {
                 type: 'warning',
-                buttons: ['Sim', 'NÃƒÂ£o'],
-                title: 'ConfirmaÃƒÂ§ÃƒÂ£o',
-                message: 'Isso substituirÃƒÂ¡ todos os registros atuais. Deseja continuar?'
+                buttons: ['Sim', 'NÃƒÆ’Ã‚Â£o'],
+                title: 'ConfirmaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o',
+                message: 'Isso substituirÃƒÆ’Ã‚Â¡ todos os registros atuais. Deseja continuar?'
             });
 
             if (response === 0) { // Se clicou em 'Sim'
@@ -1276,7 +2545,7 @@ async function importarBackup() {
                 dialog.showMessageBox(mainWindow, {
                     type: 'info',
                     title: 'Sucesso',
-                    message: 'Backup importado com sucesso! A aplicaÃƒÂ§ÃƒÂ£o serÃƒÂ¡ reiniciada.',
+                    message: 'Backup importado com sucesso! A aplicaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o serÃƒÆ’Ã‚Â¡ reiniciada.',
                     buttons: ['OK']
                 }).then(() => {
                     app.relaunch();
@@ -1294,7 +2563,7 @@ function createWindow() {
         width: 1400,
         height: 1000,
         show: false,
-        title: 'Registro de Pacientes v2.0', // Adicionado tÃƒÂ­tulo com versÃƒÂ£o
+        title: 'Registro de Pacientes v2.0', // Adicionado tÃƒÆ’Ã‚Â­tulo com versÃƒÆ’Ã‚Â£o
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -1441,12 +2710,12 @@ function createHelpWindow() {
         
         // Adiciona manipulador de erro
         helpWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-            console.error('Erro ao carregar conteÃƒÂºdo:', errorDescription);
+            console.error('Erro ao carregar conteÃƒÆ’Ã‚Âºdo:', errorDescription);
             dialog.showErrorBox('Erro', 'Falha ao carregar o manual: ' + errorDescription);
         });
     } catch (error) {
         console.error('Erro ao carregar o manual:', error);
-        dialog.showErrorBox('Erro', 'NÃƒÂ£o foi possÃƒÂ­vel carregar o manual: ' + error.message);
+        dialog.showErrorBox('Erro', 'NÃƒÆ’Ã‚Â£o foi possÃƒÆ’Ã‚Â­vel carregar o manual: ' + error.message);
     }
 
     helpWindow.on('closed', () => {
@@ -1457,6 +2726,10 @@ function createHelpWindow() {
 app.whenReady().then(async () => {
     try {
         const onlineNoInicio = await inicializarPersistencia();
+        iniciarLoopBackupAutomatico();
+        criarBackupAutomatico().catch((error) => {
+            console.warn('Falha no backup automatico inicial:', error.message);
+        });
         setupIpcHandlers();
         createWindow();
 
@@ -1468,7 +2741,7 @@ app.whenReady().then(async () => {
             });
         }
 
-        // Copiar o manual para o diretÃƒÂ³rio de instalaÃƒÂ§ÃƒÂ£o
+        // Copiar o manual para o diretÃƒÆ’Ã‚Â³rio de instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
         const manualSourcePath = path.join(__dirname, 'MANUAL.md');
         const manualDestPath = path.join(__dirname, 'MANUAL.md');
         fs.copyFileSync(manualSourcePath, manualDestPath);
@@ -1492,6 +2765,15 @@ app.on('activate', () => {
 });
 
 app.on('before-quit', () => {
+    encerrarSessaoAtual().catch((error) => {
+        console.warn('Falha ao encerrar sessao na saida:', error.message);
+    });
+
+    if (autoBackupTimer) {
+        clearInterval(autoBackupTimer);
+        autoBackupTimer = null;
+    }
+
     if (reconnectTimer) {
         clearInterval(reconnectTimer);
         reconnectTimer = null;
@@ -1503,4 +2785,6 @@ app.on('before-quit', () => {
         });
     }
 });
+
+
 

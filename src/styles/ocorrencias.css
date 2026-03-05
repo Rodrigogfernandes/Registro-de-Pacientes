@@ -1067,6 +1067,23 @@ body.dark-theme .close {
     color: #e2e2e2;
 }
 
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#btnCarregarMaisOcorrencias {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
 body.dark-theme .close:hover {
     color: #ffffff;
 }

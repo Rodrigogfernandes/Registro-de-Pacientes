@@ -1,21 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livro de Ocorrências</title>
+    <title>Livro de Ocorrencias</title>
     <link rel="stylesheet" href="../../styles/ocorrencias.css">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
     <script>
-      // Aplicar tema antes da página ser renderizada
       (function() {
         try {
           const savedTheme = localStorage.getItem('theme') || 'light';
-          // Remover classes de tema do html
           document.documentElement.classList.remove('dark-theme', 'light-theme', 'theme-azul');
-          
-          // Aplicar tema no html (o body será atualizado pelo script principal)
           if (savedTheme === 'dark') {
             document.documentElement.classList.add('dark-theme');
           } else if (savedTheme === 'light') {
@@ -32,18 +28,18 @@
 
 <body>
     <header class="header-container">
-        <button onclick="window.location.href='../index.html'" class="home-button" title="Voltar para a página inicial">Home</button>
-        <h1>Livro de Ocorrências</h1>
+        <button onclick="window.location.href='../index.html'" class="home-button" title="Voltar para a pagina inicial">Home</button>
+        <h1>Livro de Ocorrencias</h1>
     </header>
 
     <div class="table-container">
         <div class="search-bar0">
             <div class="search-bar2">
-                <button type="button" onclick="abrirModal('novo')" style="font-weight: 600;">Nova Ocorrência</button>
+                <button type="button" onclick="abrirModal('novo')" style="font-weight: 600;">Nova Ocorrencia</button>
             </div>
             <div class="search-bar1">
                 <div class="search-input-container">
-                    <input type="text" id="inputPesquisa" placeholder="Pesquisar ocorrências..." oninput="filtrarOcorrencias()">
+                    <input type="text" id="inputPesquisa" placeholder="Pesquisar ocorrencias..." oninput="filtrarOcorrencias()">
                     <button type="button" class="clear-search" style="display: none;" onclick="limparPesquisa()">&times;</button>
                 </div>
                 <button type="button" id="btnEditarRegistro" onclick="abrirModal('editar')" disabled>Editar</button>
@@ -51,62 +47,71 @@
             </div>
         </div>
 
-        <!-- Tabela de Ocorrências -->
         <table>
             <thead class="thead-columns">
                 <tr>
                     <th data-sort="asc">Data</th>
                     <th data-sort="asc">Turno</th>
-                    <th data-sort="asc">Descrição</th>
-                    <th data-sort="asc">Responsável</th>
+                    <th data-sort="asc">Descricao</th>
+                    <th data-sort="asc">Responsavel</th>
+                    <th data-sort="asc">Prazo</th>
+                    <th data-sort="asc">Prioridade</th>
+                    <th data-sort="asc">SLA</th>
                     <th data-sort="asc">Status</th>
                 </tr>
             </thead>
-            <tbody id="listaExames">
-                <!-- Ocorrências serão adicionadas dinamicamente aqui -->
-            </tbody>
+            <tbody id="listaExames"></tbody>
         </table>
+        <div class="table-footer">
+            <span id="ocorrenciasInfo">Exibindo 0 de 0 ocorrencias</span>
+            <button type="button" id="btnCarregarMaisOcorrencias" onclick="carregarMaisOcorrencias()" style="display:none;">Exibir Mais</button>
+        </div>
 
-        <!-- Modal de Cadastro/Edição -->
         <div id="modalForm" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModal()">&times;</span>
-                <h2 id="modalTitle">Nova Ocorrência</h2>
+                <h2 id="modalTitle">Nova Ocorrencia</h2>
                 <form id="formOcorrencia" onsubmit="salvarOcorrencia(event)">
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <input type="date" id="data" name="data" required style="flex: 1;">
                         <select id="turno" name="turno" required style="flex: 1;">
                             <option value="" disabled selected>Selecione o Turno</option>
-                            <option value="Manhã">Manhã</option>
+                            <option value="Manha">Manha</option>
                             <option value="Tarde">Tarde</option>
                             <option value="Noite">Noite</option>
                         </select>
                     </div>
-                    <textarea id="descricao" name="descricao" placeholder="Descrição da ocorrência" required 
-                              style="width: 100%; height: 100px; margin-bottom: 10px;"></textarea>
+                    <textarea id="descricao" name="descricao" placeholder="Descricao da ocorrencia" required style="width: 100%; height: 100px; margin-bottom: 10px;"></textarea>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="responsavel" name="responsavel" placeholder="Responsavel" required style="flex: 1;">
+                        <input type="date" id="prazo" name="prazo" title="Prazo" style="flex: 1;">
+                    </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="text" id="responsavel" name="responsavel" placeholder="Responsável" required style="flex: 1;">
+                        <select id="prioridade" name="prioridade" required style="flex: 1;">
+                            <option value="Media" selected>Media</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Baixa">Baixa</option>
+                        </select>
                         <select id="status" name="status" required style="flex: 1;">
                             <option value="" disabled selected>Status</option>
                             <option value="Pendente">Pendente</option>
                             <option value="Em andamento">Em andamento</option>
-                            <option value="Concluído">Concluído</option>
+                            <option value="Concluido">Concluido</option>
                         </select>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-                        <button type="submit" class="btn-confirmar" >Salvar</button>
+                        <button type="submit" class="btn-confirmar">Salvar</button>
                         <button type="button" onclick="fecharModal()">Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Modal de Confirmação de Exclusão -->
         <div id="modalConfirmacao" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModalConfirmacao()">&times;</span>
-                <h2>Confirmar Exclusão</h2>
-                <p>Tem certeza que deseja excluir esta ocorrência?</p>
+                <h2>Confirmar Exclusao</h2>
+                <p>Tem certeza que deseja excluir esta ocorrencia?</p>
                 <div class="modal-buttons">
                     <button type="button" class="btn-confirmar" onclick="confirmarExclusao()">Confirmar</button>
                     <button type="button" class="btn-cancelar" onclick="fecharModalConfirmacao()">Cancelar</button>
@@ -114,7 +119,6 @@
             </div>
         </div>
 
-        <!-- Modal de Alerta -->
         <div id="modalAlerta" class="modal">
             <div class="modal-content">
                 <h2>Aviso</h2>
@@ -125,12 +129,11 @@
             </div>
         </div>
 
-        <!-- Modal de Observações atualizado -->
         <div id="modalObservacoes" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModalObservacoes()">&times;</span>
-                <h2>Descrição da Ocorrência</h2>
-                <textarea id="observacoesAdicionais" placeholder="Digite a descrição completa da ocorrência..."></textarea>
+                <h2>Descricao da Ocorrencia</h2>
+                <textarea id="observacoesAdicionais" placeholder="Digite a descricao completa da ocorrencia..."></textarea>
                 <div class="modal-buttons">
                     <button type="button" class="btn-confirmar" onclick="salvarObservacoes()">Salvar</button>
                     <button type="button" class="btn-cancelar" onclick="fecharModalObservacoes()">Cancelar</button>

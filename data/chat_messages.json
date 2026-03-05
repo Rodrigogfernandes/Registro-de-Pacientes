@@ -1,0 +1,91 @@
+[
+  {
+    "id": "1772686941334-90cfab32",
+    "at": "2026-03-05T05:02:21.334Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "bom dia",
+    "readBy": [
+      "admin",
+      "rodrigo"
+    ]
+  },
+  {
+    "id": "1772687178907-628ce302",
+    "at": "2026-03-05T05:06:18.908Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "oi",
+    "readBy": [
+      "admin",
+      "rodrigo"
+    ]
+  },
+  {
+    "id": "1772687592050-90647add",
+    "at": "2026-03-05T05:13:12.050Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "ola",
+    "readBy": [
+      "admin"
+    ]
+  },
+  {
+    "id": "1772687720277-aec0d8eb",
+    "at": "2026-03-05T05:15:20.277Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "oi",
+    "readBy": [
+      "admin"
+    ]
+  },
+  {
+    "id": "1772687867983-48c0a370",
+    "at": "2026-03-05T05:17:47.983Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes"
+    },
+    "text": "ola",
+    "readBy": [
+      "admin"
+    ]
+  },
+  {
+    "id": "1772688584773-8686569a",
+    "at": "2026-03-05T05:29:44.773Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "😂",
+    "readBy": [
+      "admin"
+    ]
+  }
+]

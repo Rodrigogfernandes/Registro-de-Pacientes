@@ -1,0 +1,439 @@
+[
+  {
+    "id": "1772677592941-c44a2bfb",
+    "at": "2026-03-05T02:26:32.941Z",
+    "acao": "salvar",
+    "tipo": "agendamentos",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 2,
+      "totalDepois": 2,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de agendamentos"
+  },
+  {
+    "id": "1772677593151-7dfe2227",
+    "at": "2026-03-05T02:26:33.151Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 51,
+      "totalDepois": 52,
+      "adicionados": 1,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677596317-cc28105e",
+    "at": "2026-03-05T02:26:36.317Z",
+    "acao": "salvar",
+    "tipo": "agendamentos",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 2,
+      "totalDepois": 2,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de agendamentos"
+  },
+  {
+    "id": "1772677596474-08bb1a45",
+    "at": "2026-03-05T02:26:36.474Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 52,
+      "totalDepois": 53,
+      "adicionados": 1,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677600587-97daa60a",
+    "at": "2026-03-05T02:26:40.587Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677603380-40bf1bbb",
+    "at": "2026-03-05T02:26:43.380Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677606587-24f4f9ee",
+    "at": "2026-03-05T02:26:46.587Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677610351-d2b0cdf7",
+    "at": "2026-03-05T02:26:50.351Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677613711-54350211",
+    "at": "2026-03-05T02:26:53.711Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677617748-9f5219ad",
+    "at": "2026-03-05T02:26:57.748Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677621894-e7f4e209",
+    "at": "2026-03-05T02:27:01.894Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677625813-00e8ae88",
+    "at": "2026-03-05T02:27:05.813Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772677629880-0a46457a",
+    "at": "2026-03-05T02:27:09.880Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "89809e046567f34bd299f8a0e572129f"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1772679315835-74d1fa89",
+    "at": "2026-03-05T02:55:15.836Z",
+    "acao": "salvar",
+    "tipo": "ocorrencias",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "2ddd92d4325376e0baee3dc95c8995ae"
+    },
+    "resumo": {
+      "totalAntes": 24,
+      "totalDepois": 24,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao via modulo de ocorrencias"
+  },
+  {
+    "id": "1772679332372-45e2adbe",
+    "at": "2026-03-05T02:55:32.372Z",
+    "acao": "salvar",
+    "tipo": "ocorrencias",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "2ddd92d4325376e0baee3dc95c8995ae"
+    },
+    "resumo": {
+      "totalAntes": 24,
+      "totalDepois": 24,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao via modulo de ocorrencias"
+  },
+  {
+    "id": "1772679341410-5e350239",
+    "at": "2026-03-05T02:55:41.410Z",
+    "acao": "salvar",
+    "tipo": "ocorrencias",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "2ddd92d4325376e0baee3dc95c8995ae"
+    },
+    "resumo": {
+      "totalAntes": 24,
+      "totalDepois": 24,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao via modulo de ocorrencias"
+  },
+  {
+    "id": "1772679349834-8e90a26c",
+    "at": "2026-03-05T02:55:49.834Z",
+    "acao": "salvar",
+    "tipo": "ocorrencias",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "2ddd92d4325376e0baee3dc95c8995ae"
+    },
+    "resumo": {
+      "totalAntes": 24,
+      "totalDepois": 24,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao via modulo de ocorrencias"
+  },
+  {
+    "id": "1772686941518-e8b0d426",
+    "at": "2026-03-05T05:02:21.518Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "4e10fcbf959782c14517b3608b16e639"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772687179093-5c2962c0",
+    "at": "2026-03-05T05:06:19.093Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "1d65eb606468645cadfa5dd78de8ea39"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772687592228-87b54d62",
+    "at": "2026-03-05T05:13:12.228Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "0b08a33c59080f89a9e8d30a05289b08"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772687720467-7386b84a",
+    "at": "2026-03-05T05:15:20.468Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "cef3e7749a5cc3f894147b10cf123cef"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772687868168-971ed452",
+    "at": "2026-03-05T05:17:48.168Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "54f2ea67a744dda7d3e7c60668c84269"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772688584932-f5b9721a",
+    "at": "2026-03-05T05:29:44.932Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "54f2ea67a744dda7d3e7c60668c84269"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  }
+]

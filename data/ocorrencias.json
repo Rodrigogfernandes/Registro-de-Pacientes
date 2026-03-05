@@ -13,7 +13,7 @@
     "turno": "Tarde",
     "descricao": "LALALALALALALALALALlalalalala",
     "responsavel": "aman",
-    "status": "Pendente"
+    "status": "Concluído"
   },
   {
     "id": 1740449517158,
@@ -21,7 +21,7 @@
     "turno": "Tarde",
     "descricao": "asascascasc",
     "responsavel": "ze",
-    "status": "Em andamento"
+    "status": "Concluído"
   },
   {
     "id": 1740430714146,
@@ -29,7 +29,7 @@
     "turno": "Manhã",
     "descricao": "dteste 22:54",
     "responsavel": "rodrigo",
-    "status": "Pendente"
+    "status": "Concluído"
   },
   {
     "id": 1740430640552,

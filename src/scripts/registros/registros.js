@@ -23,6 +23,8 @@ let registrosPorPagina = 50;
 let paginaAtual = 1;
 let registroAtualId = null;
 let resizeTimer = null;
+let sessaoAtual = null;
+const dataVersions = { registros: 0, pacientes: 0 };
 
 // Adicionar estas variÃ¡veis no inÃ­cio do arquivo
  // NÃºmero de registros exibidos inicialmente
@@ -74,13 +76,14 @@ loadTheme();
 
 // FunÃ§Ãµes de InicializaÃ§Ã£o
 document.addEventListener('DOMContentLoaded', async () => {
-    await garantirAcesso(['admin', 'recepcao', 'tecnico']);
+    sessaoAtual = await garantirAcesso(['admin', 'recepcao', 'tecnico']);
     // Carregar tema novamente para garantir
     loadTheme();
     
     await carregarPacientes();
     await carregarRegistros();
     setupEventListeners();
+    carregarFiltrosSalvos();
     registrosPorPagina = calcularRegistrosPorPagina();
     atualizarTabela();
     atualizarBotoesAcao(); // Adicione esta linha para desabilitar os botÃµes ao iniciar
@@ -109,6 +112,9 @@ function setupEventListeners() {
     document.getElementById('btnFiltrarAvancado').addEventListener('click', toggleFiltroAvancado);
     document.getElementById('btnAplicarFiltroAvancado').addEventListener('click', aplicarFiltroAvancado);
     document.getElementById('btnLimparFiltroAvancado').addEventListener('click', limparFiltroAvancado);
+    document.getElementById('btnSalvarFiltroAvancado')?.addEventListener('click', salvarFiltroAvancadoAtual);
+    document.getElementById('btnRemoverFiltroAvancado')?.addEventListener('click', removerFiltroAvancadoSelecionado);
+    document.getElementById('filtroSalvoSelect')?.addEventListener('change', aplicarFiltroAvancadoSalvo);
     document.getElementById('btnExcluirRegistro').addEventListener('click', iniciarExclusao);
 
     // Listeners para ordenaÃ§Ã£o
@@ -174,6 +180,8 @@ ipcRenderer.on('start-import', () => {
 // FunÃ§Ãµes de ManipulaÃ§Ã£o de Registros
 async function carregarRegistros() {
     registros = await ipcRenderer.invoke('ler-registros');
+    const v = await ipcRenderer.invoke('data-get-version', 'registros');
+    dataVersions.registros = Number(v?.version || 0);
     registros = registros.map(normalizarRegistro);
     registrosFiltrados = [...registros];
     atualizarTabela();
@@ -194,11 +202,22 @@ async function carregarRegistros() {
 }
 
 async function salvarRegistros() {
-    await ipcRenderer.invoke('salvar-registros', registros);
+    const ok = await ipcRenderer.invoke('salvar-registros', {
+        data: registros,
+        expectedVersion: dataVersions.registros,
+        detalhe: 'Atualizacao via modulo de registros'
+    });
+    if (!ok) {
+        throw new Error('Falha ao salvar registros (possível conflito de edição).');
+    }
+    const v = await ipcRenderer.invoke('data-get-version', 'registros');
+    dataVersions.registros = Number(v?.version || dataVersions.registros);
 }
 
 async function carregarPacientes() {
     pacientes = await ipcRenderer.invoke('ler-pacientes');
+    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+    dataVersions.pacientes = Number(v?.version || 0);
     if (!Array.isArray(pacientes)) {
         pacientes = [];
         return;
@@ -217,7 +236,16 @@ async function carregarPacientes() {
 }
 
 async function salvarPacientes() {
-    await ipcRenderer.invoke('salvar-pacientes', pacientes);
+    const ok = await ipcRenderer.invoke('salvar-pacientes', {
+        data: pacientes,
+        expectedVersion: dataVersions.pacientes,
+        detalhe: 'Atualizacao de pacientes pelo modulo de registros'
+    });
+    if (!ok) {
+        throw new Error('Falha ao salvar pacientes (possível conflito de edição).');
+    }
+    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+    dataVersions.pacientes = Number(v?.version || dataVersions.pacientes);
 }
 
 function cpfSomenteDigitos(valor) {
@@ -652,6 +680,84 @@ function limparFiltroAvancado() {
     atualizarTabela();
 }
 
+function getFiltroStorageKey() {
+    const user = String(sessaoAtual?.username || 'anon');
+    return `registros:filtros:${user}`;
+}
+
+function lerFiltrosSalvos() {
+    try {
+        const raw = localStorage.getItem(getFiltroStorageKey());
+        const lista = JSON.parse(raw || '[]');
+        return Array.isArray(lista) ? lista : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function salvarFiltrosSalvos(lista) {
+    localStorage.setItem(getFiltroStorageKey(), JSON.stringify(Array.isArray(lista) ? lista : []));
+}
+
+function carregarFiltrosSalvos() {
+    const select = document.getElementById('filtroSalvoSelect');
+    if (!select) return;
+    const lista = lerFiltrosSalvos();
+    const opcoes = ['<option value="">Filtros salvos</option>']
+        .concat(lista.map((item, idx) => `<option value="${idx}">${String(item.nome || `Filtro ${idx + 1}`)}</option>`));
+    select.innerHTML = opcoes.join('');
+}
+
+function obterFiltroAvancadoAtual() {
+    return {
+        modalidade: document.getElementById('filtroModalidade').value,
+        dataInicio: document.getElementById('dataInicio').value,
+        horaInicio: document.getElementById('horaInicio').value,
+        dataFim: document.getElementById('dataFim').value,
+        horaFim: document.getElementById('horaFim').value
+    };
+}
+
+function aplicarFiltroAvancadoSalvo() {
+    const select = document.getElementById('filtroSalvoSelect');
+    if (!select || select.value === '') return;
+    const index = Number(select?.value);
+    if (!Number.isFinite(index)) return;
+    const lista = lerFiltrosSalvos();
+    const filtro = lista[index];
+    if (!filtro) return;
+    document.getElementById('filtroModalidade').value = filtro.modalidade || '';
+    document.getElementById('dataInicio').value = filtro.dataInicio || '';
+    document.getElementById('horaInicio').value = filtro.horaInicio || '00:00';
+    document.getElementById('dataFim').value = filtro.dataFim || '';
+    document.getElementById('horaFim').value = filtro.horaFim || '23:59';
+    aplicarFiltroAvancado();
+}
+
+function salvarFiltroAvancadoAtual() {
+    const nome = window.prompt('Nome do filtro salvo:');
+    if (!nome) return;
+    const lista = lerFiltrosSalvos();
+    lista.push({
+        nome: String(nome).trim(),
+        ...obterFiltroAvancadoAtual()
+    });
+    salvarFiltrosSalvos(lista.slice(-20));
+    carregarFiltrosSalvos();
+}
+
+function removerFiltroAvancadoSelecionado() {
+    const select = document.getElementById('filtroSalvoSelect');
+    if (!select || select.value === '') return;
+    const index = Number(select?.value);
+    if (!Number.isFinite(index)) return;
+    const lista = lerFiltrosSalvos();
+    if (!lista[index]) return;
+    lista.splice(index, 1);
+    salvarFiltrosSalvos(lista);
+    carregarFiltrosSalvos();
+}
+
 // FunÃ§Ãµes para OrdenaÃ§Ã£o
 function ordenarTabela(th) {
     const campos = ['nomePaciente', 'modalidade', 'observacoes', 'numeroAcesso', 'dataHoraExame', 'nomeTecnico'];
@@ -700,13 +806,18 @@ function iniciarExclusao() {
         }, 300);
     };
 
-    const confirmarExclusao = () => {
+    const confirmarExclusao = async () => {
         const index = registros.findIndex(r => r.id === registroSelecionado.id);
         if (index !== -1) {
             registros.splice(index, 1);
             registrosFiltrados = registrosFiltrados.filter(r => r.id !== registroSelecionado.id);
             registroSelecionado = null;
-            salvarRegistros();
+            try {
+                await salvarRegistros();
+            } catch (error) {
+                alert(error.message || 'Erro ao salvar alterações.');
+                carregarRegistros();
+            }
             atualizarTabela();
             atualizarBotoesAcao();
         }
@@ -879,38 +990,43 @@ function fecharModalObservacoes() {
     registroAtualId = null;
 }
 
-function salvarObservacoes() {
+async function salvarObservacoes() {
     const observacoes = document.getElementById('observacoesAdicionais').value;
     if (!registroAtualId) return;
     const index = registros.findIndex(r => r.id === registroAtualId);
     if (index !== -1) {
         registros[index].observacoesAdicionais = observacoes;
-        salvarRegistros();
+        try {
+            await salvarRegistros();
+        } catch (error) {
+            alert(error.message || 'Erro ao salvar observações.');
+            await carregarRegistros();
+        }
         atualizarTabela();
         fecharModalObservacoes();
     }
 }
 
-window.abrirHistoricoPaciente = function() {
+window.abrirHistoricoPaciente = async function() {
     if (!registroSelecionado) {
         alert('Selecione um registro para visualizar o histórico do paciente.');
         return;
     }
-    renderizarHistoricoPaciente(
+    await renderizarHistoricoPaciente(
         registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || registroSelecionado.cpfPaciente || '',
         registroSelecionado.nomePaciente
     );
 }
 
-window.abrirHistoricoPorCadastro = function() {
+window.abrirHistoricoPorCadastro = async function() {
     const form = document.getElementById('formExame');
     const documento = (form.prontuarioPaciente.value || form.cpfPaciente.value || '').trim();
     const nome = form.nomePaciente.value.trim();
-    if (!documento) {
-        alert('Informe o CPF ou prontuário para consultar o histórico.');
+    if (!documento && !nome) {
+        alert('Informe o CPF, prontuário ou nome para consultar o histórico.');
         return;
     }
-    renderizarHistoricoPaciente(documento, nome);
+    await renderizarHistoricoPaciente(documento, nome);
 }
 
 window.fecharModalHistorico = function() {
@@ -923,40 +1039,39 @@ window.fecharModalHistorico = function() {
     }, 300);
 }
 
-function renderizarHistoricoPaciente(documentoPaciente, nomePaciente = '') {
+async function renderizarHistoricoPaciente(documentoPaciente, nomePaciente = '') {
     const modal = document.getElementById('modalHistoricoPaciente');
     const info = document.getElementById('historicoPacienteInfo');
     const lista = document.getElementById('historicoPacienteLista');
-    const documentoNormalizado = (documentoPaciente || '').trim().toLowerCase();
-    const cpfNormalizado = cpfSomenteDigitos(documentoPaciente || '');
+    const result = await ipcRenderer.invoke('patient-timeline', {
+        documento: documentoPaciente,
+        nome: nomePaciente
+    });
+    if (!result?.ok) {
+        info.textContent = result?.message || 'Erro ao consultar histórico.';
+        lista.innerHTML = '';
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+        return;
+    }
 
-    const examesPaciente = registros
-        .filter(r => {
-            const prontuarioRegistro = String(r.prontuarioPaciente || r.documentoPaciente || '').trim().toLowerCase();
-            const cpfRegistro = cpfSomenteDigitos(r.cpfPaciente || '');
-            return (documentoNormalizado && prontuarioRegistro === documentoNormalizado) || (cpfNormalizado && cpfRegistro === cpfNormalizado);
-        })
-        .sort((a, b) => new Date(b.dataHoraExame) - new Date(a.dataHoraExame));
+    const timeline = Array.isArray(result.timeline) ? result.timeline : [];
+    const nomeExibicao = result.nomeExibicao || nomePaciente || 'Paciente';
+    const documentoExibicao = result.documentoExibicao || documentoPaciente || '-';
+    info.textContent = `${nomeExibicao} - ${documentoExibicao} | ${timeline.length} item(s)`;
 
-    const pacienteCadastrado = pacientes.find(p =>
-        String(p.prontuarioPaciente || p.documentoPaciente || '').trim().toLowerCase() === documentoNormalizado ||
-        (cpfNormalizado && cpfSomenteDigitos(p.cpfPaciente || '') === cpfNormalizado)
-    );
-    const nomeExibicao = pacienteCadastrado?.nomePaciente || nomePaciente || 'Paciente';
-
-    info.textContent = `${nomeExibicao} - ${documentoPaciente || '-'} | ${examesPaciente.length} item(s)`;
-
-    if (examesPaciente.length === 0) {
+    if (timeline.length === 0) {
         lista.innerHTML = '<p>Nenhum histórico encontrado para este paciente.</p>';
     } else {
-        const linhas = examesPaciente.map(exame => `
+        const linhas = timeline.map(exame => `
             <tr>
-                <td>${formatarData(exame.dataHoraExame)}</td>
-                <td>${exame.statusExame || 'Agendado'}</td>
+                <td>${exame.origem || ''}</td>
+                <td>${formatarData(exame.data)}</td>
+                <td>${exame.status || ''}</td>
                 <td>${exame.modalidade || ''}</td>
-                <td>${exame.observacoes || ''}</td>
-                <td>${exame.numeroAcesso || ''}</td>
-                <td>${exame.nomeTecnico || ''}</td>
+                <td>${exame.exame || ''}</td>
+                <td>${exame.acesso || ''}</td>
+                <td>${exame.tecnico || ''}</td>
             </tr>
         `).join('');
 
@@ -964,6 +1079,7 @@ function renderizarHistoricoPaciente(documentoPaciente, nomePaciente = '') {
             <table class="historico-table">
                 <thead>
                     <tr>
+                        <th>Origem</th>
                         <th>Data/Hora</th>
                         <th>Status</th>
                         <th>Modalidade</th>

@@ -2210,7 +2210,8 @@ textarea:focus {
 #filtroAvancadoContainer #dataInicio,
 #filtroAvancadoContainer #horaInicio,
 #filtroAvancadoContainer #dataFim,
-#filtroAvancadoContainer #horaFim {
+#filtroAvancadoContainer #horaFim,
+#filtroAvancadoContainer #filtroSalvoSelect {
     height: 38px;
     width: 100%;
     padding: 6px 10px;
@@ -2233,6 +2234,10 @@ textarea:focus {
     padding: 0 14px;
     font-size: 13px;
     white-space: nowrap;
+}
+
+#filtroAvancadoContainer #filtroSalvoSelect {
+    min-width: 180px;
 }
 
 @media (max-width: 1500px) {

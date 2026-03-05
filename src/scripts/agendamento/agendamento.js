@@ -54,6 +54,13 @@ let selecionado = null;
 let selecionadoAgendaMedico = null;
 let datasBloqueadasAgendaMedico = [];
 let configSistema = {};
+const dataVersions = {
+    config: 0,
+    'medicos-agenda': 0,
+    agendamentos: 0,
+    registros: 0,
+    pacientes: 0
+};
 let pacienteBaseNoNovo = null;
 let resolverConfirmacao = null;
 let resolverAviso = null;
@@ -241,12 +248,21 @@ function consumirProximoNumeroAcesso(ignorarAgendamentoId = null) {
 
 async function carregarConfigSistema() {
     const dados = await ipcRenderer.invoke('ler-config');
+    const v = await ipcRenderer.invoke('data-get-version', 'config');
+    dataVersions.config = Number(v?.version || 0);
     configSistema = (dados && typeof dados === 'object') ? dados : {};
     obterContadoresConfig();
 }
 
 async function salvarConfigSistema() {
-    await ipcRenderer.invoke('salvar-config', configSistema);
+    const ok = await ipcRenderer.invoke('salvar-config', {
+        data: configSistema,
+        expectedVersion: dataVersions.config,
+        detalhe: 'Atualizacao de configuracao pelo agendamento'
+    });
+    if (!ok) throw new Error('Falha ao salvar configuração (possível conflito).');
+    const v = await ipcRenderer.invoke('data-get-version', 'config');
+    dataVersions.config = Number(v?.version || dataVersions.config);
 }
 
 function obterPacienteBaseSelecionado() {
@@ -463,6 +479,8 @@ function normalizarAgendaMedico(item, index = 0) {
 
 async function carregarMedicosAgenda() {
     const dados = await ipcRenderer.invoke('ler-medicos-agenda');
+    const v = await ipcRenderer.invoke('data-get-version', 'medicos-agenda');
+    dataVersions['medicos-agenda'] = Number(v?.version || 0);
     if (Array.isArray(dados) && dados.length > 0) {
         medicosAgenda = dados.map((item, index) => normalizarAgendaMedico(item, index));
     } else {
@@ -472,7 +490,14 @@ async function carregarMedicosAgenda() {
 }
 
 async function salvarMedicosAgenda() {
-    await ipcRenderer.invoke('salvar-medicos-agenda', medicosAgenda);
+    const ok = await ipcRenderer.invoke('salvar-medicos-agenda', {
+        data: medicosAgenda,
+        expectedVersion: dataVersions['medicos-agenda'],
+        detalhe: 'Atualizacao de agenda medica'
+    });
+    if (!ok) throw new Error('Falha ao salvar agenda médica (possível conflito).');
+    const v = await ipcRenderer.invoke('data-get-version', 'medicos-agenda');
+    dataVersions['medicos-agenda'] = Number(v?.version || dataVersions['medicos-agenda']);
 }
 
 function obterMedicoPorId(id) {
@@ -505,16 +530,27 @@ function normalizarAgendamento(item) {
 
 async function carregarAgendamentos() {
     const dados = await ipcRenderer.invoke('ler-agendamentos');
+    const v = await ipcRenderer.invoke('data-get-version', 'agendamentos');
+    dataVersions.agendamentos = Number(v?.version || 0);
     agendamentos = Array.isArray(dados) ? dados.map(normalizarAgendamento) : [];
     agendamentosFiltrados = [];
 }
 
 async function salvarAgendamentos() {
-    await ipcRenderer.invoke('salvar-agendamentos', agendamentos);
+    const ok = await ipcRenderer.invoke('salvar-agendamentos', {
+        data: agendamentos,
+        expectedVersion: dataVersions.agendamentos,
+        detalhe: 'Atualizacao de agendamentos'
+    });
+    if (!ok) throw new Error('Falha ao salvar agendamentos (possível conflito).');
+    const v = await ipcRenderer.invoke('data-get-version', 'agendamentos');
+    dataVersions.agendamentos = Number(v?.version || dataVersions.agendamentos);
 }
 
 async function carregarRegistros() {
     const dados = await ipcRenderer.invoke('ler-registros');
+    const v = await ipcRenderer.invoke('data-get-version', 'registros');
+    dataVersions.registros = Number(v?.version || 0);
     registros = Array.isArray(dados)
         ? dados.map(item => {
             const legado = extrairCpfOuProntuarioLegado(item.documentoPaciente || item.pacienteDocumento || '');
@@ -531,11 +567,20 @@ async function carregarRegistros() {
 }
 
 async function salvarRegistros() {
-    await ipcRenderer.invoke('salvar-registros', registros);
+    const ok = await ipcRenderer.invoke('salvar-registros', {
+        data: registros,
+        expectedVersion: dataVersions.registros,
+        detalhe: 'Atualizacao de registros pelo agendamento'
+    });
+    if (!ok) throw new Error('Falha ao salvar registros (possível conflito).');
+    const v = await ipcRenderer.invoke('data-get-version', 'registros');
+    dataVersions.registros = Number(v?.version || dataVersions.registros);
 }
 
 async function carregarPacientes() {
     const dados = await ipcRenderer.invoke('ler-pacientes');
+    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+    dataVersions.pacientes = Number(v?.version || 0);
     pacientes = Array.isArray(dados)
         ? dados.map(item => {
             const legado = extrairCpfOuProntuarioLegado(item.documentoPaciente);
@@ -552,7 +597,14 @@ async function carregarPacientes() {
 }
 
 async function salvarPacientes() {
-    await ipcRenderer.invoke('salvar-pacientes', pacientes);
+    const ok = await ipcRenderer.invoke('salvar-pacientes', {
+        data: pacientes,
+        expectedVersion: dataVersions.pacientes,
+        detalhe: 'Atualizacao de pacientes pelo agendamento'
+    });
+    if (!ok) throw new Error('Falha ao salvar pacientes (possível conflito).');
+    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+    dataVersions.pacientes = Number(v?.version || dataVersions.pacientes);
 }
 
 function atualizarInfoAgendaMedico(medico) {
@@ -1896,60 +1948,24 @@ window.fecharModalDisponibilidade = function() {
     });
 };
 
-function renderHistorico(documentoPaciente, nomePaciente = '') {
+async function renderHistorico(documentoPaciente, nomePaciente = '') {
     const info = document.getElementById('historicoPacienteInfo');
     const lista = document.getElementById('historicoPacienteLista');
-    const docNorm = (documentoPaciente || '').trim().toLowerCase();
-    const cpfNorm = cpfSomenteDigitos(documentoPaciente || '');
-    const nomeNorm = removerAcentos(nomePaciente || '').toLowerCase().trim();
-
-    const histAg = agendamentos
-        .filter(a => {
-            const chave = obterChavePaciente(a);
-            const mesmoDoc = docNorm && chave === docNorm;
-            const mesmoCpf = cpfNorm && cpfSomenteDigitos(a.cpfPaciente || '') === cpfNorm;
-            const mesmoNomeSemDoc = !docNorm && !cpfNorm && nomeNorm && removerAcentos(a.nomePaciente || '').toLowerCase().trim() === nomeNorm;
-            return mesmoDoc || mesmoCpf || mesmoNomeSemDoc;
-        })
-        .map(a => ({
-            origem: 'Agendamento',
-            data: a.dataHora,
-            status: a.statusExame,
-            modalidade: a.modalidade,
-            exame: a.exame,
-            tecnico: a.nomeTecnico,
-            acesso: a.numeroAcesso
-        }));
-
-    const histReg = registros
-        .filter(r => {
-            const prontuario = String(r.prontuarioPaciente || r.documentoPaciente || '').trim().toLowerCase();
-            const mesmoDoc = docNorm && prontuario === docNorm;
-            const mesmoCpf = cpfNorm && cpfSomenteDigitos(r.cpfPaciente || '') === cpfNorm;
-            const mesmoNomeSemDoc = !docNorm && !cpfNorm && nomeNorm && removerAcentos(r.nomePaciente || '').toLowerCase().trim() === nomeNorm;
-            return mesmoDoc || mesmoCpf || mesmoNomeSemDoc;
-        })
-        .map(r => ({
-            origem: 'Registro',
-            data: r.dataHoraExame,
-            status: r.statusExame || 'Realizado',
-            modalidade: r.modalidade,
-            exame: r.observacoes,
-            tecnico: r.nomeTecnico,
-            acesso: r.numeroAcesso
-        }));
-
-    const historico = [...histAg, ...histReg].sort((a, b) => new Date(b.data) - new Date(a.data));
-    const paciente = pacientes.find(p => {
-        const chave = obterChavePaciente(p);
-        const mesmoDoc = docNorm && chave === docNorm;
-        const mesmoCpf = cpfNorm && cpfSomenteDigitos(p.cpfPaciente || '') === cpfNorm;
-        const mesmoNomeSemDoc = !docNorm && !cpfNorm && nomeNorm && removerAcentos(p.nomePaciente || '').toLowerCase().trim() === nomeNorm;
-        return mesmoDoc || mesmoCpf || mesmoNomeSemDoc;
+    const result = await ipcRenderer.invoke('patient-timeline', {
+        documento: documentoPaciente,
+        nome: nomePaciente
     });
-    const nomeExibicao = paciente?.nomePaciente || nomePaciente || 'Paciente';
+    if (!result?.ok) {
+        info.textContent = result?.message || 'Erro ao consultar histórico.';
+        lista.innerHTML = '';
+        abrirComAnimacao('modalHistoricoPaciente');
+        return;
+    }
 
-    info.textContent = `${nomeExibicao} - ${documentoPaciente || '-'} | ${historico.length} item(s)`;
+    const historico = Array.isArray(result.timeline) ? result.timeline : [];
+    const nomeExibicao = result.nomeExibicao || nomePaciente || 'Paciente';
+    const documentoExibicao = result.documentoExibicao || documentoPaciente || '-';
+    info.textContent = `${nomeExibicao} - ${documentoExibicao} | ${historico.length} item(s)`;
 
     if (historico.length === 0) {
         lista.innerHTML = '<p>Nenhum histórico encontrado para este paciente.</p>';
@@ -1987,22 +2003,22 @@ function renderHistorico(documentoPaciente, nomePaciente = '') {
     abrirComAnimacao('modalHistoricoPaciente');
 }
 
-window.abrirHistoricoPaciente = function() {
+window.abrirHistoricoPaciente = async function() {
     if (!selecionado) {
         alert('Selecione um agendamento para visualizar o histórico do paciente.');
         return;
     }
-    renderHistorico(selecionado.prontuarioPaciente || selecionado.documentoPaciente || selecionado.cpfPaciente || '', selecionado.nomePaciente);
+    await renderHistorico(selecionado.prontuarioPaciente || selecionado.documentoPaciente || selecionado.cpfPaciente || '', selecionado.nomePaciente);
 };
 
-window.abrirHistoricoPorCadastro = function() {
+window.abrirHistoricoPorCadastro = async function() {
     const documento = (document.getElementById('prontuarioPaciente').value || document.getElementById('cpfPaciente').value || '').trim();
     const nome = document.getElementById('nomePaciente').value.trim();
-    if (!documento) {
-        alert('Informe o CPF ou prontuário para consultar o histórico.');
+    if (!documento && !nome) {
+        alert('Informe CPF, prontuário ou nome para consultar o histórico.');
         return;
     }
-    renderHistorico(documento, nome);
+    await renderHistorico(documento, nome);
 };
 
 window.fecharModalHistorico = function() {
