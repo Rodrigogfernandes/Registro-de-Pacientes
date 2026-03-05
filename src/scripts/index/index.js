@@ -60,10 +60,19 @@
     const chatFab = document.getElementById('chatFab');
     const chatUnreadBadge = document.getElementById('chatUnreadBadge');
     const chatPanel = document.getElementById('chatPanel');
+    const chatBackBtn = document.getElementById('chatBackBtn');
     const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatMenuBtn = document.getElementById('chatMenuBtn');
+    const chatMenuList = document.getElementById('chatMenuList');
+    const chatClearSelfBtn = document.getElementById('chatClearSelfBtn');
+    const chatDeleteBothBtn = document.getElementById('chatDeleteBothBtn');
     const chatMessages = document.getElementById('chatMessages');
+    const chatContacts = document.getElementById('chatContacts');
+    const chatConversation = document.getElementById('chatConversation');
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
+    const chatAttachBtn = document.getElementById('chatAttachBtn');
+    const chatDetachBtn = document.getElementById('chatDetachBtn');
     const chatTargetSelect = document.getElementById('chatTargetSelect');
     const chatTargetLabel = document.getElementById('chatTargetLabel');
 
@@ -85,6 +94,8 @@
     let chatUsersState = [];
     let chatUnreadState = 0;
     let chatOnlineUsersSet = new Set();
+    let chatPendingAttachment = null;
+    let chatViewMode = 'contacts';
     let auditFilterState = {
         username: '',
         acao: '',
@@ -409,6 +420,7 @@
             chatTargetSelect.value = valorAtual;
         }
         atualizarRotuloDestinoChat();
+        renderListaContatosChat();
     }
 
     function atualizarRotuloDestinoChat() {
@@ -416,11 +428,55 @@
         const targetUser = String(chatTargetSelect?.value || '').trim().toLowerCase();
         if (!targetUser) {
             chatTargetLabel.textContent = '(Todos)';
+            if (chatDeleteBothBtn) chatDeleteBothBtn.disabled = true;
             return;
         }
         const alvo = chatUsersState.find((item) => String(item?.username || '').toLowerCase() === targetUser);
         const nome = String(alvo?.nome || alvo?.username || targetUser);
         chatTargetLabel.textContent = `(Para: ${nome})`;
+        if (chatDeleteBothBtn) chatDeleteBothBtn.disabled = false;
+    }
+
+    function formatBytes(bytes) {
+        const n = Number(bytes) || 0;
+        if (n < 1024) return `${n} B`;
+        if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+        return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    function atualizarArquivoSelecionadoChat() {
+        if (!chatAttachBtn) return;
+        if (!chatPendingAttachment) {
+            chatAttachBtn.textContent = '📦';
+            if (chatDetachBtn) chatDetachBtn.style.display = 'none';
+            return;
+        }
+        chatAttachBtn.textContent = `📦: ${String(chatPendingAttachment.name || '').slice(0, 14)}`;
+        if (chatDetachBtn) chatDetachBtn.style.display = 'inline-flex';
+    }
+
+    function montarReciboMensagem(item, meuUser) {
+        const fromUser = String(item?.from?.username || '').toLowerCase();
+        if (fromUser !== meuUser) return '';
+        const toUser = String(item?.to?.username || '').toLowerCase();
+        const readBy = Array.isArray(item?.readBy) ? item.readBy.map((r) => String(r || '').toLowerCase()) : [];
+        const receivedBy = Array.isArray(item?.receivedBy) ? item.receivedBy.map((r) => String(r || '').toLowerCase()) : [];
+
+        if (toUser) {
+            if (readBy.includes(toUser)) {
+                return '<span class="chat-receipt is-read" title="Visualizada">✓✓</span>';
+            }
+            if (receivedBy.includes(toUser)) {
+                return '<span class="chat-receipt is-received" title="Recebida">✓</span>';
+            }
+            return '<span class="chat-receipt" title="Enviada">✓</span>';
+        }
+
+        const outrosRead = readBy.filter((u) => u && u !== meuUser).length;
+        if (outrosRead > 0) return '<span class="chat-receipt is-read" title="Visualizada">✓✓</span>';
+        const outrosReceived = receivedBy.filter((u) => u && u !== meuUser).length;
+        if (outrosReceived > 0) return '<span class="chat-receipt is-received" title="Recebida">✓</span>';
+        return '<span class="chat-receipt" title="Enviada">✓</span>';
     }
 
     async function carregarUsuariosChat() {
@@ -445,6 +501,77 @@
         const base = usernames.map((u) => String(u || '').toLowerCase()).filter(Boolean);
         if (meuUser) base.push(meuUser);
         chatOnlineUsersSet = new Set(base);
+        renderListaContatosChat();
+    }
+
+    function definirModoChat(mode) {
+        chatViewMode = mode === 'conversation' ? 'conversation' : 'contacts';
+        if (!chatPanel) return;
+        if (chatViewMode === 'conversation') {
+            chatPanel.classList.add('in-conversation');
+            if (chatConversation) chatConversation.style.display = 'flex';
+            if (chatContacts) chatContacts.style.display = 'none';
+        } else {
+            chatPanel.classList.remove('in-conversation');
+            if (chatConversation) chatConversation.style.display = 'none';
+            if (chatContacts) chatContacts.style.display = 'flex';
+        }
+    }
+
+    function renderListaContatosChat() {
+        if (!chatContacts) return;
+        const meuUser = String(sessaoAtual?.username || '').toLowerCase();
+        const baseMensagens = Array.isArray(chatState) ? chatState : [];
+
+        const contatos = [{
+            username: '',
+            nome: 'Todos',
+            preview: (() => {
+                const publicas = baseMensagens.filter((m) => !String(m?.to?.username || '').trim());
+                const ultima = publicas[publicas.length - 1];
+                return String(ultima?.text || 'Canal público');
+            })()
+        }];
+
+        chatUsersState
+            .filter((u) => String(u?.username || '').toLowerCase() !== meuUser)
+            .forEach((u) => {
+                const username = String(u?.username || '').toLowerCase();
+                const privadas = baseMensagens.filter((m) => {
+                    const from = String(m?.from?.username || '').toLowerCase();
+                    const to = String(m?.to?.username || '').toLowerCase();
+                    return Boolean(to) && ((from === meuUser && to === username) || (from === username && to === meuUser));
+                });
+                const ultima = privadas[privadas.length - 1];
+                contatos.push({
+                    username,
+                    nome: String(u?.nome || u?.username || username),
+                    preview: String(ultima?.text || 'Sem mensagens privadas')
+                });
+            });
+
+        chatContacts.innerHTML = contatos.map((c) => {
+            const uname = String(c.username || '').toLowerCase();
+            const online = !uname || chatOnlineUsersSet.has(uname);
+            const dotClass = online ? 'is-online' : 'is-offline';
+            return `
+                <button type="button" class="chat-contact-item" data-chat-contact="${escapeHtml(uname)}">
+                    <div class="chat-contact-title"><span class="user-presence-dot ${dotClass}"></span>${escapeHtml(c.nome)}</div>
+                    <div class="chat-contact-preview">${escapeHtml(c.preview || '')}</div>
+                </button>
+            `;
+        }).join('');
+
+        chatContacts.querySelectorAll('[data-chat-contact]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const target = String(button.getAttribute('data-chat-contact') || '').toLowerCase();
+                if (chatTargetSelect) chatTargetSelect.value = target;
+                atualizarRotuloDestinoChat();
+                renderChatMessages(chatState);
+                definirModoChat('conversation');
+                if (chatInput) setTimeout(() => chatInput.focus(), 0);
+            });
+        });
     }
 
     function renderChatMessages(messages) {
@@ -480,13 +607,44 @@
             const dotClass = fromOnline ? 'is-online' : 'is-offline';
             const onlineTitle = fromOnline ? 'online' : 'offline';
             const privado = toUsername ? ` • privado ${toNome ? `para ${toNome}` : ''}` : '';
+            const receipt = montarReciboMensagem(item, meuUser);
+            const attachment = (item?.attachment && typeof item.attachment === 'object') ? item.attachment : null;
+            const attachmentHtml = attachment?.path
+                ? `<div class="chat-attachment"><button class="chat-open-file search-open-button" type="button" data-file-path="${escapeHtml(attachment.path)}">Abrir: ${escapeHtml(attachment.name || 'arquivo')}</button> <span class="users-item-meta">(${escapeHtml(formatBytes(attachment.size || 0))})</span></div>`
+                : '';
+            const deleteBtn = isMe
+                ? `<button class="chat-message-delete" type="button" data-chat-delete-id="${escapeHtml(item?.id || '')}">Excluir</button>`
+                : '<span></span>';
             return `
                 <div class="chat-message ${isMe ? 'is-me' : ''}">
                     <div class="chat-message-meta"><span class="user-presence-dot ${dotClass}" title="${onlineTitle}"></span><strong>${fromNome}</strong> • ${at}${privado}</div>
-                    <div>${texto}</div>
+                    <div class="chat-message-text">${texto}</div>
+                    ${attachmentHtml}
+                    <div class="chat-message-footer">
+                        <span>${receipt}</span>
+                        ${deleteBtn}
+                    </div>
                 </div>
             `;
         }).join('');
+        chatMessages.querySelectorAll('.chat-open-file').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const filePath = String(button.getAttribute('data-file-path') || '').trim();
+                if (!filePath) return;
+                await ipcRenderer.invoke('chat-open-file', { path: filePath });
+            });
+        });
+        chatMessages.querySelectorAll('[data-chat-delete-id]').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const id = String(button.getAttribute('data-chat-delete-id') || '').trim();
+                if (!id) return;
+                const confirmado = window.confirm('Excluir esta mensagem para ambos?');
+                if (!confirmado) return;
+                const result = await ipcRenderer.invoke('chat-delete-message', { id, mode: 'both' });
+                if (!result?.ok) return;
+                await carregarChat();
+            });
+        });
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
@@ -498,6 +656,7 @@
             return;
         }
         chatState = Array.isArray(result.messages) ? result.messages : [];
+        renderListaContatosChat();
         renderChatMessages(chatState);
         const unread = Number(result.unread) || 0;
         const unreadAnterior = chatUnreadState;
@@ -513,25 +672,41 @@
 
     async function enviarMensagemChat() {
         const text = String(chatInput?.value || '').trim();
-        if (!text) return;
+        if (!text && !chatPendingAttachment) return;
         const toUsername = String(chatTargetSelect?.value || '').trim().toLowerCase();
-        const result = await ipcRenderer.invoke('chat-send', { text, toUsername });
+        const result = await ipcRenderer.invoke('chat-send', {
+            text,
+            toUsername,
+            attachment: chatPendingAttachment || null
+        });
         if (!result?.ok) return;
         if (chatInput) chatInput.value = '';
+        chatPendingAttachment = null;
+        atualizarArquivoSelecionadoChat();
         await carregarChat();
     }
 
     function abrirChat() {
         if (!chatPanel) return;
         chatPanel.classList.add('active');
+        definirModoChat('contacts');
         if (chatFab) chatFab.classList.remove('has-alert');
         carregarChat().then(() => ipcRenderer.invoke('chat-mark-read', { all: true })).catch(() => {});
-        if (chatInput) setTimeout(() => chatInput.focus(), 0);
+    }
+
+    function fecharMenuChat() {
+        if (chatMenuList) chatMenuList.classList.remove('active');
+    }
+
+    function alternarMenuChat() {
+        if (!chatMenuList) return;
+        chatMenuList.classList.toggle('active');
     }
 
     function fecharChat() {
         if (!chatPanel) return;
         chatPanel.classList.remove('active');
+        fecharMenuChat();
     }
 
     function obterFiltrosAuditoriaDaTela() {
@@ -1141,6 +1316,20 @@
         chatCloseBtn.addEventListener('click', fecharChat);
     }
 
+    if (chatBackBtn) {
+        chatBackBtn.addEventListener('click', () => {
+            definirModoChat('contacts');
+            fecharMenuChat();
+        });
+    }
+
+    if (chatMenuBtn) {
+        chatMenuBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            alternarMenuChat();
+        });
+    }
+
     if (chatForm) {
         chatForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -1148,12 +1337,62 @@
         });
     }
 
+    if (chatAttachBtn) {
+        chatAttachBtn.addEventListener('click', async () => {
+            const result = await ipcRenderer.invoke('chat-pick-file');
+            if (!result?.ok || !result.attachment) return;
+            chatPendingAttachment = result.attachment;
+            atualizarArquivoSelecionadoChat();
+        });
+    }
+
+    if (chatDetachBtn) {
+        chatDetachBtn.addEventListener('click', () => {
+            chatPendingAttachment = null;
+            atualizarArquivoSelecionadoChat();
+        });
+    }
+
+    if (chatClearSelfBtn) {
+        chatClearSelfBtn.addEventListener('click', async () => {
+            fecharMenuChat();
+            const targetUsername = String(chatTargetSelect?.value || '').trim().toLowerCase();
+            const msg = targetUsername
+                ? 'Limpar esta conversa privada somente para você?'
+                : 'Limpar o chat público somente para você?';
+            if (!window.confirm(msg)) return;
+            const result = await ipcRenderer.invoke('chat-clear-conversation-self', { targetUsername });
+            if (!result?.ok) return;
+            await carregarChat();
+        });
+    }
+
+    if (chatDeleteBothBtn) {
+        chatDeleteBothBtn.addEventListener('click', async () => {
+            fecharMenuChat();
+            const targetUsername = String(chatTargetSelect?.value || '').trim().toLowerCase();
+            if (!targetUsername) return;
+            if (!window.confirm('Excluir toda esta conversa privada para ambos?')) return;
+            const result = await ipcRenderer.invoke('chat-delete-conversation-both', { targetUsername });
+            if (!result?.ok) return;
+            await carregarChat();
+        });
+    }
+
     if (chatTargetSelect) {
         chatTargetSelect.addEventListener('change', () => {
+            fecharMenuChat();
             atualizarRotuloDestinoChat();
             renderChatMessages(chatState);
         });
     }
+
+    document.addEventListener('click', (event) => {
+        if (!chatMenuList?.classList.contains('active')) return;
+        const alvo = event.target;
+        if (chatMenuBtn?.contains(alvo) || chatMenuList?.contains(alvo)) return;
+        fecharMenuChat();
+    });
 
     if (exportUserAuditBtn) {
         exportUserAuditBtn.addEventListener('click', async () => {

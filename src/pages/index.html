@@ -281,19 +281,38 @@
 
     <section id="chatPanel" class="chat-panel" aria-label="Chat interno">
         <div class="chat-panel-header">
-            <strong>Chat Interno <span id="chatTargetLabel">(Todos)</span></strong>
-            <button id="chatCloseBtn" class="search-open-button" type="button">Fechar</button>
+            <div class="chat-header-left">
+                <button id="chatBackBtn" class="search-open-button chat-back-btn" type="button" aria-label="Voltar">←</button>
+                <strong>Chat Interno <span id="chatTargetLabel">(Todos)</span></strong>
+            </div>
+            <div class="chat-header-actions">
+                <div class="chat-menu">
+                    <button id="chatMenuBtn" class="search-open-button chat-menu-trigger" type="button" aria-label="Mais opções">⁝</button>
+                    <div id="chatMenuList" class="chat-menu-list">
+                        <button id="chatClearSelfBtn" class="chat-menu-item" type="button">Apagar para mim</button>
+                        <button id="chatDeleteBothBtn" class="chat-menu-item" type="button">Apagar para todos</button>
+                    </div>
+                </div>
+                <button id="chatCloseBtn" class="search-open-button chat-close-btn" type="button" aria-label="Fechar chat">×</button>
+            </div>
         </div>
-        <div id="chatMessages" class="chat-messages">
-            <div class="search-status">Carregando mensagens...</div>
+        <div id="chatContacts" class="chat-contacts">
+            <div class="search-status">Carregando contatos...</div>
         </div>
-        <form id="chatForm" class="chat-form">
-            <select id="chatTargetSelect" title="Destinatário">
-                <option value="">Todos</option>
-            </select>
-            <input type="text" id="chatInput" maxlength="1000" placeholder="Digite uma mensagem..." autocomplete="off">
-            <button id="chatSendBtn" class="search-open-button" type="submit">Enviar</button>
-        </form>
+        <div id="chatConversation" class="chat-conversation">
+            <div id="chatMessages" class="chat-messages">
+                <div class="search-status">Carregando mensagens...</div>
+            </div>
+            <form id="chatForm" class="chat-form">
+                <select id="chatTargetSelect" title="Destinatário">
+                    <option value="">Todos</option>
+                </select>
+                <button id="chatAttachBtn" class="search-open-button chat-attach-btn" type="button" title="Anexar arquivo">📦</button>
+                <button id="chatDetachBtn" class="search-open-button chat-detach-btn" type="button" title="Remover anexo" style="display:none;">✕</button>
+                <input type="text" id="chatInput" maxlength="1000" placeholder="Digite uma mensagem..." autocomplete="off">
+                <button id="chatSendBtn" class="search-open-button" type="submit" title="Enviar mensagem">➤</button>
+            </form>
+        </div>
     </section>
 
     <script src="../scripts/index/index.js"></script>

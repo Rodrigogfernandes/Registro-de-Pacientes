@@ -1,35 +1,5 @@
 [
   {
-    "id": "1772686941334-90cfab32",
-    "at": "2026-03-05T05:02:21.334Z",
-    "from": {
-      "username": "admin",
-      "nome": "Administrador",
-      "role": "admin"
-    },
-    "to": null,
-    "text": "bom dia",
-    "readBy": [
-      "admin",
-      "rodrigo"
-    ]
-  },
-  {
-    "id": "1772687178907-628ce302",
-    "at": "2026-03-05T05:06:18.908Z",
-    "from": {
-      "username": "admin",
-      "nome": "Administrador",
-      "role": "admin"
-    },
-    "to": null,
-    "text": "oi",
-    "readBy": [
-      "admin",
-      "rodrigo"
-    ]
-  },
-  {
     "id": "1772687592050-90647add",
     "at": "2026-03-05T05:13:12.050Z",
     "from": {
@@ -41,21 +11,9 @@
     "text": "ola",
     "readBy": [
       "admin"
-    ]
-  },
-  {
-    "id": "1772687720277-aec0d8eb",
-    "at": "2026-03-05T05:15:20.277Z",
-    "from": {
-      "username": "admin",
-      "nome": "Administrador",
-      "role": "admin"
-    },
-    "to": null,
-    "text": "oi",
-    "readBy": [
-      "admin"
-    ]
+    ],
+    "receivedBy": [],
+    "deletedFor": []
   },
   {
     "id": "1772687867983-48c0a370",
@@ -72,7 +30,9 @@
     "text": "ola",
     "readBy": [
       "admin"
-    ]
+    ],
+    "receivedBy": [],
+    "deletedFor": []
   },
   {
     "id": "1772688584773-8686569a",
@@ -86,6 +46,70 @@
     "text": "😂",
     "readBy": [
       "admin"
-    ]
+    ],
+    "receivedBy": [],
+    "deletedFor": []
+  },
+  {
+    "id": "1772691493988-bf8e4223",
+    "at": "2026-03-05T06:18:13.989Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "oi",
+    "attachment": null,
+    "readBy": [
+      "admin"
+    ],
+    "receivedBy": [
+      "admin"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1772691540458-bcf511f7",
+    "at": "2026-03-05T06:19:00.458Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "oi",
+    "attachment": null,
+    "readBy": [
+      "admin"
+    ],
+    "receivedBy": [
+      "admin"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1772691667632-0dc90686",
+    "at": "2026-03-05T06:21:07.632Z",
+    "from": {
+      "username": "admin",
+      "nome": "Administrador",
+      "role": "admin"
+    },
+    "to": null,
+    "text": "teste",
+    "attachment": {
+      "name": "Fluxograma B.png",
+      "path": "D:\\projetos programação\\Registro-de-Pacientes\\data\\chat_uploads\\1772691654965_3768212d.png",
+      "type": "png",
+      "size": 1673614
+    },
+    "readBy": [
+      "admin"
+    ],
+    "receivedBy": [
+      "admin"
+    ],
+    "deletedFor": []
   }
 ]

@@ -435,5 +435,62 @@
       "removidos": 0
     },
     "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772691494166-5fad667e",
+    "at": "2026-03-05T06:18:14.166Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "bfb2bb7ea13741858764799d99a0fe5c"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772691540645-3fddd4d3",
+    "at": "2026-03-05T06:19:00.645Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "0329ba1bd19fb4ec69c55dafcdcb2a1c"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1772691667815-f7f905fb",
+    "at": "2026-03-05T06:21:07.815Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "0329ba1bd19fb4ec69c55dafcdcb2a1c"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
   }
 ]

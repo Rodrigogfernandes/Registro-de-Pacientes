@@ -1,4 +1,4 @@
-﻿const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+﻿const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -39,6 +39,7 @@ const AUTH_PASSWORD_LOCK_MINUTES = 15;
 const AUTH_PASSWORD_MAX_AGE_DAYS = 90;
 const AUTO_BACKUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const AUTO_BACKUP_RETENTION = 30;
+const AUTO_BACKUP_SINGLE_FILENAME = 'backup_auto_atual.json';
 
 let mongoOnline = false;
 let needsLocalSync = false;
@@ -81,6 +82,10 @@ function getDataFilePath(tipo) {
         default:
             return path.join(dataDir, 'registros.json');
     }
+}
+
+function getChatUploadsDir() {
+    return path.join(__dirname, 'data', 'chat_uploads');
 }
 
 function getDefaultValue(tipo) {
@@ -840,7 +845,12 @@ const ACAO_POR_HANDLER = {
     'chat-send': ['admin', 'recepcao', 'tecnico'],
     'chat-mark-read': ['admin', 'recepcao', 'tecnico'],
     'chat-users': ['admin', 'recepcao', 'tecnico'],
-    'auth-list-online-users': ['admin', 'recepcao', 'tecnico']
+    'auth-list-online-users': ['admin', 'recepcao', 'tecnico'],
+    'chat-delete-message': ['admin', 'recepcao', 'tecnico'],
+    'chat-clear-conversation-self': ['admin', 'recepcao', 'tecnico'],
+    'chat-delete-conversation-both': ['admin', 'recepcao', 'tecnico'],
+    'chat-pick-file': ['admin', 'recepcao', 'tecnico'],
+    'chat-open-file': ['admin', 'recepcao', 'tecnico']
 };
 
 function exigirPermissaoAcao(handlerName) {
@@ -902,6 +912,39 @@ function obterDiretorioAutoBackup() {
     return path.join(__dirname, 'data', 'backups', 'auto');
 }
 
+function obterCaminhoBackupAutomaticoUnico() {
+    return path.join(obterDiretorioAutoBackup(), AUTO_BACKUP_SINGLE_FILENAME);
+}
+
+function normalizarBackupsAutoLegados(dir) {
+    if (!fs.existsSync(dir)) {
+        return;
+    }
+    const arquivosLegados = fs.readdirSync(dir)
+        .filter((nome) => nome.startsWith('backup_auto_') && nome.endsWith('.json') && nome !== AUTO_BACKUP_SINGLE_FILENAME)
+        .sort()
+        .reverse();
+    const destino = obterCaminhoBackupAutomaticoUnico();
+
+    // Se nao existe backup unico, reaproveita o backup legado mais recente.
+    if (!fs.existsSync(destino) && arquivosLegados.length > 0) {
+        const maisRecente = arquivosLegados[0];
+        try {
+            fs.copyFileSync(path.join(dir, maisRecente), destino);
+        } catch (error) {
+            console.warn('Falha ao migrar backup legado para arquivo unico:', error.message);
+        }
+    }
+
+    arquivosLegados.forEach((nome) => {
+        try {
+            fs.unlinkSync(path.join(dir, nome));
+        } catch (error) {
+            console.warn('Falha ao remover backup legado:', error.message);
+        }
+    });
+}
+
 async function criarBackupAutomatico() {
     const snapshot = {};
     for (const tipo of ['registros', 'pacientes', 'agendamentos', 'medicos-agenda', 'ocorrencias', 'ponto', 'config', 'chat-messages']) {
@@ -912,28 +955,14 @@ async function criarBackupAutomatico() {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
+    normalizarBackupsAutoLegados(dir);
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filePath = path.join(dir, `backup_auto_${timestamp}.json`);
+    const filePath = obterCaminhoBackupAutomaticoUnico();
     fs.writeFileSync(filePath, JSON.stringify({
         generatedAt: new Date().toISOString(),
         appInstanceId,
         snapshot
     }, null, 2), 'utf8');
-
-    const arquivos = fs.readdirSync(dir)
-        .filter((nome) => nome.startsWith('backup_auto_') && nome.endsWith('.json'))
-        .sort();
-    while (arquivos.length > AUTO_BACKUP_RETENTION) {
-        const nome = arquivos.shift();
-        if (!nome) break;
-        try {
-            fs.unlinkSync(path.join(dir, nome));
-        } catch (error) {
-            console.warn('Falha ao limpar backup antigo:', error.message);
-            break;
-        }
-    }
 }
 
 function iniciarLoopBackupAutomatico() {
@@ -952,15 +981,16 @@ function listarBackupsAutomaticos() {
     if (!fs.existsSync(dir)) {
         return [];
     }
-    return fs.readdirSync(dir)
-        .filter((nome) => nome.startsWith('backup_auto_') && nome.endsWith('.json'))
-        .sort()
-        .reverse()
-        .map((nome) => ({
-            nome,
-            caminho: path.join(dir, nome),
-            criadoEm: fs.statSync(path.join(dir, nome)).mtime.toISOString()
-        }));
+    normalizarBackupsAutoLegados(dir);
+    const arquivoUnico = obterCaminhoBackupAutomaticoUnico();
+    if (!fs.existsSync(arquivoUnico)) {
+        return [];
+    }
+    return [{
+        nome: AUTO_BACKUP_SINGLE_FILENAME,
+        caminho: arquivoUnico,
+        criadoEm: fs.statSync(arquivoUnico).mtime.toISOString()
+    }];
 }
 
 async function restaurarBackupAutomatico(nomeArquivo) {
@@ -1543,19 +1573,65 @@ function setupIpcHandlers() {
         }
     });
 
+    const normalizarChatLista = (raw) => {
+        const lista = Array.isArray(raw) ? raw : [];
+        return lista.map((item) => {
+            const readBy = Array.isArray(item?.readBy) ? item.readBy.map((r) => String(r || '').toLowerCase()) : [];
+            const receivedBy = Array.isArray(item?.receivedBy) ? item.receivedBy.map((r) => String(r || '').toLowerCase()) : [];
+            const deletedFor = Array.isArray(item?.deletedFor) ? item.deletedFor.map((r) => String(r || '').toLowerCase()) : [];
+            return {
+                ...item,
+                readBy: [...new Set(readBy)],
+                receivedBy: [...new Set(receivedBy)],
+                deletedFor: [...new Set(deletedFor)]
+            };
+        });
+    };
+
+    const chatVisivelPara = (item, username) => {
+        const user = String(username || '').toLowerCase();
+        const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+        const toUsername = String(item?.to?.username || '').trim().toLowerCase();
+        const deletedFor = Array.isArray(item?.deletedFor) ? item.deletedFor.map((r) => String(r || '').toLowerCase()) : [];
+        if (deletedFor.includes(user)) return false;
+        if (!toUsername) return true;
+        return toUsername === user || fromUsername === user;
+    };
+
+    const chatMesmaConversaPrivada = (item, a, b) => {
+        const ua = String(a || '').toLowerCase();
+        const ub = String(b || '').toLowerCase();
+        const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+        const toUsername = String(item?.to?.username || '').trim().toLowerCase();
+        if (!toUsername) return false;
+        return (fromUsername === ua && toUsername === ub) || (fromUsername === ub && toUsername === ua);
+    };
+
     ipcMain.handle('chat-list', async (event, options) => {
         try {
             exigirPermissaoAcao('chat-list');
             const limit = Math.max(1, Math.min(500, Number(options?.limit) || 200));
             const username = String(currentSession?.username || '').trim().toLowerCase();
             const raw = await lerDados('chat-messages');
-            const lista = Array.isArray(raw) ? raw : [];
-            const visiveis = lista.filter((item) => {
+            const lista = normalizarChatLista(raw);
+            let mudouRecebimento = false;
+            const listaAtualizada = lista.map((item) => {
+                if (!chatVisivelPara(item, username)) return item;
                 const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
-                const toUsername = String(item?.to?.username || '').trim().toLowerCase();
-                if (!toUsername) return true;
-                return toUsername === username || fromUsername === username;
+                if (fromUsername === username) return item;
+                const receivedBy = Array.isArray(item?.receivedBy) ? item.receivedBy.map((r) => String(r || '').toLowerCase()) : [];
+                if (receivedBy.includes(username)) return item;
+                mudouRecebimento = true;
+                return {
+                    ...item,
+                    receivedBy: [...receivedBy, username]
+                };
             });
+            if (mudouRecebimento) {
+                await salvarDados('chat-messages', listaAtualizada);
+            }
+
+            const visiveis = listaAtualizada.filter((item) => chatVisivelPara(item, username));
             const mensagens = visiveis
                 .sort((a, b) => Date.parse(String(a?.at || '')) - Date.parse(String(b?.at || '')))
                 .slice(-limit);
@@ -1577,7 +1653,8 @@ function setupIpcHandlers() {
             exigirPermissaoAcao('chat-send');
             const text = String(payload?.text || '').trim();
             const toUsername = String(payload?.toUsername || '').trim().toLowerCase();
-            if (!text) {
+            const attachment = (payload?.attachment && typeof payload.attachment === 'object') ? payload.attachment : null;
+            if (!text && !attachment) {
                 throw new Error('Mensagem vazia.');
             }
             if (text.length > 1000) {
@@ -1610,7 +1687,15 @@ function setupIpcHandlers() {
                 from: { username, nome, role },
                 to,
                 text,
-                readBy: [username]
+                attachment: attachment ? {
+                    name: String(attachment?.name || ''),
+                    path: String(attachment?.path || ''),
+                    type: String(attachment?.type || ''),
+                    size: Number(attachment?.size || 0)
+                } : null,
+                readBy: [username],
+                receivedBy: [username],
+                deletedFor: []
             };
 
             lista.push(message);
@@ -1658,7 +1743,7 @@ function setupIpcHandlers() {
             const alvoIds = new Set(ids);
 
             const raw = await lerDados('chat-messages');
-            const lista = Array.isArray(raw) ? raw : [];
+            const lista = normalizarChatLista(raw);
             let mudou = false;
 
             const atualizado = lista.map((item) => {
@@ -1667,7 +1752,7 @@ function setupIpcHandlers() {
                 const readBy = Array.isArray(item?.readBy)
                     ? item.readBy.map((r) => String(r || '').toLowerCase())
                     : [];
-                const deveMarcar = fromUsername !== username && (marcarTodos || alvoIds.has(id));
+                const deveMarcar = chatVisivelPara(item, username) && fromUsername !== username && (marcarTodos || alvoIds.has(id));
                 if (!deveMarcar || readBy.includes(username)) {
                     return item;
                 }
@@ -1680,6 +1765,153 @@ function setupIpcHandlers() {
 
             if (mudou) {
                 await salvarDados('chat-messages', atualizado);
+            }
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-delete-message', async (event, input) => {
+        try {
+            exigirPermissaoAcao('chat-delete-message');
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const id = String(input?.id || '').trim();
+            const mode = String(input?.mode || 'both').trim().toLowerCase();
+            if (!id) throw new Error('Mensagem inválida.');
+
+            const raw = await lerDados('chat-messages');
+            const lista = normalizarChatLista(raw);
+            const idx = lista.findIndex((item) => String(item?.id || '') === id);
+            if (idx < 0) throw new Error('Mensagem não encontrada.');
+            const msg = lista[idx];
+            const fromUsername = String(msg?.from?.username || '').toLowerCase();
+            if (fromUsername !== username) {
+                throw new Error('Apenas o remetente pode excluir esta mensagem.');
+            }
+
+            if (mode === 'self') {
+                const deletedFor = Array.isArray(msg?.deletedFor) ? msg.deletedFor.map((r) => String(r || '').toLowerCase()) : [];
+                if (!deletedFor.includes(username)) {
+                    msg.deletedFor = [...deletedFor, username];
+                }
+                lista[idx] = msg;
+                await salvarDados('chat-messages', lista);
+                return { ok: true };
+            }
+
+            const filtrada = lista.filter((item) => String(item?.id || '') !== id);
+            await salvarDados('chat-messages', filtrada);
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-clear-conversation-self', async (event, input) => {
+        try {
+            exigirPermissaoAcao('chat-clear-conversation-self');
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const targetUsername = String(input?.targetUsername || '').trim().toLowerCase();
+            const raw = await lerDados('chat-messages');
+            const lista = normalizarChatLista(raw);
+
+            const atualizado = lista.map((item) => {
+                const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
+                const toUsername = String(item?.to?.username || '').trim().toLowerCase();
+                const deletedFor = Array.isArray(item?.deletedFor) ? item.deletedFor.map((r) => String(r || '').toLowerCase()) : [];
+                let pertence = false;
+                if (!targetUsername) {
+                    pertence = !toUsername;
+                } else {
+                    pertence = chatMesmaConversaPrivada(item, username, targetUsername);
+                }
+                if (!pertence || deletedFor.includes(username)) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    deletedFor: [...deletedFor, username]
+                };
+            });
+
+            await salvarDados('chat-messages', atualizado);
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-delete-conversation-both', async (event, input) => {
+        try {
+            exigirPermissaoAcao('chat-delete-conversation-both');
+            const username = String(currentSession?.username || '').trim().toLowerCase();
+            const targetUsername = String(input?.targetUsername || '').trim().toLowerCase();
+            if (!targetUsername) {
+                throw new Error('Selecione um usuário para excluir conversa para ambos.');
+            }
+            const raw = await lerDados('chat-messages');
+            const lista = normalizarChatLista(raw);
+            const filtrada = lista.filter((item) => !chatMesmaConversaPrivada(item, username, targetUsername));
+            await salvarDados('chat-messages', filtrada);
+            return { ok: true };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-pick-file', async () => {
+        try {
+            exigirPermissaoAcao('chat-pick-file');
+            const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+                title: 'Selecionar arquivo para enviar',
+                properties: ['openFile'],
+                filters: [
+                    { name: 'Imagens', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'] },
+                    { name: 'Documentos', extensions: ['txt', 'md', 'doc', 'docx', 'odt', 'rtf'] },
+                    { name: 'PDF', extensions: ['pdf'] },
+                    { name: 'Áudio', extensions: ['mp3', 'wav', 'ogg', 'm4a', 'aac'] }
+                ]
+            });
+            if (canceled || !Array.isArray(filePaths) || filePaths.length === 0) {
+                return { ok: false, message: 'Seleção cancelada.' };
+            }
+            const srcPath = String(filePaths[0] || '');
+            if (!srcPath || !fs.existsSync(srcPath)) {
+                throw new Error('Arquivo inválido.');
+            }
+            const ext = path.extname(srcPath).toLowerCase();
+            const nomeOriginal = path.basename(srcPath);
+            const dir = getChatUploadsDir();
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const nomeDestino = `${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`;
+            const dstPath = path.join(dir, nomeDestino);
+            fs.copyFileSync(srcPath, dstPath);
+
+            return {
+                ok: true,
+                attachment: {
+                    name: nomeOriginal,
+                    path: dstPath,
+                    type: ext.replace('.', ''),
+                    size: Number(fs.statSync(dstPath).size || 0)
+                }
+            };
+        } catch (error) {
+            return { ok: false, message: error.message };
+        }
+    });
+
+    ipcMain.handle('chat-open-file', async (event, input) => {
+        try {
+            exigirPermissaoAcao('chat-open-file');
+            const filePath = String(input?.path || '').trim();
+            if (!filePath || !fs.existsSync(filePath)) {
+                throw new Error('Arquivo não encontrado.');
+            }
+            const result = await shell.openPath(filePath);
+            if (result) {
+                throw new Error(result);
             }
             return { ok: true };
         } catch (error) {
@@ -2785,6 +3017,8 @@ app.on('before-quit', () => {
         });
     }
 });
+
+
 
 
 
