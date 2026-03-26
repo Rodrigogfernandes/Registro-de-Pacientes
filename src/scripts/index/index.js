@@ -1,6 +1,5 @@
 ﻿try {
     const { ipcRenderer } = require('electron');
-
     const modal = document.getElementById('configModal');
     const configBtn = document.getElementById('configBtn');
     const closeBtn = document.querySelector('#configModal .close');
@@ -75,6 +74,7 @@
     const chatDetachBtn = document.getElementById('chatDetachBtn');
     const chatTargetSelect = document.getElementById('chatTargetSelect');
     const chatTargetLabel = document.getElementById('chatTargetLabel');
+    const usarChatCompartilhado = Boolean(window.__sharedChatWidgetActive);
 
     const PERMISSOES = {
         admin: ['agendamento', 'registros', 'ocorrencias', 'ponto'],
@@ -180,11 +180,17 @@
     });
 
     window.changeTheme = function(theme) {
-        document.body.classList.remove('dark-theme', 'theme-azul');
+        document.body.classList.remove('dark-theme', 'light-theme', 'theme-azul');
+        document.documentElement.classList.remove('dark-theme', 'light-theme', 'theme-azul');
         if (theme === 'dark') {
             document.body.classList.add('dark-theme');
+            document.documentElement.classList.add('dark-theme');
+        } else if (theme === 'light') {
+            document.body.classList.add('light-theme');
+            document.documentElement.classList.add('light-theme');
         } else if (theme === 'blue') {
             document.body.classList.add('theme-azul');
+            document.documentElement.classList.add('theme-azul');
         }
         localStorage.setItem('theme', theme);
         closeModal();
@@ -444,6 +450,16 @@
         return `${(n / (1024 * 1024)).toFixed(1)} MB`;
     }
 
+    function resumirMensagemChat(item) {
+        const text = String(item?.text || '').trim();
+        if (text) return text;
+        const attachment = item?.attachment;
+        if (!attachment) return 'Sem mensagens';
+        if (String(attachment.kind || '').toLowerCase() === 'image') return '[Imagem]';
+        if (String(attachment.kind || '').toLowerCase() === 'pdf') return '[PDF]';
+        return '[Arquivo]';
+    }
+
     function atualizarArquivoSelecionadoChat() {
         if (!chatAttachBtn) return;
         if (!chatPendingAttachment) {
@@ -529,7 +545,7 @@
             preview: (() => {
                 const publicas = baseMensagens.filter((m) => !String(m?.to?.username || '').trim());
                 const ultima = publicas[publicas.length - 1];
-                return String(ultima?.text || 'Canal público');
+                return ultima ? resumirMensagemChat(ultima) : 'Canal público';
             })()
         }];
 
@@ -546,7 +562,7 @@
                 contatos.push({
                     username,
                     nome: String(u?.nome || u?.username || username),
-                    preview: String(ultima?.text || 'Sem mensagens privadas')
+                    preview: ultima ? resumirMensagemChat(ultima) : 'Sem mensagens privadas'
                 });
             });
 
@@ -554,11 +570,15 @@
             const uname = String(c.username || '').toLowerCase();
             const online = !uname || chatOnlineUsersSet.has(uname);
             const dotClass = online ? 'is-online' : 'is-offline';
+            const podeExcluir = Boolean(uname);
             return `
-                <button type="button" class="chat-contact-item" data-chat-contact="${escapeHtml(uname)}">
-                    <div class="chat-contact-title"><span class="user-presence-dot ${dotClass}"></span>${escapeHtml(c.nome)}</div>
-                    <div class="chat-contact-preview">${escapeHtml(c.preview || '')}</div>
-                </button>
+                <div class="chat-contact-item">
+                    <button type="button" class="chat-contact-main" data-chat-contact="${escapeHtml(uname)}">
+                        <div class="chat-contact-title"><span class="user-presence-dot ${dotClass}"></span>${escapeHtml(c.nome)}</div>
+                        <div class="chat-contact-preview">${escapeHtml(c.preview || '')}</div>
+                    </button>
+                    ${podeExcluir ? `<button type="button" class="chat-contact-delete" data-chat-contact-delete="${escapeHtml(uname)}" title="Excluir conversa">🗑</button>` : ''}
+                </div>
             `;
         }).join('');
 
@@ -570,6 +590,23 @@
                 renderChatMessages(chatState);
                 definirModoChat('conversation');
                 if (chatInput) setTimeout(() => chatInput.focus(), 0);
+            });
+        });
+
+        chatContacts.querySelectorAll('[data-chat-contact-delete]').forEach((button) => {
+            button.addEventListener('click', async (event) => {
+                event.stopPropagation();
+                const target = String(button.getAttribute('data-chat-contact-delete') || '').toLowerCase();
+                if (!target) return;
+                if (!window.confirm('Excluir toda esta conversa para ambos?')) return;
+                const result = await ipcRenderer.invoke('chat-delete-conversation-both', { targetUsername: target });
+                if (!result?.ok) return;
+                if (chatTargetSelect && String(chatTargetSelect.value || '').toLowerCase() === target) {
+                    chatTargetSelect.value = '';
+                    atualizarRotuloDestinoChat();
+                    definirModoChat('contacts');
+                }
+                await carregarChat();
             });
         });
     }
@@ -610,7 +647,11 @@
             const receipt = montarReciboMensagem(item, meuUser);
             const attachment = (item?.attachment && typeof item.attachment === 'object') ? item.attachment : null;
             const attachmentHtml = attachment?.path
-                ? `<div class="chat-attachment"><button class="chat-open-file search-open-button" type="button" data-file-path="${escapeHtml(attachment.path)}">Abrir: ${escapeHtml(attachment.name || 'arquivo')}</button> <span class="users-item-meta">(${escapeHtml(formatBytes(attachment.size || 0))})</span></div>`
+                ? `<div class="chat-attachment">${
+                    String(attachment?.kind || '').toLowerCase() === 'image'
+                        ? `<button class="chat-open-file search-open-button" type="button" data-file-path="${escapeHtml(attachment.path)}">Abrir imagem: ${escapeHtml(attachment.name || 'imagem')}</button>`
+                        : `<button class="chat-open-file search-open-button" type="button" data-file-path="${escapeHtml(attachment.path)}">Abrir PDF: ${escapeHtml(attachment.name || 'arquivo.pdf')}</button>`
+                } <span class="users-item-meta">(${escapeHtml(formatBytes(attachment.size || 0))})</span></div>`
                 : '';
             const deleteBtn = isMe
                 ? `<button class="chat-message-delete" type="button" data-chat-delete-id="${escapeHtml(item?.id || '')}">Excluir</button>`
@@ -1286,15 +1327,17 @@
             await carregarDashboard();
             iniciarPollingDashboard();
         }
-        await carregarUsuariosChat();
-        await carregarUsuariosOnlineChat();
-        await carregarChat();
-        if (chatPollTimer) clearInterval(chatPollTimer);
-        chatPollTimer = setInterval(() => {
-            Promise.all([carregarChat(), carregarUsuariosChat(), carregarUsuariosOnlineChat()]).catch((error) => {
-                console.error('Erro ao atualizar chat:', error);
-            });
-        }, 5000);
+        if (!usarChatCompartilhado) {
+            await carregarUsuariosChat();
+            await carregarUsuariosOnlineChat();
+            await carregarChat();
+            if (chatPollTimer) clearInterval(chatPollTimer);
+            chatPollTimer = setInterval(() => {
+                Promise.all([carregarChat(), carregarUsuariosChat(), carregarUsuariosOnlineChat()]).catch((error) => {
+                    console.error('Erro ao atualizar chat:', error);
+                });
+            }, 5000);
+        }
         return true;
     }
 
@@ -1302,7 +1345,7 @@
         logoutBtn.addEventListener('click', logout);
     }
 
-    if (chatFab) {
+    if (!usarChatCompartilhado && chatFab) {
         chatFab.addEventListener('click', () => {
             if (!chatPanel?.classList.contains('active')) {
                 abrirChat();
@@ -1312,32 +1355,32 @@
         });
     }
 
-    if (chatCloseBtn) {
+    if (!usarChatCompartilhado && chatCloseBtn) {
         chatCloseBtn.addEventListener('click', fecharChat);
     }
 
-    if (chatBackBtn) {
+    if (!usarChatCompartilhado && chatBackBtn) {
         chatBackBtn.addEventListener('click', () => {
             definirModoChat('contacts');
             fecharMenuChat();
         });
     }
 
-    if (chatMenuBtn) {
+    if (!usarChatCompartilhado && chatMenuBtn) {
         chatMenuBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             alternarMenuChat();
         });
     }
 
-    if (chatForm) {
+    if (!usarChatCompartilhado && chatForm) {
         chatForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             await enviarMensagemChat();
         });
     }
 
-    if (chatAttachBtn) {
+    if (!usarChatCompartilhado && chatAttachBtn) {
         chatAttachBtn.addEventListener('click', async () => {
             const result = await ipcRenderer.invoke('chat-pick-file');
             if (!result?.ok || !result.attachment) return;
@@ -1346,14 +1389,14 @@
         });
     }
 
-    if (chatDetachBtn) {
+    if (!usarChatCompartilhado && chatDetachBtn) {
         chatDetachBtn.addEventListener('click', () => {
             chatPendingAttachment = null;
             atualizarArquivoSelecionadoChat();
         });
     }
 
-    if (chatClearSelfBtn) {
+    if (!usarChatCompartilhado && chatClearSelfBtn) {
         chatClearSelfBtn.addEventListener('click', async () => {
             fecharMenuChat();
             const targetUsername = String(chatTargetSelect?.value || '').trim().toLowerCase();
@@ -1367,19 +1410,19 @@
         });
     }
 
-    if (chatDeleteBothBtn) {
+    if (!usarChatCompartilhado && chatDeleteBothBtn) {
         chatDeleteBothBtn.addEventListener('click', async () => {
             fecharMenuChat();
             const targetUsername = String(chatTargetSelect?.value || '').trim().toLowerCase();
             if (!targetUsername) return;
-            if (!window.confirm('Excluir toda esta conversa privada para ambos?')) return;
+            if (!window.confirm('Excluir toda esta conversa para ambos?')) return;
             const result = await ipcRenderer.invoke('chat-delete-conversation-both', { targetUsername });
             if (!result?.ok) return;
             await carregarChat();
         });
     }
 
-    if (chatTargetSelect) {
+    if (!usarChatCompartilhado && chatTargetSelect) {
         chatTargetSelect.addEventListener('change', () => {
             fecharMenuChat();
             atualizarRotuloDestinoChat();
@@ -1387,12 +1430,14 @@
         });
     }
 
-    document.addEventListener('click', (event) => {
-        if (!chatMenuList?.classList.contains('active')) return;
-        const alvo = event.target;
-        if (chatMenuBtn?.contains(alvo) || chatMenuList?.contains(alvo)) return;
-        fecharMenuChat();
-    });
+    if (!usarChatCompartilhado) {
+        document.addEventListener('click', (event) => {
+            if (!chatMenuList?.classList.contains('active')) return;
+            const alvo = event.target;
+            if (chatMenuBtn?.contains(alvo) || chatMenuList?.contains(alvo)) return;
+            fecharMenuChat();
+        });
+    }
 
     if (exportUserAuditBtn) {
         exportUserAuditBtn.addEventListener('click', async () => {
@@ -1479,8 +1524,29 @@
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) window.changeTheme(savedTheme);
 
-    ipcRenderer.on('apply-theme', (event, theme) => {
+    if (window.location.hash === '#open-chat') {
+        setTimeout(() => {
+            if (!usarChatCompartilhado) {
+                abrirChat();
+                return;
+            }
+            const sharedChatFab = document.getElementById('chatFab');
+            if (sharedChatFab && !document.getElementById('chatPanel')?.classList.contains('active')) {
+                sharedChatFab.click();
+            }
+        }, 0);
+    }
+
+    ipcRenderer.on('change-theme', (event, theme) => {
         window.changeTheme(theme);
+    });
+
+    ipcRenderer.on('show-export-modal', () => {
+        window.handleExport();
+    });
+
+    ipcRenderer.on('start-import', () => {
+        window.handleImport();
     });
 
     iniciarSessao().catch((error) => {

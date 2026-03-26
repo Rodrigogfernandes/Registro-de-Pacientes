@@ -8,6 +8,7 @@ const { MongoClient } = require('mongodb');
 const marked = require('marked');
 const PDFDocument = require('pdfkit');
 const XLSX = require('xlsx-js-style'); // Altere esta linha
+const { createClientPortalServer } = require('./src/scripts/clientPortalServer');
 
 let mainWindow;
 let helpWindow;
@@ -40,6 +41,8 @@ const AUTH_PASSWORD_MAX_AGE_DAYS = 90;
 const AUTO_BACKUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const AUTO_BACKUP_RETENTION = 30;
 const AUTO_BACKUP_SINGLE_FILENAME = 'backup_auto_atual.json';
+const CLIENT_PORTAL_HOST = process.env.CLIENT_PORTAL_HOST || process.env.HOST || '127.0.0.1';
+const CLIENT_PORTAL_PORT = Number(process.env.CLIENT_PORTAL_PORT || 3210);
 
 let mongoOnline = false;
 let needsLocalSync = false;
@@ -48,6 +51,8 @@ let reconnectInProgress = false;
 let currentSession = null;
 let authPresenceTimer = null;
 let autoBackupTimer = null;
+let clientPortal = null;
+let clientPortalServer = null;
 const appInstanceId = `${os.hostname()}-${process.pid}-${crypto.randomBytes(4).toString('hex')}`;
 const authFailedAttempts = new Map();
 
@@ -86,6 +91,54 @@ function getDataFilePath(tipo) {
 
 function getChatUploadsDir() {
     return path.join(__dirname, 'data', 'chat_uploads');
+}
+
+const CHAT_ALLOWED_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.pdf']);
+
+function getChatAttachmentMimeType(ext) {
+    const normalized = String(ext || '').trim().toLowerCase();
+    if (normalized === '.png') return 'image/png';
+    if (normalized === '.jpg' || normalized === '.jpeg') return 'image/jpeg';
+    if (normalized === '.pdf') return 'application/pdf';
+    return 'application/octet-stream';
+}
+
+function isChatAttachmentImage(ext) {
+    const normalized = String(ext || '').trim().toLowerCase();
+    return normalized === '.png' || normalized === '.jpg' || normalized === '.jpeg';
+}
+
+function validarAttachmentChat(payload) {
+    if (!payload || typeof payload !== 'object') return null;
+    const filePath = String(payload.path || '').trim();
+    const name = String(payload.name || '').trim();
+    const ext = path.extname(filePath || name).toLowerCase();
+    if (!filePath || !name || !ext) {
+        throw new Error('Anexo inválido.');
+    }
+    if (!CHAT_ALLOWED_EXTENSIONS.has(ext)) {
+        throw new Error('Formato de arquivo não permitido. Use PNG, JPG ou PDF.');
+    }
+    if (!fs.existsSync(filePath)) {
+        throw new Error('Arquivo do anexo não encontrado.');
+    }
+    const uploadsDir = path.resolve(getChatUploadsDir()) + path.sep;
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(uploadsDir)) {
+        throw new Error('Origem do anexo inválida.');
+    }
+    const stats = fs.statSync(resolvedPath);
+    if (!stats.isFile()) {
+        throw new Error('Anexo inválido.');
+    }
+    return {
+        name,
+        path: resolvedPath,
+        type: getChatAttachmentMimeType(ext),
+        size: Number(stats.size || 0),
+        extension: ext,
+        kind: isChatAttachmentImage(ext) ? 'image' : 'pdf'
+    };
 }
 
 function getDefaultValue(tipo) {
@@ -1396,7 +1449,11 @@ function setupIpcHandlers() {
             const presencas = await lerDados('auth-presence');
             const ativos = filtrarPresencasAtivas(presencas)
                 .sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
-            const usernames = [...new Set(ativos.map((item) => String(item?.username || '').toLowerCase()).filter(Boolean))];
+            const portalOnline = clientPortal ? clientPortal.listOnlineClients() : [];
+            const usernames = [...new Set([
+                ...ativos.map((item) => String(item?.username || '').toLowerCase()).filter(Boolean),
+                ...portalOnline.map((item) => String(item?.username || '').toLowerCase()).filter(Boolean)
+            ])];
             return { ok: true, usernames };
         } catch (error) {
             return { ok: false, message: error.message, usernames: [] };
@@ -1653,7 +1710,7 @@ function setupIpcHandlers() {
             exigirPermissaoAcao('chat-send');
             const text = String(payload?.text || '').trim();
             const toUsername = String(payload?.toUsername || '').trim().toLowerCase();
-            const attachment = (payload?.attachment && typeof payload.attachment === 'object') ? payload.attachment : null;
+            const attachment = validarAttachmentChat(payload?.attachment);
             if (!text && !attachment) {
                 throw new Error('Mensagem vazia.');
             }
@@ -1666,14 +1723,21 @@ function setupIpcHandlers() {
             const role = String(currentSession?.role || '').trim().toLowerCase();
             let to = null;
             if (toUsername) {
-                const config = await garantirUsuariosAuth();
-                const target = config.authUsers
+                const [config, portalUsers] = await Promise.all([
+                    garantirUsuariosAuth(),
+                    clientPortal ? clientPortal.listClientUsers() : Promise.resolve([])
+                ]);
+                const target = [
+                    ...config.authUsers
                     .map(sanitizeAuthUser)
-                    .find((u) => u.username === toUsername && u.active);
+                    .filter((u) => u.active)
+                    .map((u) => ({ username: u.username, nome: u.nome || u.username, role: u.role })),
+                    ...portalUsers
+                ].find((u) => String(u?.username || '').toLowerCase() === toUsername);
                 if (!target) {
                     throw new Error('Destinatário inválido ou inativo.');
                 }
-                if (target.username === username) {
+                if (String(target.username || '').toLowerCase() === username) {
                     throw new Error('Não é possível enviar mensagem privada para si mesmo.');
                 }
                 to = { username: target.username, nome: target.nome || target.username };
@@ -1688,10 +1752,12 @@ function setupIpcHandlers() {
                 to,
                 text,
                 attachment: attachment ? {
-                    name: String(attachment?.name || ''),
-                    path: String(attachment?.path || ''),
-                    type: String(attachment?.type || ''),
-                    size: Number(attachment?.size || 0)
+                    name: attachment.name,
+                    path: attachment.path,
+                    type: attachment.type,
+                    size: attachment.size,
+                    extension: attachment.extension,
+                    kind: attachment.kind
                 } : null,
                 readBy: [username],
                 receivedBy: [username],
@@ -1718,15 +1784,21 @@ function setupIpcHandlers() {
     ipcMain.handle('chat-users', async () => {
         try {
             exigirPermissaoAcao('chat-users');
-            const config = await garantirUsuariosAuth();
-            const users = config.authUsers
+            const [config, portalUsers] = await Promise.all([
+                garantirUsuariosAuth(),
+                clientPortal ? clientPortal.listClientUsers() : Promise.resolve([])
+            ]);
+            const users = [
+                ...config.authUsers
                 .map(sanitizeAuthUser)
                 .filter((u) => u.active)
                 .map((u) => ({
                     username: u.username,
                     nome: u.nome || u.username,
                     role: u.role
-                }))
+                })),
+                ...portalUsers
+            ]
                 .sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
             return { ok: true, users };
         } catch (error) {
@@ -1867,10 +1939,7 @@ function setupIpcHandlers() {
                 title: 'Selecionar arquivo para enviar',
                 properties: ['openFile'],
                 filters: [
-                    { name: 'Imagens', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'] },
-                    { name: 'Documentos', extensions: ['txt', 'md', 'doc', 'docx', 'odt', 'rtf'] },
-                    { name: 'PDF', extensions: ['pdf'] },
-                    { name: 'Áudio', extensions: ['mp3', 'wav', 'ogg', 'm4a', 'aac'] }
+                    { name: 'Arquivos permitidos', extensions: ['png', 'jpg', 'jpeg', 'pdf'] }
                 ]
             });
             if (canceled || !Array.isArray(filePaths) || filePaths.length === 0) {
@@ -1887,15 +1956,14 @@ function setupIpcHandlers() {
             const nomeDestino = `${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`;
             const dstPath = path.join(dir, nomeDestino);
             fs.copyFileSync(srcPath, dstPath);
+            const attachment = validarAttachmentChat({
+                name: nomeOriginal,
+                path: dstPath
+            });
 
             return {
                 ok: true,
-                attachment: {
-                    name: nomeOriginal,
-                    path: dstPath,
-                    type: ext.replace('.', ''),
-                    size: Number(fs.statSync(dstPath).size || 0)
-                }
+                attachment
             };
         } catch (error) {
             return { ok: false, message: error.message };
@@ -2963,6 +3031,32 @@ app.whenReady().then(async () => {
             console.warn('Falha no backup automatico inicial:', error.message);
         });
         setupIpcHandlers();
+        clientPortal = createClientPortalServer({
+            baseDir: __dirname,
+            port: CLIENT_PORTAL_PORT,
+            host: CLIENT_PORTAL_HOST,
+            cpfSomenteDigitos,
+            normalizarProntuario,
+            hashSenha,
+            validarSenhaForteOuFalhar,
+            obterStatusTentativas,
+            registrarFalhaLogin,
+            limparTentativasLogin,
+            lerDados,
+            salvarDados,
+            obterConfigAuth,
+            garantirUsuariosAuth,
+            sanitizeAuthUser,
+            filtrarPresencasAtivas,
+            getMongoOnline: () => mongoOnline
+        });
+        try {
+            clientPortalServer = await clientPortal.start();
+            console.log(`Portal do cliente disponível em http://${CLIENT_PORTAL_HOST}:${CLIENT_PORTAL_PORT}/cliente/`);
+        } catch (error) {
+            clientPortalServer = null;
+            console.warn(`Portal do cliente indisponível: ${error.message}`);
+        }
         createWindow();
 
         if (!onlineNoInicio) {
@@ -3001,6 +3095,11 @@ app.on('before-quit', () => {
         console.warn('Falha ao encerrar sessao na saida:', error.message);
     });
 
+    if (clientPortalServer) {
+        clientPortalServer.close();
+        clientPortalServer = null;
+    }
+
     if (autoBackupTimer) {
         clearInterval(autoBackupTimer);
         autoBackupTimer = null;
@@ -3017,8 +3116,3 @@ app.on('before-quit', () => {
         });
     }
 });
-
-
-
-
-

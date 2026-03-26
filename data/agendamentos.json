@@ -36,5 +36,26 @@
     "statusExame": "Realizado",
     "documentoPaciente": "P000001",
     "pacienteId": "1771994357793"
+  },
+  {
+    "id": 1774057015907,
+    "nomePaciente": "RODRIGO GUEDES FERNANDES",
+    "cpfPaciente": "08675510462",
+    "prontuarioPaciente": "P000006",
+    "telefonePaciente": "83999251636",
+    "dataNascimentoPaciente": "1988-01-21",
+    "enderecoPaciente": "Rua Francisca Grigorio de Andrade",
+    "planoPaciente": "unimed",
+    "medicoId": "bento",
+    "modalidade": "ressonancia",
+    "exame": "Abdome total",
+    "numeroAcesso": "89742983476",
+    "dataHora": "2026-03-23T07:00",
+    "nomeTecnico": "Rodrigo",
+    "statusExame": "Agendado",
+    "documentoPaciente": "P000006",
+    "pacienteId": "1774056641895-55e6d8",
+    "origem": "portal-cliente",
+    "observacoes": ""
   }
 ]

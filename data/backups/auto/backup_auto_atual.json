@@ -1,0 +1,3532 @@
+{
+  "generatedAt": "2026-03-26T22:23:39.384Z",
+  "appInstanceId": "DESKTOP-EB58H3F-11952-ac3ab3c9",
+  "snapshot": {
+    "registros": [
+      {
+        "id": 1772677595736,
+        "agendamentoId": 1772080348324,
+        "nomePaciente": "PACIENTE TESTE",
+        "documentoPaciente": "P000001",
+        "modalidade": "Ressonancia",
+        "observacoes": "ABDOME TOTAL",
+        "numeroAcesso": "89742983474",
+        "dataHoraExame": "2026-02-26T08:00",
+        "nomeTecnico": "Ronny",
+        "statusExame": "Realizado",
+        "observacoesAdicionais": ""
+      },
+      {
+        "id": 1772677592410,
+        "agendamentoId": 1772595528584,
+        "nomePaciente": "Paciente teste mongodb",
+        "documentoPaciente": "P000005",
+        "modalidade": "Ressonancia",
+        "observacoes": "abdome total",
+        "numeroAcesso": "89742983475",
+        "dataHoraExame": "2026-03-04T09:00",
+        "nomeTecnico": "Rodrigo",
+        "statusExame": "Realizado",
+        "observacoesAdicionais": ""
+      },
+      {
+        "id": 1772083649881,
+        "nomePaciente": "PACIENTE TESTE 3",
+        "cpfPaciente": "77777777777",
+        "prontuarioPaciente": "P000003",
+        "documentoPaciente": "P000003",
+        "pacienteId": "1772083649881",
+        "modalidade": "Ressonancia",
+        "observacoes": "CRANIO",
+        "numeroAcesso": "89742983474",
+        "dataHoraExame": "2026-02-26T02:26",
+        "nomeTecnico": "--",
+        "statusExame": "Realizado"
+      },
+      {
+        "id": 1740428855985,
+        "nomePaciente": "PACIENTE TESTE 2",
+        "cpfPaciente": "88888888888",
+        "prontuarioPaciente": "P000002",
+        "documentoPaciente": "P000002",
+        "pacienteId": "1772083015860",
+        "modalidade": "Raiox",
+        "observacoes": "JOELHO ESQUERDO",
+        "numeroAcesso": "89742983473",
+        "dataHoraExame": "2025-02-24T17:27",
+        "nomeTecnico": "asc",
+        "statusExame": "Realizado"
+      },
+      {
+        "id": 1739402302218,
+        "nomePaciente": "PACIENTE TESTE",
+        "modalidade": "Ressonancia",
+        "observacoes": "JOELHO DIREITO",
+        "numeroAcesso": "76318701",
+        "dataHoraExame": "2024-02-12T20:17",
+        "nomeTecnico": "RODRIGO",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1739070658295,
+        "nomePaciente": "SILVIO SANTOS ABRAVANEL",
+        "modalidade": "Densitometria",
+        "observacoes": "CORPO INTEIRO",
+        "numeroAcesso": "0876543",
+        "dataHoraExame": "2023-02-09T00:09",
+        "nomeTecnico": "GERMANA",
+        "observacoesAdicionais": "",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1739070585278,
+        "nomePaciente": "ADRIANE GALISTEU",
+        "modalidade": "Mamografia",
+        "observacoes": "MAMA",
+        "numeroAcesso": "89742983472",
+        "dataHoraExame": "2025-02-09T00:08",
+        "nomeTecnico": "LUZIANA",
+        "statusExame": "Realizado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1739070518972,
+        "nomePaciente": "ZEZINHO",
+        "modalidade": "Ressonancia",
+        "observacoes": "CERVICAL",
+        "numeroAcesso": "2102121",
+        "dataHoraExame": "2025-02-09T00:08",
+        "nomeTecnico": "GERMANA",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1739070461327,
+        "nomePaciente": "SERAFIM FULANO DE TANTÃ",
+        "modalidade": "Ressonancia",
+        "observacoes": "MASTOIDE",
+        "numeroAcesso": "121212",
+        "dataHoraExame": "2026-02-26T09:30",
+        "nomeTecnico": "Ronny",
+        "observacoesAdicionais": "zsczasxczaxc",
+        "statusExame": "Realizado",
+        "documentoPaciente": "P000004",
+        "pacienteId": "1772084470469",
+        "cpfPaciente": "66666666666",
+        "prontuarioPaciente": "P000004"
+      },
+      {
+        "id": 1738898478811,
+        "nomePaciente": "FULANO",
+        "modalidade": "Raiox",
+        "observacoes": "TORAX",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Realizado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478812,
+        "nomePaciente": "CICLANO",
+        "modalidade": "Tomografia",
+        "observacoes": "CABEÇA",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478813,
+        "nomePaciente": "BELTRANO",
+        "modalidade": "Raiox",
+        "observacoes": "PÉ",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478814,
+        "nomePaciente": "SICRANO",
+        "modalidade": "Tomografia",
+        "observacoes": "PULMÃO",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478815,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478816,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478817,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478818,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478819,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478820,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478821,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478822,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478823,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478824,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478825,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478826,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478827,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478828,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478829,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478830,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478831,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2024-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478832,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478833,
+        "nomePaciente": "TESTE",
+        "modalidade": "Ressonancia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-02-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478835,
+        "nomePaciente": "TESTE",
+        "modalidade": "Ressonancia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478836,
+        "nomePaciente": "TESTE",
+        "modalidade": "Ressonancia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478837,
+        "nomePaciente": "TESTE",
+        "modalidade": "Ressonancia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478838,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478839,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478840,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478841,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478842,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478843,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478844,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478845,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478846,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478847,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478848,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478849,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478850,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478851,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478852,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478853,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478854,
+        "nomePaciente": "TESTE",
+        "modalidade": "Tomografia",
+        "observacoes": "TESTE",
+        "numeroAcesso": "0987654321",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "BELTRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      },
+      {
+        "id": 1738898478855,
+        "nomePaciente": "TESTE",
+        "modalidade": "Raiox",
+        "observacoes": "TESTE",
+        "numeroAcesso": "1234567890",
+        "dataHoraExame": "2025-03-07T00:48",
+        "nomeTecnico": "SICRANO",
+        "observacoesAdicionais": "Exemplo de observações.",
+        "statusExame": "Agendado",
+        "documentoPaciente": "",
+        "pacienteId": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": ""
+      }
+    ],
+    "pacientes": [
+      {
+        "id": "1771994357793",
+        "nomePaciente": "PACIENTE TESTE",
+        "documentoPaciente": "P000001",
+        "telefonePaciente": "83 999999999",
+        "dataNascimentoPaciente": "1988-01-21",
+        "cpfPaciente": "99999999999",
+        "prontuarioPaciente": "P000001",
+        "enderecoPaciente": "Rua: Imaginaria que não existe, 181",
+        "planoPaciente": "Unimed"
+      },
+      {
+        "id": "1772083015860",
+        "nomePaciente": "PACIENTE TESTE 2",
+        "cpfPaciente": "88888888888",
+        "prontuarioPaciente": "P000002",
+        "documentoPaciente": "P000002",
+        "telefonePaciente": "83 999998888",
+        "enderecoPaciente": "",
+        "planoPaciente": "UNIMED",
+        "dataNascimentoPaciente": "1988-01-21"
+      },
+      {
+        "id": "1772083649881",
+        "nomePaciente": "PACIENTE TESTE 3",
+        "cpfPaciente": "77777777777",
+        "prontuarioPaciente": "P000003",
+        "documentoPaciente": "P000003",
+        "telefonePaciente": "83 777777777",
+        "enderecoPaciente": "RUA VRAA",
+        "planoPaciente": "UNIMED",
+        "dataNascimentoPaciente": "1988-01-21"
+      },
+      {
+        "id": "1772084470469",
+        "nomePaciente": "SERAFIM FULANO DE TANTÃ",
+        "cpfPaciente": "66666666666",
+        "prontuarioPaciente": "P000004",
+        "documentoPaciente": "P000004",
+        "telefonePaciente": "66666666666",
+        "enderecoPaciente": "",
+        "planoPaciente": "GEAP",
+        "dataNascimentoPaciente": "1988-01-21"
+      },
+      {
+        "id": "1772595528585",
+        "nomePaciente": "Paciente teste mongodb",
+        "cpfPaciente": "98765432123",
+        "prontuarioPaciente": "P000005",
+        "documentoPaciente": "P000005",
+        "telefonePaciente": "83988036721",
+        "enderecoPaciente": "Rua teste de campo endereço",
+        "planoPaciente": "UNIMED",
+        "dataNascimentoPaciente": "1988-01-21"
+      },
+      {
+        "id": "1774056641895-55e6d8",
+        "nomePaciente": "RODRIGO GUEDES FERNANDES",
+        "cpfPaciente": "08675510462",
+        "prontuarioPaciente": "P000006",
+        "documentoPaciente": "P000006",
+        "telefonePaciente": "83999251636",
+        "dataNascimentoPaciente": "1988-01-21",
+        "enderecoPaciente": "Rua Francisca Grigorio de Andrade",
+        "planoPaciente": "unimed"
+      },
+      {
+        "id": "1774060757294-b6341c",
+        "nomePaciente": "Teste Chat 2",
+        "cpfPaciente": "12345678902",
+        "prontuarioPaciente": "P000007",
+        "documentoPaciente": "P000007",
+        "telefonePaciente": "83999999998",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060769333-8b7081",
+        "nomePaciente": "Teste Chat 3",
+        "cpfPaciente": "12345678903",
+        "prontuarioPaciente": "P000008",
+        "documentoPaciente": "P000008",
+        "telefonePaciente": "83999999997",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060793168-72cf67",
+        "nomePaciente": "Teste Node 2",
+        "cpfPaciente": "12345678905",
+        "prontuarioPaciente": "P000009",
+        "documentoPaciente": "P000009",
+        "telefonePaciente": "83999999995",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060811346-dd4bb7",
+        "nomePaciente": "Teste Node 3",
+        "cpfPaciente": "12345678906",
+        "prontuarioPaciente": "P000010",
+        "documentoPaciente": "P000010",
+        "telefonePaciente": "83999999994",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060893111-ecd915",
+        "nomePaciente": "Teste Node 4",
+        "cpfPaciente": "12345678907",
+        "prontuarioPaciente": "P000011",
+        "documentoPaciente": "P000011",
+        "telefonePaciente": "83999999993",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060938006-cbda14",
+        "nomePaciente": "Teste Node 5",
+        "cpfPaciente": "12345678908",
+        "prontuarioPaciente": "P000012",
+        "documentoPaciente": "P000012",
+        "telefonePaciente": "83999999992",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060965521-9f4221",
+        "nomePaciente": "Teste Node 6",
+        "cpfPaciente": "12345678909",
+        "prontuarioPaciente": "P000013",
+        "documentoPaciente": "P000013",
+        "telefonePaciente": "83999999991",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774060994898-62d628",
+        "nomePaciente": "Teste Node 7",
+        "cpfPaciente": "12345678910",
+        "prontuarioPaciente": "P000014",
+        "documentoPaciente": "P000014",
+        "telefonePaciente": "83999999990",
+        "dataNascimentoPaciente": "",
+        "enderecoPaciente": "",
+        "planoPaciente": ""
+      },
+      {
+        "id": "1774316372218-583166",
+        "nomePaciente": "Teste Home",
+        "cpfPaciente": "12345678911",
+        "prontuarioPaciente": "P000015",
+        "documentoPaciente": "P000015",
+        "telefonePaciente": "83999999911",
+        "dataNascimentoPaciente": "1990-01-01",
+        "enderecoPaciente": "Rua Teste",
+        "planoPaciente": "Teste"
+      }
+    ],
+    "agendamentos": [
+      {
+        "id": 1772595528584,
+        "nomePaciente": "Paciente teste mongodb",
+        "cpfPaciente": "98765432123",
+        "prontuarioPaciente": "P000005",
+        "telefonePaciente": "83988036721",
+        "dataNascimentoPaciente": "1988-01-21",
+        "enderecoPaciente": "Rua teste de campo endereço",
+        "planoPaciente": "UNIMED",
+        "medicoId": "bento",
+        "modalidade": "Ressonancia",
+        "exame": "abdome total",
+        "numeroAcesso": "89742983475",
+        "dataHora": "2026-03-04T09:00",
+        "nomeTecnico": "Rodrigo",
+        "statusExame": "Realizado",
+        "documentoPaciente": "P000005",
+        "pacienteId": "1772595528585"
+      },
+      {
+        "id": 1772080348324,
+        "nomePaciente": "PACIENTE TESTE",
+        "cpfPaciente": "99999999999",
+        "prontuarioPaciente": "P000001",
+        "telefonePaciente": "83 999999999",
+        "dataNascimentoPaciente": "1988-01-21",
+        "enderecoPaciente": "Rua: Imaginaria que não existe, 181",
+        "planoPaciente": "Unimed",
+        "medicoId": "ronny",
+        "modalidade": "Ressonancia",
+        "exame": "ABDOME TOTAL",
+        "numeroAcesso": "89742983474",
+        "dataHora": "2026-02-26T08:00",
+        "nomeTecnico": "Ronny",
+        "statusExame": "Realizado",
+        "documentoPaciente": "P000001",
+        "pacienteId": "1771994357793"
+      },
+      {
+        "id": 1774057015907,
+        "nomePaciente": "RODRIGO GUEDES FERNANDES",
+        "cpfPaciente": "08675510462",
+        "prontuarioPaciente": "P000006",
+        "telefonePaciente": "83999251636",
+        "dataNascimentoPaciente": "1988-01-21",
+        "enderecoPaciente": "Rua Francisca Grigorio de Andrade",
+        "planoPaciente": "unimed",
+        "medicoId": "bento",
+        "modalidade": "ressonancia",
+        "exame": "Abdome total",
+        "numeroAcesso": "89742983476",
+        "dataHora": "2026-03-23T07:00",
+        "nomeTecnico": "Rodrigo",
+        "statusExame": "Agendado",
+        "documentoPaciente": "P000006",
+        "pacienteId": "1774056641895-55e6d8",
+        "origem": "portal-cliente",
+        "observacoes": ""
+      }
+    ],
+    "medicos-agenda": [
+      {
+        "id": "ronny",
+        "nome": "Ronny",
+        "diasSemana": [
+          1,
+          2,
+          4
+        ],
+        "inicio": "07:00",
+        "fim": "13:00",
+        "intervaloMinutos": 30,
+        "datasBloqueadas": []
+      },
+      {
+        "id": "germana",
+        "nome": "Germana",
+        "diasSemana": [
+          1,
+          3,
+          5
+        ],
+        "inicio": "08:00",
+        "fim": "14:00",
+        "intervaloMinutos": 30,
+        "datasBloqueadas": []
+      },
+      {
+        "id": "bento",
+        "nome": "Rodrigo",
+        "diasSemana": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "inicio": "07:00",
+        "fim": "15:00",
+        "intervaloMinutos": 30,
+        "datasBloqueadas": []
+      },
+      {
+        "id": "francisco-bento",
+        "nome": "Francisco Bento",
+        "diasSemana": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "inicio": "07:00",
+        "fim": "13:00",
+        "intervaloMinutos": 30,
+        "datasBloqueadas": [
+          "2026-02-26"
+        ]
+      }
+    ],
+    "ocorrencias": [
+      {
+        "id": 1740450647286,
+        "data": "2025-02-24",
+        "turno": "Noite",
+        "descricao": "gdsfghfhgjklç",
+        "responsavel": "lkjhgfds",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740449646478,
+        "data": "2025-02-26",
+        "turno": "Tarde",
+        "descricao": "LALALALALALALALALALlalalalala",
+        "responsavel": "aman",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740449517158,
+        "data": "2025-02-26",
+        "turno": "Tarde",
+        "descricao": "asascascasc",
+        "responsavel": "ze",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430714146,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "dteste 22:54",
+        "responsavel": "rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430640552,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430566960,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430493366,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430419772,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430346178,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430272584,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430198990,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430125396,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740430051802,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429978208,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429904614,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429831020,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429757426,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429683832,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429610238,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429536644,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429463050,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429389456,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429315862,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      },
+      {
+        "id": 1740429242268,
+        "data": "2025-02-24",
+        "turno": "Manhã",
+        "descricao": "teste de observaçoes",
+        "responsavel": "Rodrigo",
+        "status": "Concluído"
+      }
+    ],
+    "ponto": {
+      "funcionarios": [
+        {
+          "id": 1772599922221,
+          "nome": "funcionario1",
+          "cpf": "99999999999",
+          "valor_hora": 30,
+          "multiplicador_extra": 1,
+          "tipo_carga_horaria": "meio",
+          "horarios": {
+            "manha_entrada": "07:00",
+            "manha_saida": "13:00",
+            "tarde_entrada": "13:00",
+            "tarde_saida": "19:00"
+          },
+          "senha": "1234"
+        }
+      ],
+      "registros": [
+        {
+          "id": 1772601940417,
+          "funcionario_id": 1772599922221,
+          "data": "2026-03-04",
+          "turno_manha_entrada": "",
+          "turno_manha_saida": "",
+          "turno_tarde_entrada": "13:00",
+          "turno_tarde_saida": "19:00",
+          "horas_extras": 0,
+          "total_horas_trabalhadas": 6,
+          "valor_diario": 180
+        }
+      ]
+    },
+    "config": {
+      "admin_password": "123456",
+      "contadores": {
+        "prontuarioAtual": 15,
+        "numeroAcessoAtual": 89742983476
+      },
+      "authUsers": [
+        {
+          "id": "admin-default",
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin",
+          "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+          "active": true
+        },
+        {
+          "id": "1772600454165-d8993a",
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes",
+          "role": "recepcao",
+          "passwordHash": "434f4d14c1eb231306b51aaa160c021b63670ac6ca67fb8e403f4500983dd1e4",
+          "active": true
+        },
+        {
+          "id": "1772600505387-8d3474",
+          "username": "ronny",
+          "nome": "Ronny Guedes",
+          "role": "tecnico",
+          "passwordHash": "434f4d14c1eb231306b51aaa160c021b63670ac6ca67fb8e403f4500983dd1e4",
+          "active": true
+        }
+      ],
+      "portalClients": [
+        {
+          "id": "portal-1774056641895-4e9233",
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "email": "rodrigo.guedes.f@gmail.com",
+          "telefone": "83999251636",
+          "cpf": "08675510462",
+          "patientId": "1774056641895-55e6d8",
+          "prontuarioPaciente": "P000006",
+          "passwordHash": "f0ce14402e10257384e58ef27e93f123ba1be685a90543b18886db7fb53d9ca6",
+          "active": true,
+          "createdAt": "2026-03-21T01:30:41.895Z",
+          "updatedAt": "2026-03-24T01:31:36.828Z",
+          "lastLoginAt": "2026-03-24T01:31:36.828Z"
+        },
+        {
+          "id": "portal-1774060757294-60ee9d",
+          "username": "cliente_teste-chat-2",
+          "nome": "Teste Chat 2",
+          "email": "teste.chat.2.1774060756@exemplo.com",
+          "telefone": "83999999998",
+          "cpf": "12345678902",
+          "patientId": "1774060757294-b6341c",
+          "prontuarioPaciente": "P000007",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:39:17.294Z",
+          "updatedAt": "2026-03-21T02:39:17.294Z",
+          "lastLoginAt": "2026-03-21T02:39:17.294Z"
+        },
+        {
+          "id": "portal-1774060769333-fd3388",
+          "username": "cliente_teste-chat-3",
+          "nome": "Teste Chat 3",
+          "email": "teste.chat.3.1774060768@exemplo.com",
+          "telefone": "83999999997",
+          "cpf": "12345678903",
+          "patientId": "1774060769333-8b7081",
+          "prontuarioPaciente": "P000008",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:39:29.334Z",
+          "updatedAt": "2026-03-21T02:39:29.334Z",
+          "lastLoginAt": "2026-03-21T02:39:29.334Z"
+        },
+        {
+          "id": "portal-1774060793169-0a2780",
+          "username": "cliente_teste-node-2",
+          "nome": "Teste Node 2",
+          "email": "teste.chat.node2.1774060792755@exemplo.com",
+          "telefone": "83999999995",
+          "cpf": "12345678905",
+          "patientId": "1774060793168-72cf67",
+          "prontuarioPaciente": "P000009",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:39:53.169Z",
+          "updatedAt": "2026-03-21T02:39:53.169Z",
+          "lastLoginAt": "2026-03-21T02:39:53.169Z"
+        },
+        {
+          "id": "portal-1774060811346-8efe4c",
+          "username": "cliente_teste-node-3",
+          "nome": "Teste Node 3",
+          "email": "teste.chat.node3.1774060810962@exemplo.com",
+          "telefone": "83999999994",
+          "cpf": "12345678906",
+          "patientId": "1774060811346-dd4bb7",
+          "prontuarioPaciente": "P000010",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:40:11.346Z",
+          "updatedAt": "2026-03-21T02:40:11.346Z",
+          "lastLoginAt": "2026-03-21T02:40:11.346Z"
+        },
+        {
+          "id": "portal-1774060893111-2d0525",
+          "username": "cliente_teste-node-4",
+          "nome": "Teste Node 4",
+          "email": "teste.chat.node4.1774060892711@exemplo.com",
+          "telefone": "83999999993",
+          "cpf": "12345678907",
+          "patientId": "1774060893111-ecd915",
+          "prontuarioPaciente": "P000011",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:41:33.111Z",
+          "updatedAt": "2026-03-21T02:41:33.111Z",
+          "lastLoginAt": "2026-03-21T02:41:33.111Z"
+        },
+        {
+          "id": "portal-1774060938006-e19bf2",
+          "username": "cliente_teste-node-5",
+          "nome": "Teste Node 5",
+          "email": "teste.chat.node5.1774060937616@exemplo.com",
+          "telefone": "83999999992",
+          "cpf": "12345678908",
+          "patientId": "1774060938006-cbda14",
+          "prontuarioPaciente": "P000012",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:42:18.006Z",
+          "updatedAt": "2026-03-21T02:42:18.006Z",
+          "lastLoginAt": "2026-03-21T02:42:18.006Z"
+        },
+        {
+          "id": "portal-1774060965521-43aaa9",
+          "username": "cliente_teste-node-6",
+          "nome": "Teste Node 6",
+          "email": "teste.chat.node6.1774060965128@exemplo.com",
+          "telefone": "83999999991",
+          "cpf": "12345678909",
+          "patientId": "1774060965521-9f4221",
+          "prontuarioPaciente": "P000013",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:42:45.521Z",
+          "updatedAt": "2026-03-21T02:42:45.521Z",
+          "lastLoginAt": "2026-03-21T02:42:45.521Z"
+        },
+        {
+          "id": "portal-1774060994898-528b60",
+          "username": "cliente_teste-node-7",
+          "nome": "Teste Node 7",
+          "email": "teste.chat.node7.1774060993894@exemplo.com",
+          "telefone": "83999999990",
+          "cpf": "12345678910",
+          "patientId": "1774060994898-62d628",
+          "prontuarioPaciente": "P000014",
+          "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+          "active": true,
+          "createdAt": "2026-03-21T02:43:14.898Z",
+          "updatedAt": "2026-03-21T02:43:14.898Z",
+          "lastLoginAt": "2026-03-21T02:43:14.898Z"
+        },
+        {
+          "id": "portal-1774316372218-b6b9e4",
+          "username": "cliente_teste-home",
+          "nome": "Teste Home",
+          "email": "teste.home.1774316371@exemplo.com",
+          "telefone": "83999999911",
+          "cpf": "12345678911",
+          "patientId": "1774316372218-583166",
+          "prontuarioPaciente": "P000015",
+          "passwordHash": "a2ca37fe6fdc490b8f7ce841e1701a169d2b1697c6b5b5c63f94abb8f9b6d6dd",
+          "active": true,
+          "createdAt": "2026-03-24T01:39:32.218Z",
+          "updatedAt": "2026-03-24T01:39:32.218Z",
+          "lastLoginAt": "2026-03-24T01:39:32.218Z"
+        }
+      ],
+      "portalClientRouting": {
+        "portal-1774060994898-528b60": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes",
+          "assignedAt": "2026-03-21T02:43:15.256Z"
+        },
+        "portal-1774056641895-4e9233": {
+          "username": "admin",
+          "nome": "Administrador",
+          "assignedAt": "2026-03-21T02:44:13.109Z"
+        },
+        "portal-1774316372218-b6b9e4": {
+          "username": "admin",
+          "nome": "Administrador",
+          "assignedAt": "2026-03-24T01:39:32.980Z"
+        }
+      }
+    },
+    "chat-messages": [
+      {
+        "id": "1772687592050-90647add",
+        "at": "2026-03-05T05:13:12.050Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": null,
+        "text": "ola",
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1772687867983-48c0a370",
+        "at": "2026-03-05T05:17:47.983Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes"
+        },
+        "text": "ola",
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1772688584773-8686569a",
+        "at": "2026-03-05T05:29:44.773Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": null,
+        "text": "😂",
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1772691493988-bf8e4223",
+        "at": "2026-03-05T06:18:13.989Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": null,
+        "text": "oi",
+        "attachment": null,
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1772691540458-bcf511f7",
+        "at": "2026-03-05T06:19:00.458Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": null,
+        "text": "oi",
+        "attachment": null,
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1772691667632-0dc90686",
+        "at": "2026-03-05T06:21:07.632Z",
+        "from": {
+          "username": "admin",
+          "nome": "Administrador",
+          "role": "admin"
+        },
+        "to": null,
+        "text": "teste",
+        "attachment": {
+          "name": "Fluxograma B.png",
+          "path": "D:\\projetos programação\\Registro-de-Pacientes\\data\\chat_uploads\\1772691654965_3768212d.png",
+          "type": "png",
+          "size": 1673614
+        },
+        "readBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "admin",
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774057042782-69cba565",
+        "at": "2026-03-21T01:37:22.782Z",
+        "from": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes"
+        },
+        "text": "oi",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774058860571-895ab96d",
+        "at": "2026-03-21T02:07:40.571Z",
+        "from": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes",
+          "role": "recepcao"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "oi",
+        "attachment": null,
+        "readBy": [
+          "rodrigo",
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "rodrigo",
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774060995429-2436ee66",
+        "at": "2026-03-21T02:43:15.429Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_teste-node-7",
+          "nome": "Teste Node 7"
+        },
+        "text": "Seu atendimento foi iniciado com Rodrigo guedes.",
+        "attachment": null,
+        "readBy": [],
+        "receivedBy": [],
+        "deletedFor": []
+      },
+      {
+        "id": "1774060995975-78aea8b9",
+        "at": "2026-03-21T02:43:15.975Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_teste-node-7",
+          "nome": "Teste Node 7"
+        },
+        "text": "Seu atendimento foi iniciado com Rodrigo guedes.",
+        "attachment": null,
+        "readBy": [],
+        "receivedBy": [],
+        "deletedFor": []
+      },
+      {
+        "id": "1774060996229-22a20127",
+        "at": "2026-03-21T02:43:16.229Z",
+        "from": {
+          "username": "cliente_teste-node-7",
+          "nome": "Teste Node 7",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes"
+        },
+        "text": "mensagem teste 7",
+        "attachment": null,
+        "readBy": [
+          "cliente_teste-node-7",
+          "rodrigo"
+        ],
+        "receivedBy": [
+          "cliente_teste-node-7",
+          "rodrigo"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061053297-10c01b8c",
+        "at": "2026-03-21T02:44:13.297Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061054235-0be55dda",
+        "at": "2026-03-21T02:44:14.235Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061059982-a5f41d46",
+        "at": "2026-03-21T02:44:19.982Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061064977-9839b423",
+        "at": "2026-03-21T02:44:24.977Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061070000-dd2207b0",
+        "at": "2026-03-21T02:44:30.000Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061070387-cc06fe07",
+        "at": "2026-03-21T02:44:30.387Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061071274-55182108",
+        "at": "2026-03-21T02:44:31.274Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061074972-a44fcb16",
+        "at": "2026-03-21T02:44:34.972Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061079986-7a99685c",
+        "at": "2026-03-21T02:44:39.986Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061085121-bd2418b0",
+        "at": "2026-03-21T02:44:45.121Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061089967-15585b20",
+        "at": "2026-03-21T02:44:49.967Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061095006-520e6cf9",
+        "at": "2026-03-21T02:44:55.006Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061099958-97ed13aa",
+        "at": "2026-03-21T02:44:59.958Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061104986-82ebcb3c",
+        "at": "2026-03-21T02:45:04.986Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061109972-0b233a02",
+        "at": "2026-03-21T02:45:09.972Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061115029-abe8c6cc",
+        "at": "2026-03-21T02:45:15.029Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061120005-f9caf0a6",
+        "at": "2026-03-21T02:45:20.005Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061124959-9d7a957d",
+        "at": "2026-03-21T02:45:24.959Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061129965-afc9e5dc",
+        "at": "2026-03-21T02:45:29.965Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061134994-73b3e369",
+        "at": "2026-03-21T02:45:34.994Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061138718-049005d4",
+        "at": "2026-03-21T02:45:38.718Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061139538-950b413d",
+        "at": "2026-03-21T02:45:39.538Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061140301-6141ba6d",
+        "at": "2026-03-21T02:45:40.301Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061145058-82bfa410",
+        "at": "2026-03-21T02:45:45.058Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061150064-6ab60aad",
+        "at": "2026-03-21T02:45:50.064Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061155066-8224dc3e",
+        "at": "2026-03-21T02:45:55.066Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061160050-983f6d3a",
+        "at": "2026-03-21T02:46:00.050Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061165059-316999e1",
+        "at": "2026-03-21T02:46:05.059Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061170076-7ced1311",
+        "at": "2026-03-21T02:46:10.076Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061175070-98b5039d",
+        "at": "2026-03-21T02:46:15.070Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061180053-a42033ef",
+        "at": "2026-03-21T02:46:20.053Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061185064-3d4f393c",
+        "at": "2026-03-21T02:46:25.064Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061190070-bb0d5b30",
+        "at": "2026-03-21T02:46:30.070Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061195063-e3aff0fa",
+        "at": "2026-03-21T02:46:35.063Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061200078-f06a1205",
+        "at": "2026-03-21T02:46:40.078Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061205068-38bbda87",
+        "at": "2026-03-21T02:46:45.068Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061210096-b041c626",
+        "at": "2026-03-21T02:46:50.096Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061215069-1f49a211",
+        "at": "2026-03-21T02:46:55.069Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061220034-f91e3b40",
+        "at": "2026-03-21T02:47:00.034Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061225052-3b2d388a",
+        "at": "2026-03-21T02:47:05.052Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061230058-995c86fa",
+        "at": "2026-03-21T02:47:10.059Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061235062-3babb08b",
+        "at": "2026-03-21T02:47:15.062Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061240046-93e49e00",
+        "at": "2026-03-21T02:47:20.046Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061245045-c974cc09",
+        "at": "2026-03-21T02:47:25.045Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061250087-33276d1c",
+        "at": "2026-03-21T02:47:30.087Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061255062-8ed108b1",
+        "at": "2026-03-21T02:47:35.062Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061260068-cf8c2987",
+        "at": "2026-03-21T02:47:40.068Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061265086-87897133",
+        "at": "2026-03-21T02:47:45.086Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061270050-54db3d87",
+        "at": "2026-03-21T02:47:50.050Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061275051-b7f8f20a",
+        "at": "2026-03-21T02:47:55.051Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061280060-3bfe999f",
+        "at": "2026-03-21T02:48:00.060Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061285058-9e0889b9",
+        "at": "2026-03-21T02:48:05.058Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061290046-bd40223c",
+        "at": "2026-03-21T02:48:10.047Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061295065-b2e79e65",
+        "at": "2026-03-21T02:48:15.065Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061300067-d6bfb9a8",
+        "at": "2026-03-21T02:48:20.067Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061305063-eb674627",
+        "at": "2026-03-21T02:48:25.063Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061310056-69d79b2c",
+        "at": "2026-03-21T02:48:30.056Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061315108-ddf890b3",
+        "at": "2026-03-21T02:48:35.108Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061320046-2ec63341",
+        "at": "2026-03-21T02:48:40.047Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061325058-f7da61ab",
+        "at": "2026-03-21T02:48:45.058Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061330058-d14dcfd8",
+        "at": "2026-03-21T02:48:50.058Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061335144-575b73f8",
+        "at": "2026-03-21T02:48:55.144Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061340064-ebf4c37d",
+        "at": "2026-03-21T02:49:00.064Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061345075-8bbda077",
+        "at": "2026-03-21T02:49:05.075Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061350053-4b49cd57",
+        "at": "2026-03-21T02:49:10.053Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061355128-263de560",
+        "at": "2026-03-21T02:49:15.128Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061360077-09c3b12b",
+        "at": "2026-03-21T02:49:20.077Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061365052-8f0befcd",
+        "at": "2026-03-21T02:49:25.052Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061370102-6e794fbb",
+        "at": "2026-03-21T02:49:30.102Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061375069-066ef486",
+        "at": "2026-03-21T02:49:35.069Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061380059-87edf6cf",
+        "at": "2026-03-21T02:49:40.059Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061385067-6438e8c5",
+        "at": "2026-03-21T02:49:45.067Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061390069-208a79a1",
+        "at": "2026-03-21T02:49:50.069Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061395366-007b255b",
+        "at": "2026-03-21T02:49:55.366Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061400099-613c8982",
+        "at": "2026-03-21T02:50:00.099Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061405077-e32413fb",
+        "at": "2026-03-21T02:50:05.077Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061410068-2cfa46aa",
+        "at": "2026-03-21T02:50:10.068Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061415065-69d61556",
+        "at": "2026-03-21T02:50:15.065Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061420063-7051cd05",
+        "at": "2026-03-21T02:50:20.063Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061425086-ab3db540",
+        "at": "2026-03-21T02:50:25.086Z",
+        "from": {
+          "username": "sistema",
+          "nome": "Sistema",
+          "role": "sistema"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "Seu atendimento foi iniciado com Administrador.",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1774061569200-965d64d4",
+        "at": "2026-03-21T02:52:49.200Z",
+        "from": {
+          "username": "rodrigo",
+          "nome": "Rodrigo guedes",
+          "role": "recepcao"
+        },
+        "to": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES"
+        },
+        "text": "ola",
+        "attachment": null,
+        "readBy": [
+          "rodrigo",
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "receivedBy": [
+          "rodrigo",
+          "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      }
+    ]
+  }
+}

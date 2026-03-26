@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>Portal do Cliente</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section id="authView" class="auth-view">
+            <div class="hero-card">
+                <p class="eyebrow">Portal Mobile</p>
+                <h1>Seu atendimento na palma da mão</h1>
+                <p class="hero-copy">Converse com a recepção, acompanhe agendamentos, solicite exames e baixe seus laudos digitais.</p>
+            </div>
+
+            <div class="panel">
+                <div class="panel-switch">
+                    <button id="showLoginBtn" class="is-active" type="button">Entrar</button>
+                    <button id="showRegisterBtn" type="button">Criar conta</button>
+                </div>
+
+                <form id="loginForm" class="form-stack">
+                    <label>E-mail
+                        <input type="email" id="loginEmail" required placeholder="voce@exemplo.com">
+                    </label>
+                    <label>Senha
+                        <input type="password" id="loginPassword" required placeholder="Sua senha">
+                    </label>
+                    <button class="primary-btn" type="submit">Entrar no portal</button>
+                </form>
+
+                <form id="registerForm" class="form-stack is-hidden">
+                    <label>Nome completo
+                        <input type="text" id="registerNome" required placeholder="Nome do paciente">
+                    </label>
+                    <label>E-mail
+                        <input type="email" id="registerEmail" required placeholder="voce@exemplo.com">
+                    </label>
+                    <label>Senha forte
+                        <input type="password" id="registerPassword" required placeholder="Maiúscula, minúscula, número e símbolo">
+                    </label>
+                    <label>CPF
+                        <input type="text" id="registerCpf" required placeholder="00000000000" inputmode="numeric">
+                    </label>
+                    <label>Telefone
+                        <input type="text" id="registerTelefone" placeholder="(00) 00000-0000">
+                    </label>
+                    <label>Data de nascimento
+                        <input type="date" id="registerNascimento">
+                    </label>
+                    <label>Endereço
+                        <input type="text" id="registerEndereco" placeholder="Rua, número, bairro">
+                    </label>
+                    <label>Plano
+                        <input type="text" id="registerPlano" placeholder="Ex.: Unimed">
+                    </label>
+                    <button class="primary-btn" type="submit">Cadastrar e entrar</button>
+                </form>
+
+                <p id="authMessage" class="status-text"></p>
+            </div>
+        </section>
+
+        <section id="appView" class="app-view is-hidden">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Área do cliente</p>
+                    <h2 id="clientName">Portal</h2>
+                    <p id="clientMeta" class="muted-text"></p>
+                </div>
+                <button id="logoutBtn" class="ghost-btn" type="button">Sair</button>
+            </header>
+
+            <section class="summary-grid">
+                <article class="metric-card">
+                    <span>Próximo exame</span>
+                    <strong id="metricNext">-</strong>
+                </article>
+                <article class="metric-card">
+                    <span>Agendamentos</span>
+                    <strong id="metricAppointments">0</strong>
+                </article>
+                <article class="metric-card">
+                    <span>Laudos</span>
+                    <strong id="metricReports">0</strong>
+                </article>
+                <article class="metric-card">
+                    <span>Pendentes</span>
+                    <strong id="metricPending">0</strong>
+                </article>
+            </section>
+
+            <nav class="tabbar">
+                <button class="tab-btn is-active" data-tab="overview" type="button">Resumo</button>
+                <button class="tab-btn" data-tab="schedule" type="button">Agendar</button>
+                <button class="tab-btn" data-tab="chat" type="button">Chat</button>
+                <button class="tab-btn" data-tab="reports" type="button">Laudos</button>
+            </nav>
+
+            <section class="content-stack">
+                <article id="tab-overview" class="content-card tab-panel is-active">
+                    <div class="section-head">
+                        <h3>Seus próximos passos</h3>
+                    </div>
+                    <div id="appointmentList" class="list-stack"></div>
+                </article>
+
+                <article id="tab-schedule" class="content-card tab-panel">
+                    <div class="section-head">
+                        <h3>Solicitar agendamento</h3>
+                    </div>
+                    <form id="scheduleForm" class="form-stack">
+                        <label>Profissional
+                            <select id="scheduleDoctor" required></select>
+                        </label>
+                        <label>Data
+                            <input type="date" id="scheduleDate" required>
+                        </label>
+                        <label>Horário
+                            <select id="scheduleTime" required></select>
+                        </label>
+                        <label>Modalidade
+                            <input type="text" id="scheduleModalidade" placeholder="Ex.: Ressonância">
+                        </label>
+                        <label>Exame
+                            <input type="text" id="scheduleExam" required placeholder="Ex.: Abdome total">
+                        </label>
+                        <label>Observações
+                            <textarea id="scheduleNotes" rows="3" placeholder="Sintomas, preparo ou observações úteis"></textarea>
+                        </label>
+                        <button class="primary-btn" type="submit">Confirmar agendamento</button>
+                    </form>
+                    <p id="scheduleMessage" class="status-text"></p>
+                </article>
+
+                <article id="tab-chat" class="content-card tab-panel">
+                    <div class="section-head">
+                        <h3>Falar com a recepção</h3>
+                    </div>
+                    <button id="chatClearBtn" class="ghost-btn chat-clear-btn" type="button">Excluir conversa</button>
+                    <div id="chatRoutingStatus" class="empty-state"></div>
+                    <div id="chatMessages" class="chat-box"></div>
+                    <form id="chatForm" class="chat-form">
+                        <input type="file" id="chatAttachmentInput" accept=".png,.jpg,.jpeg,.pdf" hidden>
+                        <button id="chatAttachBtn" class="ghost-btn chat-attach-btn" type="button">Anexar</button>
+                        <input type="text" id="chatInput" maxlength="1000" placeholder="Digite sua mensagem">
+                        <button id="chatDetachBtn" class="ghost-btn chat-detach-btn is-hidden" type="button">Remover</button>
+                        <button class="primary-btn" type="submit">Enviar</button>
+                    </form>
+                    <p id="chatMessage" class="status-text"></p>
+                </article>
+
+                <article id="tab-reports" class="content-card tab-panel">
+                    <div class="section-head">
+                        <h3>Laudos e resultados</h3>
+                    </div>
+                    <div id="reportList" class="list-stack"></div>
+                </article>
+            </section>
+        </section>
+    </main>
+    <script src="./app.js"></script>
+</body>
+</html>

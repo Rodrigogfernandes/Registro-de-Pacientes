@@ -4,7 +4,8 @@
   "description": "Sistema de registro de pacientes",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "node scripts/start-electron.js",
+    "client-portal": "node client-portal-standalone.js",
     "build": "electron-builder",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",

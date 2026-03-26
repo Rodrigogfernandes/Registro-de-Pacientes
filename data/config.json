@@ -1,8 +1,8 @@
 {
   "admin_password": "123456",
   "contadores": {
-    "prontuarioAtual": 5,
-    "numeroAcessoAtual": 89742983475
+    "prontuarioAtual": 15,
+    "numeroAcessoAtual": 89742983476
   },
   "authUsers": [
     {
@@ -29,5 +29,174 @@
       "passwordHash": "434f4d14c1eb231306b51aaa160c021b63670ac6ca67fb8e403f4500983dd1e4",
       "active": true
     }
-  ]
+  ],
+  "portalClients": [
+    {
+      "id": "portal-1774056641895-4e9233",
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "email": "rodrigo.guedes.f@gmail.com",
+      "telefone": "83999251636",
+      "cpf": "08675510462",
+      "patientId": "1774056641895-55e6d8",
+      "prontuarioPaciente": "P000006",
+      "passwordHash": "f0ce14402e10257384e58ef27e93f123ba1be685a90543b18886db7fb53d9ca6",
+      "active": true,
+      "createdAt": "2026-03-21T01:30:41.895Z",
+      "updatedAt": "2026-03-24T01:31:36.828Z",
+      "lastLoginAt": "2026-03-24T01:31:36.828Z"
+    },
+    {
+      "id": "portal-1774060757294-60ee9d",
+      "username": "cliente_teste-chat-2",
+      "nome": "Teste Chat 2",
+      "email": "teste.chat.2.1774060756@exemplo.com",
+      "telefone": "83999999998",
+      "cpf": "12345678902",
+      "patientId": "1774060757294-b6341c",
+      "prontuarioPaciente": "P000007",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:39:17.294Z",
+      "updatedAt": "2026-03-21T02:39:17.294Z",
+      "lastLoginAt": "2026-03-21T02:39:17.294Z"
+    },
+    {
+      "id": "portal-1774060769333-fd3388",
+      "username": "cliente_teste-chat-3",
+      "nome": "Teste Chat 3",
+      "email": "teste.chat.3.1774060768@exemplo.com",
+      "telefone": "83999999997",
+      "cpf": "12345678903",
+      "patientId": "1774060769333-8b7081",
+      "prontuarioPaciente": "P000008",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:39:29.334Z",
+      "updatedAt": "2026-03-21T02:39:29.334Z",
+      "lastLoginAt": "2026-03-21T02:39:29.334Z"
+    },
+    {
+      "id": "portal-1774060793169-0a2780",
+      "username": "cliente_teste-node-2",
+      "nome": "Teste Node 2",
+      "email": "teste.chat.node2.1774060792755@exemplo.com",
+      "telefone": "83999999995",
+      "cpf": "12345678905",
+      "patientId": "1774060793168-72cf67",
+      "prontuarioPaciente": "P000009",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:39:53.169Z",
+      "updatedAt": "2026-03-21T02:39:53.169Z",
+      "lastLoginAt": "2026-03-21T02:39:53.169Z"
+    },
+    {
+      "id": "portal-1774060811346-8efe4c",
+      "username": "cliente_teste-node-3",
+      "nome": "Teste Node 3",
+      "email": "teste.chat.node3.1774060810962@exemplo.com",
+      "telefone": "83999999994",
+      "cpf": "12345678906",
+      "patientId": "1774060811346-dd4bb7",
+      "prontuarioPaciente": "P000010",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:40:11.346Z",
+      "updatedAt": "2026-03-21T02:40:11.346Z",
+      "lastLoginAt": "2026-03-21T02:40:11.346Z"
+    },
+    {
+      "id": "portal-1774060893111-2d0525",
+      "username": "cliente_teste-node-4",
+      "nome": "Teste Node 4",
+      "email": "teste.chat.node4.1774060892711@exemplo.com",
+      "telefone": "83999999993",
+      "cpf": "12345678907",
+      "patientId": "1774060893111-ecd915",
+      "prontuarioPaciente": "P000011",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:41:33.111Z",
+      "updatedAt": "2026-03-21T02:41:33.111Z",
+      "lastLoginAt": "2026-03-21T02:41:33.111Z"
+    },
+    {
+      "id": "portal-1774060938006-e19bf2",
+      "username": "cliente_teste-node-5",
+      "nome": "Teste Node 5",
+      "email": "teste.chat.node5.1774060937616@exemplo.com",
+      "telefone": "83999999992",
+      "cpf": "12345678908",
+      "patientId": "1774060938006-cbda14",
+      "prontuarioPaciente": "P000012",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:42:18.006Z",
+      "updatedAt": "2026-03-21T02:42:18.006Z",
+      "lastLoginAt": "2026-03-21T02:42:18.006Z"
+    },
+    {
+      "id": "portal-1774060965521-43aaa9",
+      "username": "cliente_teste-node-6",
+      "nome": "Teste Node 6",
+      "email": "teste.chat.node6.1774060965128@exemplo.com",
+      "telefone": "83999999991",
+      "cpf": "12345678909",
+      "patientId": "1774060965521-9f4221",
+      "prontuarioPaciente": "P000013",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:42:45.521Z",
+      "updatedAt": "2026-03-21T02:42:45.521Z",
+      "lastLoginAt": "2026-03-21T02:42:45.521Z"
+    },
+    {
+      "id": "portal-1774060994898-528b60",
+      "username": "cliente_teste-node-7",
+      "nome": "Teste Node 7",
+      "email": "teste.chat.node7.1774060993894@exemplo.com",
+      "telefone": "83999999990",
+      "cpf": "12345678910",
+      "patientId": "1774060994898-62d628",
+      "prontuarioPaciente": "P000014",
+      "passwordHash": "6b7a8a40eb42d9b6593930c0a4ca9946792e235709bc074ca056d9aefaa37b61",
+      "active": true,
+      "createdAt": "2026-03-21T02:43:14.898Z",
+      "updatedAt": "2026-03-21T02:43:14.898Z",
+      "lastLoginAt": "2026-03-21T02:43:14.898Z"
+    },
+    {
+      "id": "portal-1774316372218-b6b9e4",
+      "username": "cliente_teste-home",
+      "nome": "Teste Home",
+      "email": "teste.home.1774316371@exemplo.com",
+      "telefone": "83999999911",
+      "cpf": "12345678911",
+      "patientId": "1774316372218-583166",
+      "prontuarioPaciente": "P000015",
+      "passwordHash": "a2ca37fe6fdc490b8f7ce841e1701a169d2b1697c6b5b5c63f94abb8f9b6d6dd",
+      "active": true,
+      "createdAt": "2026-03-24T01:39:32.218Z",
+      "updatedAt": "2026-03-24T01:39:32.218Z",
+      "lastLoginAt": "2026-03-24T01:39:32.218Z"
+    }
+  ],
+  "portalClientRouting": {
+    "portal-1774060994898-528b60": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes",
+      "assignedAt": "2026-03-21T02:43:15.256Z"
+    },
+    "portal-1774056641895-4e9233": {
+      "username": "admin",
+      "nome": "Administrador",
+      "assignedAt": "2026-03-21T02:44:13.109Z"
+    },
+    "portal-1774316372218-b6b9e4": {
+      "username": "admin",
+      "nome": "Administrador",
+      "assignedAt": "2026-03-24T01:39:32.980Z"
+    }
+  }
 }

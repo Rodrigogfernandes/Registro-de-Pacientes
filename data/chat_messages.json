@@ -10,9 +10,12 @@
     "to": null,
     "text": "ola",
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
-    "receivedBy": [],
+    "receivedBy": [
+      "rodrigo"
+    ],
     "deletedFor": []
   },
   {
@@ -29,9 +32,12 @@
     },
     "text": "ola",
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
-    "receivedBy": [],
+    "receivedBy": [
+      "rodrigo"
+    ],
     "deletedFor": []
   },
   {
@@ -45,9 +51,12 @@
     "to": null,
     "text": "😂",
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
-    "receivedBy": [],
+    "receivedBy": [
+      "rodrigo"
+    ],
     "deletedFor": []
   },
   {
@@ -62,10 +71,12 @@
     "text": "oi",
     "attachment": null,
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
     "receivedBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
     "deletedFor": []
   },
@@ -81,10 +92,12 @@
     "text": "oi",
     "attachment": null,
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
     "receivedBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
     "deletedFor": []
   },
@@ -105,10 +118,1904 @@
       "size": 1673614
     },
     "readBy": [
-      "admin"
+      "admin",
+      "rodrigo"
     ],
     "receivedBy": [
-      "admin"
+      "admin",
+      "rodrigo"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774057042782-69cba565",
+    "at": "2026-03-21T01:37:22.782Z",
+    "from": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes"
+    },
+    "text": "oi",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "rodrigo"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "rodrigo"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774058860571-895ab96d",
+    "at": "2026-03-21T02:07:40.571Z",
+    "from": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes",
+      "role": "recepcao"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "oi",
+    "attachment": null,
+    "readBy": [
+      "rodrigo",
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "rodrigo",
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774060995429-2436ee66",
+    "at": "2026-03-21T02:43:15.429Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_teste-node-7",
+      "nome": "Teste Node 7"
+    },
+    "text": "Seu atendimento foi iniciado com Rodrigo guedes.",
+    "attachment": null,
+    "readBy": [],
+    "receivedBy": [],
+    "deletedFor": []
+  },
+  {
+    "id": "1774060995975-78aea8b9",
+    "at": "2026-03-21T02:43:15.975Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_teste-node-7",
+      "nome": "Teste Node 7"
+    },
+    "text": "Seu atendimento foi iniciado com Rodrigo guedes.",
+    "attachment": null,
+    "readBy": [],
+    "receivedBy": [],
+    "deletedFor": []
+  },
+  {
+    "id": "1774060996229-22a20127",
+    "at": "2026-03-21T02:43:16.229Z",
+    "from": {
+      "username": "cliente_teste-node-7",
+      "nome": "Teste Node 7",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes"
+    },
+    "text": "mensagem teste 7",
+    "attachment": null,
+    "readBy": [
+      "cliente_teste-node-7",
+      "rodrigo"
+    ],
+    "receivedBy": [
+      "cliente_teste-node-7",
+      "rodrigo"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061053297-10c01b8c",
+    "at": "2026-03-21T02:44:13.297Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061054235-0be55dda",
+    "at": "2026-03-21T02:44:14.235Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061059982-a5f41d46",
+    "at": "2026-03-21T02:44:19.982Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061064977-9839b423",
+    "at": "2026-03-21T02:44:24.977Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061070000-dd2207b0",
+    "at": "2026-03-21T02:44:30.000Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061070387-cc06fe07",
+    "at": "2026-03-21T02:44:30.387Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061071274-55182108",
+    "at": "2026-03-21T02:44:31.274Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061074972-a44fcb16",
+    "at": "2026-03-21T02:44:34.972Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061079986-7a99685c",
+    "at": "2026-03-21T02:44:39.986Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061085121-bd2418b0",
+    "at": "2026-03-21T02:44:45.121Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061089967-15585b20",
+    "at": "2026-03-21T02:44:49.967Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061095006-520e6cf9",
+    "at": "2026-03-21T02:44:55.006Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061099958-97ed13aa",
+    "at": "2026-03-21T02:44:59.958Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061104986-82ebcb3c",
+    "at": "2026-03-21T02:45:04.986Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061109972-0b233a02",
+    "at": "2026-03-21T02:45:09.972Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061115029-abe8c6cc",
+    "at": "2026-03-21T02:45:15.029Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061120005-f9caf0a6",
+    "at": "2026-03-21T02:45:20.005Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061124959-9d7a957d",
+    "at": "2026-03-21T02:45:24.959Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061129965-afc9e5dc",
+    "at": "2026-03-21T02:45:29.965Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061134994-73b3e369",
+    "at": "2026-03-21T02:45:34.994Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061138718-049005d4",
+    "at": "2026-03-21T02:45:38.718Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061139538-950b413d",
+    "at": "2026-03-21T02:45:39.538Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061140301-6141ba6d",
+    "at": "2026-03-21T02:45:40.301Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061145058-82bfa410",
+    "at": "2026-03-21T02:45:45.058Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061150064-6ab60aad",
+    "at": "2026-03-21T02:45:50.064Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061155066-8224dc3e",
+    "at": "2026-03-21T02:45:55.066Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061160050-983f6d3a",
+    "at": "2026-03-21T02:46:00.050Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061165059-316999e1",
+    "at": "2026-03-21T02:46:05.059Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061170076-7ced1311",
+    "at": "2026-03-21T02:46:10.076Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061175070-98b5039d",
+    "at": "2026-03-21T02:46:15.070Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061180053-a42033ef",
+    "at": "2026-03-21T02:46:20.053Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061185064-3d4f393c",
+    "at": "2026-03-21T02:46:25.064Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061190070-bb0d5b30",
+    "at": "2026-03-21T02:46:30.070Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061195063-e3aff0fa",
+    "at": "2026-03-21T02:46:35.063Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061200078-f06a1205",
+    "at": "2026-03-21T02:46:40.078Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061205068-38bbda87",
+    "at": "2026-03-21T02:46:45.068Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061210096-b041c626",
+    "at": "2026-03-21T02:46:50.096Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061215069-1f49a211",
+    "at": "2026-03-21T02:46:55.069Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061220034-f91e3b40",
+    "at": "2026-03-21T02:47:00.034Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061225052-3b2d388a",
+    "at": "2026-03-21T02:47:05.052Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061230058-995c86fa",
+    "at": "2026-03-21T02:47:10.059Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061235062-3babb08b",
+    "at": "2026-03-21T02:47:15.062Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061240046-93e49e00",
+    "at": "2026-03-21T02:47:20.046Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061245045-c974cc09",
+    "at": "2026-03-21T02:47:25.045Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061250087-33276d1c",
+    "at": "2026-03-21T02:47:30.087Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061255062-8ed108b1",
+    "at": "2026-03-21T02:47:35.062Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061260068-cf8c2987",
+    "at": "2026-03-21T02:47:40.068Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061265086-87897133",
+    "at": "2026-03-21T02:47:45.086Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061270050-54db3d87",
+    "at": "2026-03-21T02:47:50.050Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061275051-b7f8f20a",
+    "at": "2026-03-21T02:47:55.051Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061280060-3bfe999f",
+    "at": "2026-03-21T02:48:00.060Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061285058-9e0889b9",
+    "at": "2026-03-21T02:48:05.058Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061290046-bd40223c",
+    "at": "2026-03-21T02:48:10.047Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061295065-b2e79e65",
+    "at": "2026-03-21T02:48:15.065Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061300067-d6bfb9a8",
+    "at": "2026-03-21T02:48:20.067Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061305063-eb674627",
+    "at": "2026-03-21T02:48:25.063Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061310056-69d79b2c",
+    "at": "2026-03-21T02:48:30.056Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061315108-ddf890b3",
+    "at": "2026-03-21T02:48:35.108Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061320046-2ec63341",
+    "at": "2026-03-21T02:48:40.047Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061325058-f7da61ab",
+    "at": "2026-03-21T02:48:45.058Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061330058-d14dcfd8",
+    "at": "2026-03-21T02:48:50.058Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061335144-575b73f8",
+    "at": "2026-03-21T02:48:55.144Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061340064-ebf4c37d",
+    "at": "2026-03-21T02:49:00.064Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061345075-8bbda077",
+    "at": "2026-03-21T02:49:05.075Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061350053-4b49cd57",
+    "at": "2026-03-21T02:49:10.053Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061355128-263de560",
+    "at": "2026-03-21T02:49:15.128Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061360077-09c3b12b",
+    "at": "2026-03-21T02:49:20.077Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061365052-8f0befcd",
+    "at": "2026-03-21T02:49:25.052Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061370102-6e794fbb",
+    "at": "2026-03-21T02:49:30.102Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061375069-066ef486",
+    "at": "2026-03-21T02:49:35.069Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061380059-87edf6cf",
+    "at": "2026-03-21T02:49:40.059Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061385067-6438e8c5",
+    "at": "2026-03-21T02:49:45.067Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061390069-208a79a1",
+    "at": "2026-03-21T02:49:50.069Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061395366-007b255b",
+    "at": "2026-03-21T02:49:55.366Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061400099-613c8982",
+    "at": "2026-03-21T02:50:00.099Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061405077-e32413fb",
+    "at": "2026-03-21T02:50:05.077Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061410068-2cfa46aa",
+    "at": "2026-03-21T02:50:10.068Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061415065-69d61556",
+    "at": "2026-03-21T02:50:15.065Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061420063-7051cd05",
+    "at": "2026-03-21T02:50:20.063Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061425086-ab3db540",
+    "at": "2026-03-21T02:50:25.086Z",
+    "from": {
+      "username": "sistema",
+      "nome": "Sistema",
+      "role": "sistema"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "Seu atendimento foi iniciado com Administrador.",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1774061569200-965d64d4",
+    "at": "2026-03-21T02:52:49.200Z",
+    "from": {
+      "username": "rodrigo",
+      "nome": "Rodrigo guedes",
+      "role": "recepcao"
+    },
+    "to": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES"
+    },
+    "text": "ola",
+    "attachment": null,
+    "readBy": [
+      "rodrigo",
+      "cliente_rodrigo-guedes-fernandes"
+    ],
+    "receivedBy": [
+      "rodrigo",
+      "cliente_rodrigo-guedes-fernandes"
     ],
     "deletedFor": []
   }
