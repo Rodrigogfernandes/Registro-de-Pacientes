@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-04-17T02:18:17.156Z",
-  "appInstanceId": "DESKTOP-EB58H3F-109284-732dbeca",
+  "generatedAt": "2026-04-24T00:01:17.974Z",
+  "appInstanceId": "DESKTOP-EB58H3F-11192-9d15da9c",
   "snapshot": {
     "registros": [
       {
@@ -1353,8 +1353,8 @@
           "passwordHash": "f0ce14402e10257384e58ef27e93f123ba1be685a90543b18886db7fb53d9ca6",
           "active": true,
           "createdAt": "2026-03-21T01:30:41.895Z",
-          "updatedAt": "2026-04-16T23:32:36.779Z",
-          "lastLoginAt": "2026-04-16T23:32:36.779Z"
+          "updatedAt": "2026-04-23T23:57:28.436Z",
+          "lastLoginAt": "2026-04-23T23:57:28.435Z"
         },
         {
           "id": "portal-1774060757294-60ee9d",
@@ -1520,28 +1520,6 @@
           "role": "admin"
         },
         "to": null,
-        "text": "ola",
-        "readBy": [
-          "admin",
-          "rodrigo"
-        ],
-        "receivedBy": [
-          "rodrigo"
-        ],
-        "deletedFor": []
-      },
-      {
-        "id": "1772687867983-48c0a370",
-        "at": "2026-03-05T05:17:47.983Z",
-        "from": {
-          "username": "admin",
-          "nome": "Administrador",
-          "role": "admin"
-        },
-        "to": {
-          "username": "rodrigo",
-          "nome": "Rodrigo guedes"
-        },
         "text": "ola",
         "readBy": [
           "admin",
@@ -3528,6 +3506,78 @@
         "receivedBy": [
           "rodrigo",
           "cliente_rodrigo-guedes-fernandes"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1776987397771-9df4c97f",
+        "at": "2026-04-23T23:36:37.771Z",
+        "from": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "admin",
+          "nome": "Administrador"
+        },
+        "text": "fala",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1776987575476-e30dd87f",
+        "at": "2026-04-23T23:39:35.476Z",
+        "from": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "admin",
+          "nome": "Administrador"
+        },
+        "text": "teste",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1776987697558-1828edbb",
+        "at": "2026-04-23T23:41:37.558Z",
+        "from": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "admin",
+          "nome": "Administrador"
+        },
+        "text": "teste 2",
+        "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
         ],
         "deletedFor": []
       }

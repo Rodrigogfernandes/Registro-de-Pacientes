@@ -19,28 +19,6 @@
     "deletedFor": []
   },
   {
-    "id": "1772687867983-48c0a370",
-    "at": "2026-03-05T05:17:47.983Z",
-    "from": {
-      "username": "admin",
-      "nome": "Administrador",
-      "role": "admin"
-    },
-    "to": {
-      "username": "rodrigo",
-      "nome": "Rodrigo guedes"
-    },
-    "text": "ola",
-    "readBy": [
-      "admin",
-      "rodrigo"
-    ],
-    "receivedBy": [
-      "rodrigo"
-    ],
-    "deletedFor": []
-  },
-  {
     "id": "1772688584773-8686569a",
     "at": "2026-03-05T05:29:44.773Z",
     "from": {
@@ -2016,6 +1994,109 @@
     "receivedBy": [
       "rodrigo",
       "cliente_rodrigo-guedes-fernandes"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1776987397771-9df4c97f",
+    "at": "2026-04-23T23:36:37.771Z",
+    "from": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "admin",
+      "nome": "Administrador"
+    },
+    "text": "fala",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1776987575476-e30dd87f",
+    "at": "2026-04-23T23:39:35.476Z",
+    "from": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "admin",
+      "nome": "Administrador"
+    },
+    "text": "teste",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1776987697558-1828edbb",
+    "at": "2026-04-23T23:41:37.558Z",
+    "from": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "admin",
+      "nome": "Administrador"
+    },
+    "text": "teste 2",
+    "attachment": null,
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "deletedFor": []
+  },
+  {
+    "id": "1776988917465-fc8515ce",
+    "at": "2026-04-24T00:01:57.465Z",
+    "from": {
+      "username": "cliente_rodrigo-guedes-fernandes",
+      "nome": "RODRIGO GUEDES FERNANDES",
+      "role": "cliente"
+    },
+    "to": {
+      "username": "admin",
+      "nome": "Administrador"
+    },
+    "text": "",
+    "attachment": {
+      "name": "Captura_de_tela_2025-12-04_122525.png",
+      "path": "D:\\projetos programação\\Registro-de-Pacientes\\data\\chat_uploads\\1776988916845_ace1c9b7.png",
+      "type": "image/png",
+      "size": 53121,
+      "extension": ".png",
+      "kind": "image"
+    },
+    "readBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
+    ],
+    "receivedBy": [
+      "cliente_rodrigo-guedes-fernandes",
+      "admin"
     ],
     "deletedFor": []
   }

@@ -8,6 +8,14 @@ const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const CHAT_ALLOWED_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.pdf']);
 const CHAT_ATTACHMENT_MAX_BYTES = 8 * 1024 * 1024;
 
+function limparTexto(valor) {
+    return String(valor || '').trim();
+}
+
+function getChatUploadsDir(baseDir) {
+    return path.join(baseDir, 'data', 'chat_uploads');
+}
+
 function createClientPortalServer(deps) {
     const {
         baseDir,
@@ -45,7 +53,6 @@ function createClientPortalServer(deps) {
         next();
     });
 
-    const limparTexto = (valor) => String(valor || '').trim();
     const normalizarEmail = (email) => String(email || '').trim().toLowerCase();
     const normalizarUsername = (valor) => String(valor || '')
         .trim()
@@ -427,11 +434,6 @@ function createClientPortalServer(deps) {
         }));
     }
 
-    function getChatUploadsDir() {
-        return path.join(baseDir, 'data', 'chat_uploads');
-    }
-
-
     function chatVisivelPara(item, username) {
         const user = String(username || '').toLowerCase();
         const fromUsername = String(item?.from?.username || '').trim().toLowerCase();
@@ -676,9 +678,9 @@ function createClientPortalServer(deps) {
                 ok: true,
                 summary: {
                     proximoAgendamento: proximos[0] || null,
-                    totalAgendamentos: agendamentos.length,
+                    totalAgendamentos: proximos.length,
                     totalLaudos: registros.length,
-                    pendentes: agendamentos.filter((item) => String(item?.statusExame || '').toLowerCase() === 'agendado').length
+                    pendentes: proximos.filter((item) => String(item?.statusExame || '').toLowerCase() === 'agendado').length
                 }
             });
         } catch (error) {
@@ -913,7 +915,7 @@ function createClientPortalServer(deps) {
     webApp.post('/cliente/api/chat/messages', autenticar, async (req, res) => {
         try {
             const text = limparTexto(req.body?.text);
-            const attachment = salvarAttachmentBase64(req.body?.attachment);
+            const attachment = salvarAttachmentBase64(req.body?.attachment, baseDir);
             if (!text && !attachment) throw new Error('Digite uma mensagem ou selecione um anexo.');
             if (text.length > 1000) throw new Error('Mensagem muito longa.');
 
@@ -1014,7 +1016,15 @@ function createClientPortalServer(deps) {
         }
     });
 
-    webApp.use('/cliente', express.static(staticDir));
+    webApp.use('/cliente', express.static(staticDir, {
+        etag: false,
+        lastModified: false,
+        setHeaders(res) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+    }));
     webApp.get(['/cliente', '/cliente/'], (req, res) => {
         res.sendFile(path.join(staticDir, 'index.html'));
     });
@@ -1056,6 +1066,14 @@ module.exports = {
         return 'application/octet-stream';
     }
 
+    function getChatAttachmentExtensionFromMime(type) {
+        const normalized = String(type || '').trim().toLowerCase();
+        if (normalized === 'image/png') return '.png';
+        if (normalized === 'image/jpg' || normalized === 'image/jpeg') return '.jpg';
+        if (normalized === 'application/pdf') return '.pdf';
+        return '';
+    }
+
     function isChatAttachmentImage(ext) {
         const normalized = String(ext || '').trim().toLowerCase();
         return normalized === '.png' || normalized === '.jpg' || normalized === '.jpeg';
@@ -1094,12 +1112,17 @@ module.exports = {
         };
     }
 
-    function salvarAttachmentBase64(attachment) {
+    function salvarAttachmentBase64(attachment, uploadBaseDir) {
         if (!attachment || typeof attachment !== 'object') return null;
-        const name = limparTexto(attachment.name);
-        const base64 = String(attachment.base64 || '').trim();
-        const ext = path.extname(name).toLowerCase();
-        if (!name || !base64 || !CHAT_ALLOWED_EXTENSIONS.has(ext)) {
+        const originalName = limparTexto(attachment.name);
+        const attachmentType = limparTexto(attachment.type).toLowerCase();
+        const base64 = String(attachment.base64 || '').trim().replace(/^data:[^;]+;base64,/i, '');
+        const extFromName = path.extname(originalName).toLowerCase();
+        const extFromMime = getChatAttachmentExtensionFromMime(attachmentType);
+        const ext = CHAT_ALLOWED_EXTENSIONS.has(extFromName) ? extFromName : extFromMime;
+        const safeBaseName = path.basename(originalName || 'anexo', extFromName || path.extname(originalName)).replace(/[^\w.-]+/g, '_');
+        const name = `${safeBaseName || 'anexo'}${ext}`;
+        if (!base64 || !CHAT_ALLOWED_EXTENSIONS.has(ext)) {
             throw new Error('Formato de anexo inválido. Use PNG, JPG ou PDF.');
         }
         const buffer = Buffer.from(base64, 'base64');
@@ -1109,7 +1132,7 @@ module.exports = {
         if (buffer.length > CHAT_ATTACHMENT_MAX_BYTES) {
             throw new Error('O anexo excede o limite de 8 MB.');
         }
-        const uploadsDir = getChatUploadsDir();
+        const uploadsDir = getChatUploadsDir(uploadBaseDir);
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }

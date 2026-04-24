@@ -44,6 +44,10 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function limparTexto(value) {
+    return String(value || '').trim();
+}
+
 function formatBytes(bytes) {
     const total = Number(bytes) || 0;
     if (total < 1024) return `${total} B`;
@@ -67,6 +71,31 @@ function updateChatAttachmentUI() {
     const label = String(state.pendingAttachment.name || 'arquivo');
     els.chatAttachBtn.textContent = label.length > 18 ? `${label.slice(0, 15)}...` : label;
     els.chatDetachBtn.classList.remove('is-hidden');
+}
+
+function resetSessionState() {
+    state.token = '';
+    state.client = null;
+    state.assignedAttendant = null;
+    state.attendantsOnline = [];
+    state.appointments = [];
+    state.reports = [];
+    state.pendingAttachment = null;
+    localStorage.removeItem('portal_client_token');
+    stopChatPolling();
+    updateChatAttachmentUI();
+    toggleApp(false);
+}
+
+function isUnauthorizedError(error) {
+    return Boolean(error && (error.status === 401 || error.code === 'UNAUTHORIZED'));
+}
+
+function handleUnauthorized(error, target = els.authMessage) {
+    if (!isUnauthorizedError(error)) return false;
+    resetSessionState();
+    setMessage(target, 'Sua sessao expirou. Entre novamente para continuar.', true);
+    return true;
 }
 
 function readFileAsBase64(file) {
@@ -102,9 +131,18 @@ async function api(path, options = {}) {
         return response.blob();
     }
 
-    const data = await response.json();
+    let data = null;
+    try {
+        data = contentType.includes('application/json') ? await response.json() : null;
+    } catch (error) {
+        data = null;
+    }
     if (!response.ok || data?.ok === false) {
-        throw new Error(data?.message || 'Falha na requisicao.');
+        const requestError = new Error(data?.message || 'Falha na requisicao.');
+        requestError.status = response.status;
+        requestError.code = response.status === 401 ? 'UNAUTHORIZED' : 'REQUEST_FAILED';
+        requestError.payload = data;
+        throw requestError;
     }
     return data;
 }
@@ -134,23 +172,36 @@ function formatDateTime(value) {
     return new Date(parsed).toLocaleString('pt-BR');
 }
 
+function isCancelledAppointment(item) {
+    return String(item?.statusExame || '').toLowerCase() === 'cancelado';
+}
+
+function getUpcomingAppointments(appointments) {
+    const now = Date.now();
+    return (Array.isArray(appointments) ? appointments : [])
+        .filter((item) => !isCancelledAppointment(item))
+        .filter((item) => Date.parse(String(item?.dataHora || '')) >= now)
+        .sort((a, b) => Date.parse(String(a?.dataHora || '')) - Date.parse(String(b?.dataHora || '')));
+}
+
 function renderOverview() {
     if (!state.client) return;
+    const upcomingAppointments = getUpcomingAppointments(state.appointments);
+    const next = upcomingAppointments[0] || null;
     els.clientName.textContent = state.client.nome || 'Cliente';
     els.clientMeta.textContent = `${state.client.email} • Prontuario ${state.client.prontuarioPaciente || '-'}`;
-    els.metricAppointments.textContent = String(state.appointments.length);
+    els.metricAppointments.textContent = String(upcomingAppointments.length);
     els.metricReports.textContent = String(state.reports.length);
-    const pending = state.appointments.filter((item) => String(item?.statusExame || '').toLowerCase() === 'agendado').length;
+    const pending = upcomingAppointments.filter((item) => String(item?.statusExame || '').toLowerCase() === 'agendado').length;
     els.metricPending.textContent = String(pending);
-    const next = state.appointments.find((item) => Date.parse(String(item?.dataHora || '')) >= Date.now() && String(item?.statusExame || '').toLowerCase() !== 'cancelado');
     els.metricNext.textContent = next ? formatDateTime(next.dataHora) : 'Sem agendamento';
 
-    if (state.appointments.length === 0) {
-        els.appointmentList.innerHTML = '<div class="empty-state">Nenhum agendamento ainda. Use a aba Agendar para solicitar seu proximo exame.</div>';
+    if (upcomingAppointments.length === 0) {
+        els.appointmentList.innerHTML = '<div class="empty-state">Nenhum agendamento futuro encontrado. Use a aba Agendar para solicitar seu proximo exame.</div>';
         return;
     }
 
-    els.appointmentList.innerHTML = state.appointments.map((item) => `
+    els.appointmentList.innerHTML = upcomingAppointments.map((item) => `
         <div class="appointment-item">
             <strong>${item.exame || 'Exame nao informado'}</strong>
             <div class="list-meta">${item.modalidade || '-'} • ${formatDateTime(item.dataHora)}</div>
@@ -213,7 +264,9 @@ function startChatPolling() {
     }
     chatPollTimer = setInterval(() => {
         if (!state.token) return;
-        loadChat().catch(() => {});
+        loadChat().catch((error) => {
+            handleUnauthorized(error, els.chatMessage);
+        });
     }, 5000);
 }
 
@@ -274,15 +327,16 @@ async function loadScheduleOptions() {
 }
 
 async function refreshData() {
-    const [sessionData, dashboardData, attendantsData, appointmentsData, reportsData] = await Promise.all([
-        api('/session'),
+    const sessionData = await api('/session');
+    state.client = sessionData.client;
+
+    const [dashboardData, attendantsData, appointmentsData, reportsData] = await Promise.all([
         api('/dashboard'),
         api('/attendants'),
         api('/appointments'),
         api('/reports')
     ]);
 
-    state.client = sessionData.client;
     state.assignedAttendant = attendantsData.attendant || null;
     state.attendantsOnline = attendantsData.attendantsOnline || [];
     state.appointments = appointmentsData.appointments || [];
@@ -291,10 +345,7 @@ async function refreshData() {
     renderChatRouting();
     renderOverview();
     renderReports();
-    els.metricPending.textContent = String(dashboardData.summary?.pendentes || 0);
     els.metricReports.textContent = String(dashboardData.summary?.totalLaudos || state.reports.length);
-    els.metricAppointments.textContent = String(dashboardData.summary?.totalAgendamentos || state.appointments.length);
-    els.metricNext.textContent = dashboardData.summary?.proximoAgendamento ? formatDateTime(dashboardData.summary.proximoAgendamento.dataHora) : 'Sem agendamento';
     await loadScheduleOptions();
     await loadChat();
 }
@@ -332,6 +383,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         });
         await handleAuthSuccess(data);
     } catch (error) {
+        handleUnauthorized(error);
         setMessage(els.authMessage, error.message, true);
     }
 });
@@ -355,6 +407,7 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
         });
         await handleAuthSuccess(data);
     } catch (error) {
+        handleUnauthorized(error);
         setMessage(els.authMessage, error.message, true);
     }
 });
@@ -369,6 +422,8 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
     state.client = null;
     state.assignedAttendant = null;
     state.attendantsOnline = [];
+    state.appointments = [];
+    state.reports = [];
     state.pendingAttachment = null;
     localStorage.removeItem('portal_client_token');
     stopChatPolling();
@@ -380,8 +435,14 @@ document.querySelectorAll('.tab-btn').forEach((button) => {
     button.addEventListener('click', () => activateTab(button.dataset.tab));
 });
 
-els.scheduleDoctor.addEventListener('change', () => loadScheduleOptions().catch((error) => setMessage(els.scheduleMessage, error.message, true)));
-els.scheduleDate.addEventListener('change', () => loadScheduleOptions().catch((error) => setMessage(els.scheduleMessage, error.message, true)));
+els.scheduleDoctor.addEventListener('change', () => loadScheduleOptions().catch((error) => {
+    if (handleUnauthorized(error, els.scheduleMessage)) return;
+    setMessage(els.scheduleMessage, error.message, true);
+}));
+els.scheduleDate.addEventListener('change', () => loadScheduleOptions().catch((error) => {
+    if (handleUnauthorized(error, els.scheduleMessage)) return;
+    setMessage(els.scheduleMessage, error.message, true);
+}));
 
 document.getElementById('scheduleForm').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -401,6 +462,7 @@ document.getElementById('scheduleForm').addEventListener('submit', async (event)
         await refreshData();
         activateTab('overview');
     } catch (error) {
+        if (handleUnauthorized(error, els.scheduleMessage)) return;
         setMessage(els.scheduleMessage, error.message, true);
     }
 });
@@ -409,27 +471,34 @@ document.getElementById('chatForm').addEventListener('submit', async (event) => 
     event.preventDefault();
     const input = document.getElementById('chatInput');
     try {
+        const text = limparTexto(input?.value);
         const attachment = state.pendingAttachment
             ? {
-                name: state.pendingAttachment.name,
-                type: state.pendingAttachment.type,
-                size: state.pendingAttachment.size,
-                base64: state.pendingAttachment.base64
+                name: limparTexto(state.pendingAttachment.name),
+                type: limparTexto(state.pendingAttachment.type),
+                size: Number(state.pendingAttachment.size || 0),
+                base64: limparTexto(state.pendingAttachment.base64)
             }
             : null;
+        if (!text && !attachment) {
+            setMessage(els.chatMessage, 'Digite uma mensagem ou selecione um anexo.', true);
+            return;
+        }
         await api('/chat/messages', {
             method: 'POST',
             body: JSON.stringify({
-                text: input.value,
+                text,
                 attachment
             })
         });
-        input.value = '';
+        if (input) input.value = '';
         state.pendingAttachment = null;
         updateChatAttachmentUI();
-        setMessage(els.chatMessage, 'Mensagem enviada.');
+        setMessage(els.chatMessage, attachment ? 'Mensagem e anexo enviados.' : 'Mensagem enviada.');
         await loadChat();
     } catch (error) {
+        if (handleUnauthorized(error, els.chatMessage)) return;
+        console.error('Falha ao enviar mensagem/anexo do portal:', error, error?.payload || null);
         setMessage(els.chatMessage, error.message, true);
     }
 });
@@ -492,6 +561,7 @@ if (els.chatClearBtn) {
             setMessage(els.chatMessage, 'Conversa removida do seu portal.');
             await loadChat();
         } catch (error) {
+            if (handleUnauthorized(error, els.chatMessage)) return;
             setMessage(els.chatMessage, error.message, true);
         }
     });
@@ -513,10 +583,10 @@ if (els.chatClearBtn) {
         updateChatAttachmentUI();
         startChatPolling();
     } catch (error) {
-        localStorage.removeItem('portal_client_token');
-        state.token = '';
-        stopChatPolling();
-        toggleApp(false);
+        if (handleUnauthorized(error)) {
+            return;
+        }
+        resetSessionState();
         setMessage(els.authMessage, error.message || 'Nao foi possivel carregar a home do portal.', true);
     }
 })();

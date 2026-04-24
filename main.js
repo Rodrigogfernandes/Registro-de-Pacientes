@@ -52,7 +52,7 @@ const AUTH_PASSWORD_MAX_AGE_DAYS = 90;
 const AUTO_BACKUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const AUTO_BACKUP_RETENTION = 30;
 const AUTO_BACKUP_SINGLE_FILENAME = 'backup_auto_atual.json';
-const CLIENT_PORTAL_HOST = process.env.CLIENT_PORTAL_HOST || process.env.HOST || '127.0.0.1';
+const CLIENT_PORTAL_HOST = process.env.CLIENT_PORTAL_HOST || process.env.HOST || '0.0.0.0';
 const CLIENT_PORTAL_PORT = Number(process.env.CLIENT_PORTAL_PORT || 3210);
 
 let mongoOnline = false;
@@ -68,6 +68,25 @@ const appInstanceId = `${os.hostname()}-${process.pid}-${crypto.randomBytes(4).t
 const authFailedAttempts = new Map();
 
 const AUTH_ROLES = ['admin', 'recepcao', 'tecnico'];
+
+function listarUrlsPortalCliente(host, port) {
+    const porta = Number(port) || 3210;
+    const hostNormalizado = String(host || '').trim() || '0.0.0.0';
+    if (hostNormalizado !== '0.0.0.0' && hostNormalizado !== '::') {
+        return [`http://${hostNormalizado}:${porta}/cliente/`];
+    }
+
+    const urls = new Set([`http://127.0.0.1:${porta}/cliente/`]);
+    const interfaces = os.networkInterfaces();
+    Object.values(interfaces).forEach((lista) => {
+        (Array.isArray(lista) ? lista : []).forEach((item) => {
+            if (!item || item.internal) return;
+            if (item.family !== 'IPv4') return;
+            urls.add(`http://${item.address}:${porta}/cliente/`);
+        });
+    });
+    return Array.from(urls);
+}
 
 // Adicionar nova funÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o para gerenciar caminhos de arquivos
 function getDataFilePath(tipo) {
@@ -3102,7 +3121,8 @@ app.whenReady().then(async () => {
         });
         try {
             clientPortalServer = await clientPortal.start();
-            console.log(`Portal do cliente disponível em http://${CLIENT_PORTAL_HOST}:${CLIENT_PORTAL_PORT}/cliente/`);
+            const portalUrls = listarUrlsPortalCliente(CLIENT_PORTAL_HOST, CLIENT_PORTAL_PORT);
+            console.log(`Portal do cliente disponível em ${portalUrls.join(' | ')}`);
         } catch (error) {
             clientPortalServer = null;
             console.warn(`Portal do cliente indisponível: ${error.message}`);

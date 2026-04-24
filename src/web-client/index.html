@@ -4,59 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
     <title>Portal do Cliente</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%230f766e'/%3E%3Cpath d='M9 16.5C9 12.358 12.358 9 16.5 9C20.642 9 24 12.358 24 16.5' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='16.5' cy='22' r='3' fill='white'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+    <div class="noise-overlay"></div>
+
     <main class="app-shell">
+
         <section id="authView" class="auth-view">
-            <div class="hero-card">
-                <p class="eyebrow">Portal Mobile</p>
-                <h1>Seu atendimento na palma da mão</h1>
-                <p class="hero-copy">Converse com a recepção, acompanhe agendamentos, solicite exames e baixe seus laudos digitais.</p>
+            <div class="auth-brand">
+                <div class="brand-mark">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="10" fill="var(--brand)"/>
+                        <path d="M9 16.5C9 12.358 12.358 9 16.5 9C20.642 9 24 12.358 24 16.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="16.5" cy="22" r="3" fill="white"/>
+                    </svg>
+                </div>
+                <span class="brand-name">Portal Saúde</span>
             </div>
 
-            <div class="panel">
+            <div class="auth-hero">
+                <h1>Seu cuidado<br><em>começa aqui.</em></h1>
+                <p class="auth-sub">Agendamentos, exames e atendimento em um só lugar.</p>
+            </div>
+
+            <div class="auth-panel">
                 <div class="panel-switch">
-                    <button id="showLoginBtn" class="is-active" type="button">Entrar</button>
-                    <button id="showRegisterBtn" type="button">Criar conta</button>
+                    <button id="showLoginBtn" class="switch-btn is-active" type="button">Entrar</button>
+                    <button id="showRegisterBtn" class="switch-btn" type="button">Criar conta</button>
                 </div>
 
-                <form id="loginForm" class="form-stack">
-                    <label>E-mail
-                        <input type="email" id="loginEmail" required placeholder="voce@exemplo.com">
-                    </label>
-                    <label>Senha
-                        <input type="password" id="loginPassword" required placeholder="Sua senha">
-                    </label>
-                    <button class="primary-btn" type="submit">Entrar no portal</button>
+                <form id="loginForm" class="form-stack" autocomplete="on">
+                    <div class="field-group">
+                        <label class="field-label" for="loginEmail">E-mail</label>
+                        <input class="field-input" type="email" id="loginEmail" required autocomplete="email username" placeholder="voce@exemplo.com">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="loginPassword">Senha</label>
+                        <input class="field-input" type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Acessar portal</button>
                 </form>
 
-                <form id="registerForm" class="form-stack is-hidden">
-                    <label>Nome completo
-                        <input type="text" id="registerNome" required placeholder="Nome do paciente">
-                    </label>
-                    <label>E-mail
-                        <input type="email" id="registerEmail" required placeholder="voce@exemplo.com">
-                    </label>
-                    <label>Senha forte
-                        <input type="password" id="registerPassword" required placeholder="Maiúscula, minúscula, número e símbolo">
-                    </label>
-                    <label>CPF
-                        <input type="text" id="registerCpf" required placeholder="00000000000" inputmode="numeric">
-                    </label>
-                    <label>Telefone
-                        <input type="text" id="registerTelefone" placeholder="(00) 00000-0000">
-                    </label>
-                    <label>Data de nascimento
-                        <input type="date" id="registerNascimento">
-                    </label>
-                    <label>Endereço
-                        <input type="text" id="registerEndereco" placeholder="Rua, número, bairro">
-                    </label>
-                    <label>Plano
-                        <input type="text" id="registerPlano" placeholder="Ex.: Unimed">
-                    </label>
-                    <button class="primary-btn" type="submit">Cadastrar e entrar</button>
+                <form id="registerForm" class="form-stack is-hidden" autocomplete="on">
+                    <div class="field-group">
+                        <label class="field-label" for="registerNome">Nome completo</label>
+                        <input class="field-input" type="text" id="registerNome" required autocomplete="name" placeholder="Nome do paciente">
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label class="field-label" for="registerEmail">E-mail</label>
+                            <input class="field-input" type="email" id="registerEmail" required autocomplete="email" placeholder="voce@exemplo.com">
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label" for="registerCpf">CPF</label>
+                            <input class="field-input" type="text" id="registerCpf" required autocomplete="off" placeholder="000.000.000-00" inputmode="numeric">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="registerPassword">Senha forte</label>
+                        <input class="field-input" type="password" id="registerPassword" required autocomplete="new-password" placeholder="Maiúscula, número e símbolo">
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label class="field-label" for="registerTelefone">Telefone</label>
+                            <input class="field-input" type="text" id="registerTelefone" autocomplete="tel" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label" for="registerNascimento">Nascimento</label>
+                            <input class="field-input" type="date" id="registerNascimento">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="registerEndereco">Endereço</label>
+                        <input class="field-input" type="text" id="registerEndereco" autocomplete="street-address" placeholder="Rua, número, bairro">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="registerPlano">Plano de saúde</label>
+                        <input class="field-input" type="text" id="registerPlano" placeholder="Ex.: Unimed">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Cadastrar e entrar</button>
                 </form>
 
                 <p id="authMessage" class="status-text"></p>
@@ -64,45 +95,78 @@
         </section>
 
         <section id="appView" class="app-view is-hidden">
+
             <header class="topbar">
-                <div>
-                    <p class="eyebrow">Área do cliente</p>
-                    <h2 id="clientName">Portal</h2>
-                    <p id="clientMeta" class="muted-text"></p>
+                <div class="topbar-left">
+                    <div class="brand-mark brand-mark--sm">
+                        <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+                            <rect width="32" height="32" rx="10" fill="var(--brand)"/>
+                            <path d="M9 16.5C9 12.358 12.358 9 16.5 9C20.642 9 24 12.358 24 16.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="16.5" cy="22" r="3" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="topbar-info">
+                        <span class="topbar-label">Área do cliente</span>
+                        <h2 id="clientName">Portal</h2>
+                    </div>
                 </div>
-                <button id="logoutBtn" class="ghost-btn" type="button">Sair</button>
+                <div class="topbar-right">
+                    <p id="clientMeta" class="client-meta"></p>
+                    <button id="logoutBtn" class="btn btn-ghost btn-sm" type="button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Sair
+                    </button>
+                </div>
             </header>
 
-            <section class="summary-grid">
-                <article class="metric-card">
-                    <span>Próximo exame</span>
-                    <strong id="metricNext">-</strong>
+            <div class="summary-grid">
+                <article class="metric-card metric-card--wide">
+                    <div class="metric-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <span class="metric-label">Próximo exame</span>
+                    <strong id="metricNext" class="metric-value metric-value--sm">-</strong>
                 </article>
-                <article class="metric-card">
-                    <span>Agendamentos</span>
-                    <strong id="metricAppointments">0</strong>
-                </article>
-                <article class="metric-card">
-                    <span>Laudos</span>
-                    <strong id="metricReports">0</strong>
-                </article>
-                <article class="metric-card">
-                    <span>Pendentes</span>
-                    <strong id="metricPending">0</strong>
-                </article>
-            </section>
+                <div class="metric-mini-grid">
+                    <article class="metric-card metric-card--mini">
+                        <span class="metric-label">Agendamentos</span>
+                        <strong id="metricAppointments" class="metric-value">0</strong>
+                    </article>
+                    <article class="metric-card metric-card--mini">
+                        <span class="metric-label">Laudos</span>
+                        <strong id="metricReports" class="metric-value">0</strong>
+                    </article>
+                    <article class="metric-card metric-card--mini metric-card--alert">
+                        <span class="metric-label">Pendentes</span>
+                        <strong id="metricPending" class="metric-value">0</strong>
+                    </article>
+                </div>
+            </div>
 
             <nav class="tabbar">
-                <button class="tab-btn is-active" data-tab="overview" type="button">Resumo</button>
-                <button class="tab-btn" data-tab="schedule" type="button">Agendar</button>
-                <button class="tab-btn" data-tab="chat" type="button">Chat</button>
-                <button class="tab-btn" data-tab="reports" type="button">Laudos</button>
+                <button class="tab-btn is-active" data-tab="overview" type="button">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span>Resumo</span>
+                </button>
+                <button class="tab-btn" data-tab="schedule" type="button">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span>Agendar</span>
+                </button>
+                <button class="tab-btn" data-tab="chat" type="button">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>Chat</span>
+                </button>
+                <button class="tab-btn" data-tab="reports" type="button">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span>Laudos</span>
+                </button>
             </nav>
 
-            <section class="content-stack">
+            <div class="content-stack">
+
                 <article id="tab-overview" class="content-card tab-panel is-active">
                     <div class="section-head">
-                        <h3>Seus próximos passos</h3>
+                        <h3>Próximos passos</h3>
                     </div>
                     <div id="appointmentList" class="list-stack"></div>
                 </article>
@@ -112,42 +176,61 @@
                         <h3>Solicitar agendamento</h3>
                     </div>
                     <form id="scheduleForm" class="form-stack">
-                        <label>Profissional
-                            <select id="scheduleDoctor" required></select>
-                        </label>
-                        <label>Data
-                            <input type="date" id="scheduleDate" required>
-                        </label>
-                        <label>Horário
-                            <select id="scheduleTime" required></select>
-                        </label>
-                        <label>Modalidade
-                            <input type="text" id="scheduleModalidade" placeholder="Ex.: Ressonância">
-                        </label>
-                        <label>Exame
-                            <input type="text" id="scheduleExam" required placeholder="Ex.: Abdome total">
-                        </label>
-                        <label>Observações
-                            <textarea id="scheduleNotes" rows="3" placeholder="Sintomas, preparo ou observações úteis"></textarea>
-                        </label>
-                        <button class="primary-btn" type="submit">Confirmar agendamento</button>
+                        <div class="field-group">
+                            <label class="field-label" for="scheduleDoctor">Profissional</label>
+                            <select class="field-input" id="scheduleDoctor" required></select>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label class="field-label" for="scheduleDate">Data</label>
+                                <input class="field-input" type="date" id="scheduleDate" required>
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label" for="scheduleTime">HorÃ¡rio</label>
+                                <select class="field-input" id="scheduleTime" required></select>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label class="field-label" for="scheduleModalidade">Modalidade</label>
+                                <input class="field-input" type="text" id="scheduleModalidade" placeholder="Ex.: Ressonância">
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label" for="scheduleExam">Exame</label>
+                                <input class="field-input" type="text" id="scheduleExam" required placeholder="Ex.: Abdome total">
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label" for="scheduleNotes">Observações</label>
+                            <textarea class="field-input field-textarea" id="scheduleNotes" rows="3" placeholder="Sintomas, preparo ou observações úteis"></textarea>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Confirmar agendamento</button>
                     </form>
                     <p id="scheduleMessage" class="status-text"></p>
                 </article>
 
                 <article id="tab-chat" class="content-card tab-panel">
                     <div class="section-head">
-                        <h3>Falar com a recepção</h3>
+                        <h3>Falar com o atendente</h3>
+                        <button id="chatClearBtn" class="btn btn-ghost btn-sm btn-danger" type="button">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                            Excluir
+                        </button>
                     </div>
-                    <button id="chatClearBtn" class="ghost-btn chat-clear-btn" type="button">Excluir conversa</button>
-                    <div id="chatRoutingStatus" class="empty-state"></div>
+                    <div id="chatRoutingStatus" class="routing-status"></div>
                     <div id="chatMessages" class="chat-box"></div>
                     <form id="chatForm" class="chat-form">
                         <input type="file" id="chatAttachmentInput" accept=".png,.jpg,.jpeg,.pdf" hidden>
-                        <button id="chatAttachBtn" class="ghost-btn chat-attach-btn" type="button">Anexar</button>
-                        <input type="text" id="chatInput" maxlength="1000" placeholder="Digite sua mensagem">
-                        <button id="chatDetachBtn" class="ghost-btn chat-detach-btn is-hidden" type="button">Remover</button>
-                        <button class="primary-btn" type="submit">Enviar</button>
+                        <button id="chatAttachBtn" class="btn btn-ghost btn-icon" type="button" title="Anexar arquivo">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
+                        <input class="field-input chat-input" type="text" id="chatInput" maxlength="1000" placeholder="Digite sua mensagem aqui...">
+                        <button id="chatDetachBtn" class="btn btn-ghost btn-icon btn-danger is-hidden" type="button" title="Remover anexo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                        <button class="btn btn-primary btn-icon" type="submit" title="Enviar">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
                     </form>
                     <p id="chatMessage" class="status-text"></p>
                 </article>
@@ -158,9 +241,11 @@
                     </div>
                     <div id="reportList" class="list-stack"></div>
                 </article>
-            </section>
+
+            </div>
         </section>
     </main>
-    <script src="./app.js"></script>
+
+    <script src="./app.js?v=20260423-2"></script>
 </body>
 </html>
