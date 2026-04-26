@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node scripts/start-electron.js",
     "client-portal": "node client-portal-standalone.js",
-    "build": "electron-builder",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "build": "node scripts/run-electron-builder.js",
+    "pack": "node scripts/run-electron-builder.js --dir",
+    "dist": "node scripts/run-electron-builder.js",
     "clean": "rimraf \"./dist\""
   },
   "dependencies": {
@@ -46,6 +46,7 @@
     },
     "win": {
       "icon": "icon.ico",
+      "signAndEditExecutable": false,
       "target": [
         "nsis"
       ],

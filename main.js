@@ -22,8 +22,7 @@ function carregarVariaveisAmbiente() {
             continue;
         }
 
-        dotenv.config({ path: envPath });
-        console.log(`Arquivo .env carregado de: ${envPath}`);
+        dotenv.config({ path: envPath, quiet: true });
         return envPath;
     }
 
@@ -3160,10 +3159,6 @@ app.whenReady().then(async () => {
             });
         }
 
-        // Copiar o manual para o diretÃƒÆ’Ã‚Â³rio de instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o
-        const manualSourcePath = path.join(__dirname, 'MANUAL.md');
-        const manualDestPath = path.join(__dirname, 'MANUAL.md');
-        fs.copyFileSync(manualSourcePath, manualDestPath);
     } catch (error) {
         console.error('Falha ao iniciar a aplicacao:', error);
         dialog.showErrorBox('Erro de Inicializacao', 'Nao foi possivel iniciar a aplicacao: ' + error.message);

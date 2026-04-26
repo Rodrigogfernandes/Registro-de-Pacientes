@@ -181,17 +181,46 @@ async function salvarOcorrencias() {
 }
 
 // Funções para o Modal de Alerta
-function mostrarAlerta(mensagem) {
-    const modal = document.getElementById('modalAlerta');
-    document.getElementById('mensagemAlerta').textContent = mensagem;
+function abrirModalComAnimacao(modalId, onClose) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return null;
+
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
     setTimeout(() => modal.classList.add('show'), 10);
+
+    if (typeof modalA11y !== 'undefined') {
+        modalA11y.initModal(modalId, { onClose });
+    }
+
+    return modal;
+}
+
+function fecharModalComAnimacao(modalId, cleanup) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    if (typeof modalA11y !== 'undefined') {
+        modalA11y.removeModal(modalId);
+    }
+
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        if (typeof cleanup === 'function') {
+            cleanup();
+        }
+    }, 300);
+}
+
+function mostrarAlerta(mensagem) {
+    document.getElementById('mensagemAlerta').textContent = mensagem;
+    abrirModalComAnimacao('modalAlerta', fecharModalAlerta);
 }
 
 function fecharModalAlerta() {
-    const modal = document.getElementById('modalAlerta');
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
+    fecharModalComAnimacao('modalAlerta');
 }
 
 window.salvarOcorrencia = async function(event) {
@@ -232,7 +261,7 @@ window.salvarOcorrencia = async function(event) {
     ocorrenciaSelecionada = null;
     paginaAtual = 1;
     
-    document.getElementById('modalForm').style.display = 'none'; // Fecha o modal
+    window.fecharModal();
     atualizarTabela();
     atualizarBotoesAcao();
 }
@@ -295,8 +324,6 @@ window.carregarMaisOcorrencias = function() {
 // Funções de UI
 window.abrirModal = function(tipo) {
     const form = document.getElementById('formOcorrencia');
-    const modal = document.getElementById('modalForm');
-    
     if (tipo === 'novo') {
         form.reset();
         document.getElementById('modalTitle').textContent = 'Nova Ocorrência';
@@ -311,14 +338,11 @@ window.abrirModal = function(tipo) {
         document.getElementById('modalTitle').textContent = 'Editar Ocorrência';
     }
     
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10); // Adiciona animação
+    abrirModalComAnimacao('modalForm', window.fecharModal);
 }
 
 window.fecharModal = function() {
-    const modal = document.getElementById('modalForm');
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300); // Espera a animação terminar
+    fecharModalComAnimacao('modalForm');
 }
 
 function atualizarBotoesAcao() {
@@ -328,15 +352,11 @@ function atualizarBotoesAcao() {
 
 // Funções para o Modal de Confirmação
 function mostrarModalConfirmacao() {
-    const modal = document.getElementById('modalConfirmacao');
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
+    abrirModalComAnimacao('modalConfirmacao', fecharModalConfirmacao);
 }
 
 function fecharModalConfirmacao() {
-    const modal = document.getElementById('modalConfirmacao');
-    modal.classList.remove('show');
-    setTimeout(() => modal.style.display = 'none', 300);
+    fecharModalComAnimacao('modalConfirmacao');
 }
 
 function confirmarExclusao() {
@@ -390,20 +410,15 @@ window.limparPesquisa = function() {
 
 // Adicione estas funções para manipulação do modal de observações
 function abrirModalObservacoes(ocorrencia) {
-    const modal = document.getElementById('modalObservacoes');
     document.getElementById('observacoesAdicionais').value = ocorrencia.descricao || '';
     registroAtualId = ocorrencia.id;
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
+    abrirModalComAnimacao('modalObservacoes', fecharModalObservacoes);
 }
 
 function fecharModalObservacoes() {
-    const modal = document.getElementById('modalObservacoes');
-    modal.classList.remove('show');
-    setTimeout(() => {
-        modal.style.display = 'none';
+    fecharModalComAnimacao('modalObservacoes', () => {
         registroAtualId = null;
-    }, 300);
+    });
 }
 
 function salvarObservacoes() {
@@ -547,3 +562,5 @@ try {
 } catch (error) {
     console.error('Erro ao configurar listener de tema:', error);
 }
+
+

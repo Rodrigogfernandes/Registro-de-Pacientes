@@ -83,6 +83,10 @@
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 22px;
+
+    /* Z-index para Modais */
+    --z-modal-backdrop: 1000;
+    --z-modal-content: 1001;
 }
 
 /* ══════════════════ TEMA ESCURO ══════════════════ */
@@ -396,16 +400,50 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
 .modal, .export-modal {
     display: none;
     position: fixed;
-    z-index: 1001;
+    z-index: var(--z-modal-content);
     inset: 0;
     background: var(--modal-background);
     backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    
+    /* Animação */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    
+    /* Fallback para navegadores sem suporte */
 }
 
-.modal.active, .export-modal.active {
+@supports not (backdrop-filter: blur(1px)) {
+    .modal, .export-modal {
+        background: rgba(26, 32, 51, 0.65);
+    }
+    
+    body.dark-theme .modal,
+    body.dark-theme .export-modal,
+    html.dark-theme .modal,
+    html.dark-theme .export-modal {
+        background: rgba(0, 0, 0, 0.75);
+    }
+}
+
+.modal.active, .export-modal.active,
+.modal.show, .export-modal.show {
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 1;
+}
+
+/* Animação de entrada */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .modal-content {
@@ -420,6 +458,31 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    
+    /* Animação de entrada */
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Customizar scrollbar */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 .modal-content h2, .modal-content h3 {
@@ -438,20 +501,45 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
 
 .close {
     position: absolute;
-    right: 18px;
-    top: 16px;
+    right: 16px;
+    top: 14px;
     font-size: 1.3rem;
     cursor: pointer;
     color: var(--text-muted);
     line-height: 1;
     background: none;
     border: none;
-    padding: 4px;
+    padding: 8px;
     border-radius: 6px;
-    transition: background 0.15s, color 0.15s;
+    transition: all 0.15s ease;
+    
+    /* Melhorar clicabilidade */
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Acessibilidade */
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+.close:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    background: var(--bg-tertiary);
+}
+
+.close:active {
+    transform: scale(0.95);
+}
 
 .modal h2, .modal h3, .export-modal h2, .export-modal h3 {
     font-family: var(--font-display);
@@ -459,6 +547,67 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
     font-weight: 400;
     letter-spacing: -0.02em;
     margin-bottom: 16px;
+}
+
+.modal form button,
+.modal button {
+    padding: 10px 18px;
+    border: 1.5px solid var(--modal-border);
+    border-radius: var(--radius-sm);
+    background: var(--modal-content-background);
+    color: var(--modal-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: auto;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.modal form button[type=submit] {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.modal form button[type=submit]:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 107, 92, 0.3);
+}
+
+.modal form button[type=submit]:active {
+    transform: translateY(0);
+}
+
+.modal form button[type=submit]:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.modal form button[type=submit]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modal form button:not([type=submit]) {
+    border-color: var(--border-color);
+}
+
+.modal form button:not([type=submit]):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--selected-row);
+}
+
+.modal form button:not([type=submit]):focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 .modal-buttons, .actions {
@@ -1035,6 +1184,56 @@ hr { border: none; border-top: 1px solid var(--border-color); margin: 18px 0; }
     transition: all 0.15s;
 }
 .btn-cancelar:hover { border-color: var(--text-muted); background: var(--border-color); }
+
+/* ============================================
+   RESPONSIVIDADE - MODAIS
+   ============================================ */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95vw !important;
+        padding: 20px;
+        max-height: 95vh;
+    }
+    
+    .modal-content-large {
+        max-width: 95vw;
+    }
+    
+    .modal h2, .modal h3,
+    .modal-content h2, .modal-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: 14px;
+    }
+    
+    .modal-buttons, .actions {
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+    
+    .modal-buttons button,
+    .actions button,
+    .modal form button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 98vw;
+        padding: 16px;
+    }
+    
+    .modal h2, .modal h3,
+    .modal-content h2, .modal-content h3 {
+        font-size: 1rem;
+    }
+    
+    .close {
+        right: 12px;
+        top: 12px;
+        padding: 6px;
+    }
+}
 
 /* ============================================
    RESPONSIVO

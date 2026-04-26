@@ -70,11 +70,29 @@ loadTheme();
 // Os dados são gerenciados através dos handlers IPC no main.js
 
 // Abrir modal
+function ensureLegacyModalStructure(modal) {
+  if (!modal || modal.querySelector(':scope > .modal-content')) {
+    return modal?.querySelector(':scope > .modal-content') || null;
+  }
+
+  const content = document.createElement('div');
+  content.className = 'modal-content modal-content--legacy';
+
+  while (modal.firstChild) {
+    content.appendChild(modal.firstChild);
+  }
+
+  modal.appendChild(content);
+  return content;
+}
+
 function openModal(modalId) {
   const modal = document.getElementById(`modal-${modalId}`);
   const overlay = document.getElementById('overlay');
   
   if (modal) {
+    ensureLegacyModalStructure(modal);
+
     // Fechar outros modais primeiro
     document.querySelectorAll('.modal.active').forEach(m => {
       m.classList.remove('active');
@@ -83,6 +101,10 @@ function openModal(modalId) {
     modal.classList.add('active');
     if (overlay) {
       overlay.classList.add('active');
+    }
+
+    if (typeof modalA11y !== 'undefined') {
+      modalA11y.initModal(modal.id, { onClose: closeModal });
     }
 
     // Se for o modal de bater ponto, definir data padrão
@@ -114,6 +136,9 @@ function closeModal() {
   
   modals.forEach(modal => {
     modal.classList.remove('active');
+    if (typeof modalA11y !== 'undefined' && modal.id) {
+      modalA11y.removeModal(modal.id);
+    }
   });
   
   if (overlay) {
@@ -1159,3 +1184,4 @@ function confirmarExclusao(registroId) {
     closeModal();
     filtrarPorMes();
 }
+

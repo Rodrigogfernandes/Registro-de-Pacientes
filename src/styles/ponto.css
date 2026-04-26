@@ -184,88 +184,10 @@ body {
 #registros-table tfoot td { font-weight: 700; background: var(--table-header); color: var(--text-primary); border-top: 2px solid var(--border-color); border-bottom: none; }
 #total-a-receber { color: var(--success-color); font-size: 1rem; }
 
-/* ── Modais ── */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    inset: 0;
-    background: var(--modal-background);
-    backdrop-filter: blur(3px);
-    align-items: center;
-    justify-content: center;
-}
-
-.modal.active { display: flex; }
-
-.modal > * {
-    background: var(--modal-content-background);
-    border: 1px solid var(--modal-border);
-    border-radius: var(--radius-xl);
-    padding: 28px;
-    box-shadow: var(--shadow-lg);
-    color: var(--modal-text);
-    width: min(440px, 92vw);
-    max-height: 90vh;
-    overflow: auto;
-    position: relative;
-}
-
-.modal h2, .modal h3 {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    color: var(--modal-title);
-    margin-bottom: 16px;
-}
-
-.modal form { display: flex; flex-direction: column; gap: 12px; }
-
-.modal form label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-secondary);
-    margin-bottom: 0;
-}
-
-.modal form button[type=submit], .modal form button[type=button], .modal button {
-    padding: 10px 18px;
-    border: 1.5px solid var(--modal-border);
-    border-radius: var(--radius-sm);
-    background: var(--modal-content-background);
-    color: var(--modal-text);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    width: auto;
-}
-
-.modal form button[type=submit] { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-.modal form button[type=submit]:hover { background: var(--primary-hover); }
-.modal form button:not([type=submit]):hover { border-color: var(--primary-color); color: var(--primary-color); }
-
-.btn-confirmar { background: var(--primary-color) !important; color: #fff !important; border-color: var(--primary-color) !important; }
-.btn-cancelar { background: var(--bg-tertiary) !important; color: var(--text-secondary) !important; }
-
-/* Overlay */
-.overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(0,0,0,0.35);
-}
-
-.overlay.active { display: block; }
-
 /* Horários */
 #horarios-container { display: grid; gap: 8px; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
 
-/* Modal exportar PDF */
+/* Modal exportar PDF - específico de ponto */
 #modal-exportar-pdf > * { display: flex; flex-direction: column; gap: 12px; }
 #selecao-funcionario { display: flex; flex-direction: column; gap: 6px; }
 
@@ -277,3 +199,4 @@ body {
     .content { padding: 18px 14px; }
     .admin-controls { padding: 10px 14px; }
 }
+

@@ -978,7 +978,7 @@ async function abrirModalSelecaoImpressao(item) {
     `).join('');
 
     fecharOutrosModais('modalImpressaoExames');
-    abrirComAnimacao('modalImpressaoExames');
+    abrirComAnimacao('modalImpressaoExames', window.fecharModalImpressaoExames);
 }
 
 window.fecharModalImpressaoExames = function() {
@@ -1229,17 +1229,23 @@ function sincronizarNomesMedicoNosAgendamentos() {
     window.filtrarAgendamentos();
 }
 
-function abrirComAnimacao(modalId) {
+function abrirComAnimacao(modalId, onClose) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
     setTimeout(() => modal.classList.add('show'), 10);
+    if (typeof modalA11y !== 'undefined') {
+        modalA11y.initModal(modalId, { onClose });
+    }
 }
 
 function fecharComAnimacao(modalId, cleanup) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
+    if (typeof modalA11y !== 'undefined') {
+        modalA11y.removeModal(modalId);
+    }
     modal.classList.remove('show');
     setTimeout(() => {
         modal.style.display = 'none';
@@ -1262,7 +1268,7 @@ function abrirModalConfirmacao({ titulo, mensagem, textoConfirmar = 'Confirmar' 
     btnConfirmar.textContent = textoConfirmar;
 
     fecharOutrosModais('modalConfirmacao');
-    abrirComAnimacao('modalConfirmacao');
+    abrirComAnimacao('modalConfirmacao', window.fecharModalConfirmacao);
 
     return new Promise(resolve => {
         resolverConfirmacao = resolve;
@@ -1292,7 +1298,7 @@ function abrirModalAviso({ titulo, mensagem }) {
     tituloEl.textContent = titulo || 'Aviso';
     mensagemEl.textContent = mensagem || '';
     fecharOutrosModais('modalAviso');
-    abrirComAnimacao('modalAviso');
+    abrirComAnimacao('modalAviso', window.fecharModalAviso);
 
     return new Promise(resolve => {
         resolverAviso = resolve;
@@ -1399,7 +1405,7 @@ window.abrirModal = function(tipo) {
 
     fecharOutrosModais('modalAgendamento');
     habilitarCamposDoModalAgendamento();
-    abrirComAnimacao('modalAgendamento');
+    abrirComAnimacao('modalAgendamento', window.fecharModal);
     setTimeout(() => {
         const campoNome = document.getElementById('nomePaciente');
         campoNome.focus();
@@ -1827,7 +1833,7 @@ window.abrirModalPerformance = function() {
     const inputData = document.getElementById('perfData');
     if (inputData) inputData.value = obterDataHojeIso();
     fecharOutrosModais('modalPerformance');
-    abrirComAnimacao('modalPerformance');
+    abrirComAnimacao('modalPerformance', window.fecharModalPerformance);
     window.renderPerformance();
 };
 
@@ -1970,7 +1976,7 @@ window.abrirModalDisponibilidade = function() {
 
     inputData.value = obterDataHojeIso();
     fecharOutrosModais('modalDisponibilidade');
-    abrirComAnimacao('modalDisponibilidade');
+    abrirComAnimacao('modalDisponibilidade', window.fecharModalDisponibilidade);
     window.renderDisponibilidadeMedico();
 };
 
@@ -1993,7 +1999,7 @@ async function renderHistorico(documentoPaciente, nomePaciente = '') {
     if (!result?.ok) {
         info.textContent = result?.message || 'Erro ao consultar histórico.';
         lista.innerHTML = '';
-        abrirComAnimacao('modalHistoricoPaciente');
+        abrirComAnimacao('modalHistoricoPaciente', window.fecharModalHistorico);
         return;
     }
 
@@ -2035,7 +2041,7 @@ async function renderHistorico(documentoPaciente, nomePaciente = '') {
         `;
     }
 
-    abrirComAnimacao('modalHistoricoPaciente');
+    abrirComAnimacao('modalHistoricoPaciente', window.fecharModalHistorico);
 }
 
 window.abrirHistoricoPaciente = async function() {
@@ -2236,7 +2242,7 @@ window.abrirModalAgendaMedico = function(modo = 'novo') {
     }
 
     fecharOutrosModais('modalAgendaMedico');
-    abrirComAnimacao('modalAgendaMedico');
+    abrirComAnimacao('modalAgendaMedico', window.fecharModalAgendaMedico);
     if (modo === 'novo') {
         setTimeout(() => document.getElementById('agendaMedicoNome').focus(), 60);
     }
