@@ -36,7 +36,7 @@
     "electron": "^40.6.1",
     "electron-builder": "^24.13.3",
     "rimraf": "5.0.5",
-    "typescript": "^4.9.5"
+    "typescript": "^5.7.3"
   },
   "build": {
     "appId": "com.registro.pacientes",

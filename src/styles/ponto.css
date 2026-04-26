@@ -1,537 +1,279 @@
-﻿/* Importar estilos comuns (inclui variÃ¡veis globais de cores) */
-@import url('./common.css');
-
-:root {
-  --pt-accent-success: var(--success-color);
-  --pt-accent-success-hover: var(--success-hover);
-  --pt-accent-danger: var(--danger-color);
-  --pt-accent-danger-hover: var(--danger-hover);
-  --pt-accent-neutral: var(--cancel-color);
-  --pt-accent-neutral-hover: var(--cancel-hover);
-  --pt-chip-text: #ffffff;
-  --pt-focus-ring: color-mix(in srgb, var(--button-primary) 35%, transparent);
-}
+@import url('../styles/common.css');
 
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  user-select: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
 }
 
+/* ── Layout principal ── */
 .container {
-  display: flex;
-  height: 100vh;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
 }
 
-/* Estilos duplicados removidos - jÃ¡ definidos abaixo */
-
-.modal {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--modal-bg);
-  color: var(--modal-text);
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  min-width: 400px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.modal h3 {
-  margin: 0 0 20px 0;
-  color: var(--modal-text);
-  font-size: 1.5em;
-  text-align: center;
-}
-
-.modal input, .modal select {
-  width: 93%;
-  padding: 10px;
- margin-bottom: 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.modal input:focus, .modal select:focus {
-  outline: none;
-  border-color: var(--button-primary);
-  box-shadow: 0 0 0 3px var(--pt-focus-ring);
-}
-
+/* ── Sidebar ── */
 .sidebar {
-  width: 250px;
-  background-color: var(--bg-sidebar);
-  color: var(--text-sidebar);
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.content {
-  flex-grow: 1;
-  padding: 30px;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: background-color 0.3s ease;
-}
-
-th {
-  background-color: var(--table-header);
-  color: var(--text-primary);
-  font-weight: 600;
-  padding: 15px 12px;
-  text-align: left;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
-  transition: color 0.3s ease, border-color 0.3s ease;
-}
-
-tr:hover {
-  background-color: var(--table-row-hover);
-}
-
-tfoot {
-  background-color: var(--table-row-hover);
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-tfoot td {
-  border-top: 2px solid var(--table-header);
-  padding: 15px 12px;
-  color: var(--text-primary);
-  background-color: var(--table-row-hover);
-  transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
-}
-
-tfoot td strong {
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-.calendario-container {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background-color: var(--bg-secondary);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-.calendario-container label {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-  transition: color 0.3s ease;
-}
-
-.calendario-container input {
-  padding: 8px 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  font-size: 14px;
-  min-width: 150px;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-.calendario-container input:focus {
-  outline: none;
-  border-color: var(--button-primary);
-  box-shadow: 0 0 0 3px var(--pt-focus-ring);
-}
-
-
-/* Style form groups in modals */
-.modal form > div {
-  margin-bottom: 15px;
-}
-
-.modal label {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--modal-text);
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-/* Improve button layout in modals */
-.modal .button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.modal .button-group button {
-  flex: 1;
-}
-
-/* Add smooth transitions */
-button, input, select {
-  transition: all 0.3s ease;
-}
-
-.modal.active {
-  display: block;
-}
-
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
-.overlay.active {
-  display: block;
-}
-
-/* Estilos de tabela jÃ¡ definidos acima, removendo duplicaÃ§Ã£o */
-
-/* BotÃµes gerais - usar variÃ¡veis de tema (substitui a definiÃ§Ã£o anterior) */
-button:not(.home-button):not(#btn-alterar-senha):not(.modal button) {
-  margin: 5px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  background-color: var(--button-primary);
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
-button:not(.home-button):not(#btn-alterar-senha):not(.modal button):hover:not(:disabled) {
-  background-color: var(--button-hover);
-  opacity: 1;
-}
-
-button:not(.home-button):not(#btn-alterar-senha):not(.modal button):disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background-color: var(--button-primary);
-}
-
-#funcionarios-list li {
-  list-style: none;
-  padding: 10px 10px;
-  margin-bottom: 5px;
-  margin-left: -40px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 13px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-sidebar);
-  transition: all 0.3s ease;
-}
-
-#funcionarios-list li:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: var(--text-sidebar);
-}
-
-#funcionarios-list li.selecionado {
-  background-color: var(--pt-accent-success) !important;
-  color: var(--pt-chip-text) !important;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-#funcionarios-list li.selecionado:hover {
-  background-color: var(--pt-accent-success-hover) !important;
-}
-
-#funcionarios-list li.admin-selecionado {
-  background-color: var(--pt-accent-danger) !important;
-  color: var(--pt-chip-text) !important;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-#funcionarios-list li.admin-selecionado:hover {
-  background-color: var(--pt-accent-danger-hover) !important;
-}
-
-#btn-alterar-senha {
-  margin-right: 10px;
-  background-color: var(--pt-accent-success);
-  color: var(--pt-chip-text);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#btn-alterar-senha:hover {
-  background-color: var(--pt-accent-success-hover);
-}
-
-/* Estilizar botÃµes gerais - removido para evitar conflito */
-
-/* Estilizar labels */
-label {
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-/* Estilizar inputs */
-input[type="month"],
-input[type="date"],
-input[type="time"],
-input[type="text"],
-input[type="number"],
-select {
-  background-color: var(--input-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--input-border);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-input[type="month"]:focus,
-input[type="date"]:focus,
-input[type="time"]:focus,
-input[type="text"]:focus,
-input[type="number"]:focus,
-select:focus {
-  outline: none;
-  border-color: var(--button-primary);
-  box-shadow: 0 0 0 3px var(--pt-focus-ring);
-}
-
-/* Estilizar h2 */
-h2 {
-  color: var(--text-primary);
-  transition: color 0.3s ease;
+    background: var(--bg-sidebar);
+    color: var(--text-sidebar);
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 .sidebar h2 {
-  color: var(--text-sidebar);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: rgba(255,255,255,0.6);
+    margin: 10px 0 8px;
+    padding: 8px 0 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Estilizar parÃ¡grafos */
-p {
-  color: var(--text-primary);
-  transition: color 0.3s ease;
+.sidebar .home-button {
+    width: 100%;
+    position: relative !important;
+    left: auto !important;
+    background: rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.9) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    margin-bottom: 8px;
+    font-size: 0.88rem !important;
+    padding: 10px 14px !important;
+    border-radius: var(--radius-sm) !important;
+    justify-content: flex-start;
 }
 
-.modal p {
-  color: var(--modal-text);
-  transition: color 0.3s ease;
+.sidebar .home-button:hover {
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-.modal button {
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: var(--button-primary);
-  color: white;
-  transition: background-color 0.3s ease;
+/* Funcionários list */
+#funcionarios-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    flex: 1;
 }
 
-/* Add styles for delete confirmation modal */
-#modal-confirmar-exclusao-funcionario {
-  text-align: center;
-  min-width: 300px;
+#funcionarios-list li {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    transition: all 0.15s;
+    border: 1px solid transparent;
 }
 
-#modal-confirmar-exclusao-funcionario h3 {
-  color: var(--pt-accent-danger);
-  margin-bottom: 20px;
-  transition: color 0.3s ease;
+#funcionarios-list li:hover { background: rgba(255,255,255,0.1); color: #fff; }
+#funcionarios-list li.ativo { background: rgba(26,107,92,0.3); color: #fff; border-color: rgba(26,107,92,0.5); }
+
+#btn-add-funcionario {
+    display: none;
+    width: 100%;
+    padding: 9px 14px;
+    background: rgba(26,107,92,0.3);
+    color: #fff;
+    border: 1px solid rgba(26,107,92,0.5);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: all 0.15s;
 }
 
-#modal-confirmar-exclusao-funcionario p {
-  color: var(--modal-text);
-  margin-bottom: 10px;
-  transition: color 0.3s ease;
-}
+#btn-add-funcionario:hover { background: rgba(26,107,92,0.5); }
 
-#modal-confirmar-exclusao-funcionario .btn-confirmar {
-  background-color: var(--pt-accent-danger);
-}
-
-#modal-confirmar-exclusao-funcionario .btn-confirmar:hover {
-  background-color: var(--pt-accent-danger-hover);
-}
-
-#modal-confirmar-exclusao-funcionario .btn-cancelar {
-  background-color: var(--pt-accent-neutral);
-}
-
-#modal-confirmar-exclusao-funcionario .btn-cancelar:hover {
-  background-color: var(--pt-accent-neutral-hover);
-}
-
-.modal button:hover {
-  background-color: var(--button-hover);
-}
-
-#selecao-funcionario {
-  margin-bottom: 15px;
-}
-
-#funcionario-exportar {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 4px;
-  border: 1px solid var(--input-border);
-  background-color: var(--input-bg);
-  color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-
-#modal-add-funcionario {
-  width: 450px;
-  padding: 25px;
-}
-
-#modal-add-funcionario form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-#modal-add-funcionario input,
-#modal-add-funcionario select {
-  width: 100%;
-  padding: 8px;
-  margin: 0;
-  height: 35px;
-  box-sizing: border-box;
-}
-
-#modal-add-funcionario label {
-  color: var(--modal-text);
-  font-weight: 500;
-  margin-bottom: 4px;
-  transition: color 0.3s ease;
-}
-
-#modal-add-funcionario #horarios-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-  align-items: center;
-}
-
-#modal-add-funcionario #horarios-container label {
-  grid-column: 1 / -1;
-  margin: 5px 0;
-}
-
-#modal-add-funcionario #horarios-container input {
-  width: 100%;
-}
-
-#modal-add-funcionario button {
-  padding: 10px;
-  margin-top: 5px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-#modal-add-funcionario button[type="submit"] {
-  background-color: var(--pt-accent-success);
-}
-
-#modal-add-funcionario button[type="submit"]:hover {
-  background-color: var(--pt-accent-success-hover);
-}
-
-#modal-add-funcionario button[type="button"] {
-  background-color: var(--pt-accent-neutral);
-}
-
-#modal-add-funcionario button[type="button"]:hover {
-  background-color: var(--pt-accent-neutral-hover);
-}
-
-#modal-mensagem {
-  text-align: center;
-  min-width: 300px;
-}
-
-#mensagem-texto {
-  margin: 20px 0;
-  font-size: 16px;
-  color: var(--modal-text);
-  transition: color 0.3s ease;
-}
-
-#mensagem-titulo {
-  color: var(--modal-text);
-  transition: color 0.3s ease;
-}
-
-#modal-mensagem button {
-  width: 100px;
-  margin: 10px auto;
-}
-
+/* Admin controls */
 .admin-controls {
-  position: fixed;
-  bottom: 60px;
-  left: 20px;
-  z-index: 100;
+    background: var(--bg-sidebar);
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 .allow-delete-control {
-  display: none;
-  margin-bottom: 20px;
-  color: var(--text-sidebar);
-  font-size: 10px;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    margin-bottom: 0;
 }
 
-.allow-delete-control input {
-  margin-right: 5px;
-  accent-color: var(--button-primary);
+.allow-delete-control input[type=checkbox] { width: auto; flex-shrink: 0; }
+
+/* ── Content ── */
+.content {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: auto;
 }
 
-.allow-delete-control.visible {
-  display: block;
+.content h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0;
 }
 
+/* Mês selecionado */
+.calendario-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.calendario-container label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    margin: 0;
+}
+
+.calendario-container input { width: auto; flex-shrink: 0; }
+
+/* Action buttons */
+#btn-bater-ponto, #btn-exportar-pdf {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600; font-size: 0.88rem; cursor: pointer;
+    transition: all 0.15s; width: fit-content;
+}
+
+#btn-bater-ponto { background: var(--primary-color); color: #fff; border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(26,107,92,0.22); }
+#btn-bater-ponto:hover { background: var(--primary-hover); transform: translateY(-1px); }
+#btn-exportar-pdf:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+/* Table */
+#registros-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+#registros-table th { background: var(--table-header); padding: 11px 14px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); border-bottom: 2px solid var(--border-color); text-align: left; }
+#registros-table td { padding: 11px 14px; border-bottom: 1px solid var(--border-color); }
+#registros-table tr:hover td { background: var(--table-row-hover); }
+#registros-table tfoot td { font-weight: 700; background: var(--table-header); color: var(--text-primary); border-top: 2px solid var(--border-color); border-bottom: none; }
+#total-a-receber { color: var(--success-color); font-size: 1rem; }
+
+/* ── Modais ── */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    inset: 0;
+    background: var(--modal-background);
+    backdrop-filter: blur(3px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active { display: flex; }
+
+.modal > * {
+    background: var(--modal-content-background);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+    color: var(--modal-text);
+    width: min(440px, 92vw);
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+}
+
+.modal h2, .modal h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--modal-title);
+    margin-bottom: 16px;
+}
+
+.modal form { display: flex; flex-direction: column; gap: 12px; }
+
+.modal form label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+}
+
+.modal form button[type=submit], .modal form button[type=button], .modal button {
+    padding: 10px 18px;
+    border: 1.5px solid var(--modal-border);
+    border-radius: var(--radius-sm);
+    background: var(--modal-content-background);
+    color: var(--modal-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: auto;
+}
+
+.modal form button[type=submit] { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+.modal form button[type=submit]:hover { background: var(--primary-hover); }
+.modal form button:not([type=submit]):hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+.btn-confirmar { background: var(--primary-color) !important; color: #fff !important; border-color: var(--primary-color) !important; }
+.btn-cancelar { background: var(--bg-tertiary) !important; color: var(--text-secondary) !important; }
+
+/* Overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.35);
+}
+
+.overlay.active { display: block; }
+
+/* Horários */
+#horarios-container { display: grid; gap: 8px; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+
+/* Modal exportar PDF */
+#modal-exportar-pdf > * { display: flex; flex-direction: column; gap: 12px; }
+#selecao-funcionario { display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 768px) {
+    .container { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 14px; }
+    .sidebar h2 { width: 100%; }
+    #funcionarios-list { flex-direction: row; flex-wrap: wrap; }
+    .content { padding: 18px 14px; }
+    .admin-controls { padding: 10px 14px; }
+}

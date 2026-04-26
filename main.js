@@ -3,12 +3,35 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const os = require('os');
-require('dotenv').config();
+const dotenv = require('dotenv');
 const { MongoClient } = require('mongodb');
 const marked = require('marked');
 const PDFDocument = require('pdfkit');
 const XLSX = require('xlsx-js-style'); // Altere esta linha
 const { createClientPortalServer } = require('./src/scripts/clientPortalServer');
+
+function carregarVariaveisAmbiente() {
+    const envCandidates = [
+        path.join(__dirname, '.env'),
+        path.join(process.cwd(), '.env'),
+        path.join(process.resourcesPath || '', '.env')
+    ].filter((item, index, arr) => item && arr.indexOf(item) === index);
+
+    for (const envPath of envCandidates) {
+        if (!fs.existsSync(envPath)) {
+            continue;
+        }
+
+        dotenv.config({ path: envPath });
+        console.log(`Arquivo .env carregado de: ${envPath}`);
+        return envPath;
+    }
+
+    console.warn('Arquivo .env nao encontrado. Usando variaveis de ambiente do sistema ou fallback local do MongoDB.');
+    return null;
+}
+
+carregarVariaveisAmbiente();
 
 const appDataRoot = path.join(app.getPath('appData'), 'RegistroDePacientes');
 const userDataPath = path.join(appDataRoot, 'user-data');

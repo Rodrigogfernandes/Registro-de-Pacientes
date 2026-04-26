@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-04-24T00:01:17.974Z",
-  "appInstanceId": "DESKTOP-EB58H3F-11192-9d15da9c",
+  "generatedAt": "2026-04-26T13:43:09.419Z",
+  "appInstanceId": "DESKTOP-EB58H3F-13212-a4e66175",
   "snapshot": {
     "registros": [
       {
@@ -1353,8 +1353,8 @@
           "passwordHash": "f0ce14402e10257384e58ef27e93f123ba1be685a90543b18886db7fb53d9ca6",
           "active": true,
           "createdAt": "2026-03-21T01:30:41.895Z",
-          "updatedAt": "2026-04-23T23:57:28.436Z",
-          "lastLoginAt": "2026-04-23T23:57:28.435Z"
+          "updatedAt": "2026-04-24T00:01:40.636Z",
+          "lastLoginAt": "2026-04-24T00:01:40.636Z"
         },
         {
           "id": "portal-1774060757294-60ee9d",
@@ -3571,6 +3571,37 @@
         },
         "text": "teste 2",
         "attachment": null,
+        "readBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "receivedBy": [
+          "cliente_rodrigo-guedes-fernandes",
+          "admin"
+        ],
+        "deletedFor": []
+      },
+      {
+        "id": "1776988917465-fc8515ce",
+        "at": "2026-04-24T00:01:57.465Z",
+        "from": {
+          "username": "cliente_rodrigo-guedes-fernandes",
+          "nome": "RODRIGO GUEDES FERNANDES",
+          "role": "cliente"
+        },
+        "to": {
+          "username": "admin",
+          "nome": "Administrador"
+        },
+        "text": "",
+        "attachment": {
+          "name": "Captura_de_tela_2025-12-04_122525.png",
+          "path": "D:\\projetos programação\\Registro-de-Pacientes\\data\\chat_uploads\\1776988916845_ace1c9b7.png",
+          "type": "image/png",
+          "size": 53121,
+          "extension": ".png",
+          "kind": "image"
+        },
         "readBy": [
           "cliente_rodrigo-guedes-fernandes",
           "admin"
