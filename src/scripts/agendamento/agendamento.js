@@ -65,6 +65,7 @@ let pacienteBaseNoNovo = null;
 let resolverConfirmacao = null;
 let resolverAviso = null;
 let contextoImpressao = null;
+let sessaoAtual = null;
 
 window.addEventListener('error', (event) => {
     console.error('Erro global em Agendamento:', event.error || event.message);
@@ -114,6 +115,21 @@ function cpfSomenteDigitos(valor) {
 
 function idsIguais(a, b) {
     return String(a ?? '').trim() !== '' && String(a) === String(b);
+}
+
+function usuarioEhAdmin() {
+    return String(sessaoAtual?.role || '').toLowerCase() === 'admin';
+}
+
+function aplicarPermissaoBotoesAdmin() {
+    const btnAgendaMedico = document.getElementById('btnAgendaMedico');
+    const btnPerformance = document.getElementById('btnPerformance');
+    if (btnAgendaMedico) {
+        btnAgendaMedico.hidden = !usuarioEhAdmin();
+    }
+    if (btnPerformance) {
+        btnPerformance.hidden = !usuarioEhAdmin();
+    }
 }
 
 function extrairIdRegistroOrigem(idOrigem) {
@@ -2336,8 +2352,9 @@ ipcRenderer.on('change-theme', (event, theme) => setTheme(theme));
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        await garantirAcesso(['admin', 'recepcao']);
+        sessaoAtual = await garantirAcesso(['admin', 'recepcao']);
         carregarTema();
+        aplicarPermissaoBotoesAdmin();
         await carregarMedicosAgenda();
         popularSelectMedicos();
 

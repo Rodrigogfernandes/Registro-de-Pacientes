@@ -211,24 +211,26 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
 .export-buttons button:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
 /* Gráfico */
-.grafico-container { display: flex; flex-direction: column; gap: 14px; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
-.content { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
-.chart-container { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; background: var(--bg-tertiary); }
-.relatorio { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; background: var(--bg-tertiary); }
+.grafico-container { display: flex; flex-direction: column; gap: 18px; }
+#modalGrafico .modal-content { width: min(1100px, 96vw); max-width: 1100px; max-height: 92vh; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+.content { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr); gap: 18px; align-items: stretch; }
+.chart-container { min-width: 0; min-height: 420px; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; background: var(--bg-tertiary); }
+.relatorio { min-width: 0; max-height: 420px; overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; background: var(--bg-tertiary); }
 .relatorio h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 400; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: -0.01em; }
 #relatorioContent { font-size: 0.88rem; color: var(--text-secondary); }
 
 /* Dropdown */
-.dropdown { position: relative; }
-.dropdown-button { padding: 9px 14px; border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-secondary); color: var(--text-primary); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
+.dropdown { position: relative; flex: 1 1 220px; min-width: 220px; }
+.dropdown-button { width: 100%; min-height: 52px; padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-secondary); color: var(--text-primary); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.15s; text-align: left; }
 .dropdown-button:hover { border-color: var(--primary-color); color: var(--primary-color); }
-.dropdown-menu { position: absolute; z-index: 10; top: calc(100% + 4px); left: 0; min-width: 180px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); list-style: none; display: none; }
-.dropdown-menu.active { display: block; }
-.dropdown-menu li { padding: 9px 14px; cursor: pointer; font-size: 0.88rem; color: var(--text-primary); transition: background 0.12s; }
+.dropdown-menu { position: absolute; z-index: 50; top: calc(100% + 6px); left: 0; right: 0; max-height: 260px; overflow: auto; min-width: 180px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); list-style: none; display: none; }
+.dropdown-menu.active,
+.dropdown-menu.show { display: block; }
+.dropdown-menu li { padding: 11px 14px; cursor: pointer; font-size: 0.92rem; color: var(--text-primary); transition: background 0.12s; }
 .dropdown-menu li:hover { background: var(--table-row-hover); }
 
-#exportPDF { padding: 9px 16px; border: 1.5px solid var(--primary-border); border-radius: var(--radius-sm); background: var(--selected-row); color: var(--primary-color); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
+#exportPDF { min-height: 52px; padding: 12px 18px; border: 1.5px solid var(--primary-border); border-radius: var(--radius-sm); background: var(--selected-row); color: var(--primary-color); font-weight: 600; font-size: 0.92rem; cursor: pointer; transition: all 0.15s; }
 #exportPDF:hover { background: var(--primary-color); color: #fff; }
 
 /* Observações modal */
@@ -241,6 +243,9 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
 
 @media (max-width: 900px) {
     .content { grid-template-columns: 1fr; }
+    #modalGrafico .modal-content { width: min(96vw, 760px); }
+    .chart-container { min-height: 320px; }
+    .relatorio { max-height: none; }
     .form-row-inline { grid-template-columns: 1fr; }
     .date-inputs { grid-template-columns: 1fr; }
 }

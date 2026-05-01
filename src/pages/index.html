@@ -44,11 +44,11 @@
                     <img src="../assets/images/import.png" alt="Importar" width="20">
                     Importar
                 </button>
-                <button id="manageAutoBackupBtn" class="config-button" onclick="openAutoBackupModal()">
+                <button id="manageAutoBackupBtn" class="config-button" onclick="openAutoBackupModal()" hidden>
                     <img src="../assets/images/json.png" alt="Backups" width="20">
                     Backups Automáticos
                 </button>
-                <button id="manageUsersBtn" class="config-button" onclick="openUsersModal()">
+                <button id="manageUsersBtn" class="config-button" onclick="openUsersModal()" hidden>
                     <img src="../assets/images/config.png" alt="Usuários" width="20">
                     Usuários
                 </button>
@@ -186,7 +186,7 @@
                             <div class="users-form-actions">
                                 <button type="button" class="export-button" onclick="resetUserForm()">Novo</button>
                                 <button type="submit" class="export-button">Salvar</button>
-                                <button type="button" id="deleteUserBtn" class="export-button users-danger" onclick="deleteSelectedUser()">Excluir</button>
+                                <button type="button" id="deleteUserBtn" class="export-button users-danger" onclick="deleteSelectedUser()" hidden>Excluir</button>
                             </div>
                         </form>
 
@@ -221,7 +221,7 @@
         <div class="home-actions">
             <button class="global-search-button" onclick="openSearchModal()">Busca Global</button>
         </div>
-        <section class="home-dashboard" aria-label="Resumo operacional">
+        <section class="home-dashboard" aria-label="Resumo operacional" hidden>
             <article class="dash-card">
                 <span class="dash-label">Registros Hoje</span>
                 <strong id="dashRegistrosHoje">0</strong>
@@ -239,7 +239,7 @@
                 <strong id="dashUsuariosAtivos">0</strong>
             </article>
         </section>
-        <section class="home-alerts">
+        <section class="home-alerts" hidden>
             <h2>Alertas Internos</h2>
             <div id="homeAlertsList" class="home-alerts-list">Sem alertas no momento.</div>
         </section>

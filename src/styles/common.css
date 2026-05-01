@@ -5,6 +5,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 
+[hidden] {
+    display: none !important;
+}
+
 /* ── Tokens base (Tema Claro) ── */
 :root {
     /* Cores semânticas */
@@ -402,6 +406,8 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
     position: fixed;
     z-index: var(--z-modal-content);
     inset: 0;
+    align-items: center;
+    justify-content: center;
     background: var(--modal-background);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
@@ -429,8 +435,6 @@ tr.selected td, tr.is-selected td { background: var(--selected-row); }
 .modal.active, .export-modal.active,
 .modal.show, .export-modal.show {
     display: flex;
-    align-items: center;
-    justify-content: center;
     opacity: 1;
 }
 

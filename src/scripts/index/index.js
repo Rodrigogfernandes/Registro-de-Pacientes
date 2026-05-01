@@ -1275,22 +1275,23 @@
         }
 
         if (manageUsersBtn) {
-            manageUsersBtn.style.display = role === 'admin' ? '' : 'none';
+            manageUsersBtn.hidden = role !== 'admin';
         }
 
         if (manageAutoBackupBtn) {
-            manageAutoBackupBtn.style.display = role === 'admin' ? '' : 'none';
+            manageAutoBackupBtn.hidden = role !== 'admin';
         }
 
         if (homeDashboardSection) {
-            homeDashboardSection.style.display = role === 'admin' ? '' : 'none';
+            homeDashboardSection.hidden = role !== 'admin';
         }
 
         if (homeAlertsSection) {
-            homeAlertsSection.style.display = role === 'admin' ? '' : 'none';
+            homeAlertsSection.hidden = role !== 'admin';
         }
 
         if (deleteUserBtn) {
+            deleteUserBtn.hidden = role !== 'admin';
             deleteUserBtn.disabled = role !== 'admin';
         }
 

@@ -106,54 +106,6 @@
     "deletedFor": []
   },
   {
-    "id": "1774057042782-69cba565",
-    "at": "2026-03-21T01:37:22.782Z",
-    "from": {
-      "username": "cliente_rodrigo-guedes-fernandes",
-      "nome": "RODRIGO GUEDES FERNANDES",
-      "role": "cliente"
-    },
-    "to": {
-      "username": "rodrigo",
-      "nome": "Rodrigo guedes"
-    },
-    "text": "oi",
-    "attachment": null,
-    "readBy": [
-      "cliente_rodrigo-guedes-fernandes",
-      "rodrigo"
-    ],
-    "receivedBy": [
-      "cliente_rodrigo-guedes-fernandes",
-      "rodrigo"
-    ],
-    "deletedFor": []
-  },
-  {
-    "id": "1774058860571-895ab96d",
-    "at": "2026-03-21T02:07:40.571Z",
-    "from": {
-      "username": "rodrigo",
-      "nome": "Rodrigo guedes",
-      "role": "recepcao"
-    },
-    "to": {
-      "username": "cliente_rodrigo-guedes-fernandes",
-      "nome": "RODRIGO GUEDES FERNANDES"
-    },
-    "text": "oi",
-    "attachment": null,
-    "readBy": [
-      "rodrigo",
-      "cliente_rodrigo-guedes-fernandes"
-    ],
-    "receivedBy": [
-      "rodrigo",
-      "cliente_rodrigo-guedes-fernandes"
-    ],
-    "deletedFor": []
-  },
-  {
     "id": "1774060995429-2436ee66",
     "at": "2026-03-21T02:43:15.429Z",
     "from": {
@@ -187,30 +139,6 @@
     "attachment": null,
     "readBy": [],
     "receivedBy": [],
-    "deletedFor": []
-  },
-  {
-    "id": "1774060996229-22a20127",
-    "at": "2026-03-21T02:43:16.229Z",
-    "from": {
-      "username": "cliente_teste-node-7",
-      "nome": "Teste Node 7",
-      "role": "cliente"
-    },
-    "to": {
-      "username": "rodrigo",
-      "nome": "Rodrigo guedes"
-    },
-    "text": "mensagem teste 7",
-    "attachment": null,
-    "readBy": [
-      "cliente_teste-node-7",
-      "rodrigo"
-    ],
-    "receivedBy": [
-      "cliente_teste-node-7",
-      "rodrigo"
-    ],
     "deletedFor": []
   },
   {
@@ -1969,30 +1897,6 @@
       "cliente_rodrigo-guedes-fernandes"
     ],
     "receivedBy": [
-      "cliente_rodrigo-guedes-fernandes"
-    ],
-    "deletedFor": []
-  },
-  {
-    "id": "1774061569200-965d64d4",
-    "at": "2026-03-21T02:52:49.200Z",
-    "from": {
-      "username": "rodrigo",
-      "nome": "Rodrigo guedes",
-      "role": "recepcao"
-    },
-    "to": {
-      "username": "cliente_rodrigo-guedes-fernandes",
-      "nome": "RODRIGO GUEDES FERNANDES"
-    },
-    "text": "ola",
-    "attachment": null,
-    "readBy": [
-      "rodrigo",
-      "cliente_rodrigo-guedes-fernandes"
-    ],
-    "receivedBy": [
-      "rodrigo",
       "cliente_rodrigo-guedes-fernandes"
     ],
     "deletedFor": []
